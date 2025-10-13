@@ -1,0 +1,145 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<style>
+.modal-almost-fullscreen {
+	width: calc(100% - 60px); /* 좌우 30px 여백 */
+	max-width: none;
+	height: calc(100% - 60px); /* 상하 30px 여백 */
+	margin: 30px auto;
+}
+
+.modal-almost-fullscreen .modal-content {
+	height: 100%;
+}
+
+.modal-almost-fullscreen .modal-body {
+	overflow-y: auto;
+}
+</style>
+
+</head>
+<body>
+	<div class="modal fade" id="deployRequestCompareModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-almost-fullscreen" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" mb-0 id="modalFullTitle">
+						<span class="fw-semibold text-secondary mb-0">Compare</span> 
+					    <span class="text-dark fw-normal">"src/main/java/com/vrs/platform/service/UserService.java"</span>
+				    </h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+
+
+				<div class="modal-body">
+					<div class="container-fluid py-2">
+						<div class="row g-3">
+
+							<!-- Left Column -->
+							<div class="col-md-6">
+								<div class="card border-light shadow-sm">
+									<div class="card-body">
+										<div class="mb-2 d-flex justify-content-between align-items-center">
+											<label for="selectedCommit" class="form-label me-2 mb-0 fw-semibold text-secondary" style="min-width: 50px;">
+												고정
+											</label>
+											<input type="text" id="selectedCommit" class="form-control form-control-sm bg-light border text-primary"
+											  value="e3a1a5c8b92f3a49f7e5c5c3125f4e10cc88fb25" readonly>
+										</div>
+
+										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
+											<div class="line-numbers" id="left-line-numbers"></div>
+											<pre class="code-content mb-0" id="left-code"></pre>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+
+							<!-- Right Column -->
+							<div class="col-md-6">
+								<div class="card border-light shadow-sm">
+									<div class="card-body">
+										<div class="mb-2 d-flex justify-content-between align-items-center">
+											<label for="compareDropdown" class="form-label me-2 mb-0 fw-semibold text-secondary" style="min-width: 50px;">
+												선택
+											</label>
+											<select id="compareDropdown"
+												class="form-select form-select-sm">
+												<option>553834e8b92f3a49f7e5c5c3125f4e10cc88fb25</option>
+												<option selected>d20db258b92f3a49f7e5c5c3125f4e10cc88fb25</option>
+												<option>473dc7a8b92f3a49f7e5c5c3125f4e10cc88fb25</option>
+												<option>e3a1a5c8b92f3a49f7e5c5c3125f4e10cc88fb25</option>
+											</select>
+										</div>
+										<div class="border rounded p-3 bg-light"
+											style="height: 500px; overflow-y: auto;">
+											<pre class="mb-0">
+												
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- row -->
+					</div>
+					<!-- container-fluid -->
+				</div>
+				<!-- modal-body -->
+
+
+
+				<!-- <div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary"
+						data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div> -->
+			</div>
+		</div>
+	</div>
+	
+	
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+	function displayCodeWithLineNumbers(code, codeId, lineId) {
+	  const lines = code.split("\n");
+	  //const lineNumbers = lines.map((_, i) => i + 1);
+	  
+	  //document.getElementById(lineId).textContent = lineNumbers;
+	  //document.getElementById(codeId).textContent =  code;
+	  
+	  lines.forEach(function(item, index){
+		  console.log(index, item);
+		  document.getElementById(codeId).textContent += (index+1) + "\t" + item +"\n";
+	  })  
+	}
+
+	// 예시 데이터 (git API 결과 대신)
+	const sampleCode = `
+	import java.util.List;
+	import java.util.Map;
+	
+	@Controller
+	@RequestMapping("/user")
+	public class UserService {
+	    @Autowired
+	    private VoteService voteService;
+	}`;
+
+	displayCodeWithLineNumbers(sampleCode, "left-code", "left-line-numbers");
+
+	
+
+</script>
+
+
+</body>
+</html>
