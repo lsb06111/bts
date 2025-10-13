@@ -1,14 +1,56 @@
 package edu.example.bts.controller;
 
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import edu.example.bts.domain.history.RequestsDTO;
+import edu.example.bts.domain.user.UserDTO;
+import edu.example.bts.service.DeployRequestHistoryService;
+import edu.example.bts.service.MainService;
 
 @Controller
 public class MainController {
 
+	@Autowired
+	MainService service;
+	@Autowired
+	DeployRequestHistoryService historyService;
 	
 	@RequestMapping("/")
-	public String goMain() {
+	public String goMain(HttpSession session, Model model) {
+		session.setAttribute("user", service.getUserDetail((long) 1));
+		UserDTO user = (UserDTO) session.getAttribute("user");
+		Long userId = user.getId();
+		List<RequestsDTO> latestRequests = getLatestRequests(user);
+		
+		
+		model.addAttribute("latests", historyService.getLatestApproval(latestRequests));
+		model.addAttribute("userDetails", historyService.getUsersByReq(latestRequests));
+		model.addAttribute("latestRequests", latestRequests);
 		return "index";
+	}
+	
+	public List<RequestsDTO> getLatestRequests(UserDTO user){
+		List<RequestsDTO> latestRequests = null;
+		System.out.println(user.getDept().getDeptno().intValue());
+		switch(user.getDept().getDeptno().intValue()) {
+			case 1: // dev team
+				if(user.getJob().getJobno().intValue() == 2) // 사원
+					latestRequests = service.getLatestRequestsForS(user.getId());
+				else
+					latestRequests = service.getLatestRequestsForT(user.getId());
+				break;
+			case 2: // 운영
+				latestRequests = service.getLatestRequestsForU(user.getId());
+				break;
+		}
+		
+		return latestRequests;
 	}
 }
