@@ -8,6 +8,16 @@
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
 </head>
+<style>
+.dropdown-menu {
+	min-width: 110px !important;
+}
+
+.dropdown-menu {
+	right: auto !important;
+	left: 0 !important;
+}
+</style>
 <body
 	style="background-color: #f7f7fb; font-family: 'Noto Sans KR', sans-serif;">
 	<%@ include file="/WEB-INF/views/jspf/header.jspf"%>
@@ -21,16 +31,60 @@
 			<div
 				style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
 				<h4 style="font-weight: 700; color: #222;">사원 목록</h4>
-				<div class="input-group" style="width: 240px;">
-					<input type="text" class="form-control" placeholder="검색..."
-						style="font-size: 13px; border-right: 0; background-color: #fafafa;">
-					<button class="btn btn-outline-light" type="button"
-						style="border-left: 0; border-color: #ddd; background-color: #fff;">
-						<i class="bi bi-search" style="color: #777;"></i>
-					</button>
+				<div class="d-flex align-items-center gap-2">
+
+					<!-- ✅ 이용자 필터 -->
+					<div class="dropdown" style="position: relative;" data-bs-display="static">
+						<button class="btn btn-light dropdown-toggle" type="button"
+							id="userFilterDropdown" data-bs-toggle="dropdown"
+							aria-expanded="false"
+							style="font-size: 13px; border: 1px solid #ddd; border-radius: 8px; color: #555;">
+							이용자: 전체</button>
+						<ul class="dropdown-menu dropdown-menu-start shadow-sm"
+							aria-labelledby="userFilterDropdown" style="font-size: 13px;">
+							<li><a class="dropdown-item user-filter-item" href="#"
+								data-value="">전체</a></li>
+							<li><a class="dropdown-item user-filter-item" href="#"
+								data-value="BTS">BTS</a></li>
+						</ul>
+					</div>
+
+					<!-- ✅ 부서(직위) 필터 -->
+					<div class="dropdown" style="position: relative;" data-bs-display="static">
+						<button class="btn btn-light dropdown-toggle" type="button"
+							id="deptFilterDropdown" data-bs-toggle="dropdown"
+							aria-expanded="false"
+							style="font-size: 13px; border: 1px solid #ddd; border-radius: 8px; color: #555;">
+							부서: 전체</button>
+						<ul class="dropdown-menu dropdown-menu-start shadow-sm"
+							aria-labelledby="deptFilterDropdown" style="font-size: 13px;">
+							<li><a class="dropdown-item dept-filter-item" href="#"
+								data-value="">전체</a></li>
+							<li><a class="dropdown-item dept-filter-item" href="#"
+								data-value="사원">사원</a></li>
+							<li><a class="dropdown-item dept-filter-item" href="#"
+								data-value="대리">대리</a></li>
+							<li><a class="dropdown-item dept-filter-item" href="#"
+								data-value="팀장">팀장</a></li>
+							<li><a class="dropdown-item dept-filter-item" href="#"
+								data-value="과장">과장</a></li>
+							<li><a class="dropdown-item dept-filter-item" href="#"
+								data-value="차장">차장</a></li>
+							<li><a class="dropdown-item dept-filter-item" href="#"
+								data-value="부장">부장</a></li>
+						</ul>
+					</div>
+
+					<div class="input-group" style="width: 240px;">
+						<input type="text" class="form-control" placeholder="검색..."
+							style="font-size: 13px; border-right: 0; background-color: #fafafa;">
+						<button class="btn btn-outline-light" type="button"
+							style="border-left: 0; border-color: #ddd; background-color: #fff;">
+							<i class="bi bi-search" style="color: #777;"></i>
+						</button>
+					</div>
 				</div>
 			</div>
-
 			<!-- 테이블 카드 -->
 			<!-- 600px 넘어가면 스크롤 생성 -->
 			<div
@@ -132,10 +186,67 @@
 		</div>
 	</div>
 
+	<!-- head.jspf 아래쪽이나 body 끝부분에 추가 -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
 	<%@ include file="/WEB-INF/views/employee/employeeAddModal.jsp"%>
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
+	<script>
+		document
+				.addEventListener(
+						"DOMContentLoaded",
+						function() {
+							// 이용자 필터 클릭 이벤트
+							var userFilterItems = document
+									.querySelectorAll('.user-filter-item');
+							for (var i = 0; i < userFilterItems.length; i++) {
+								userFilterItems[i]
+										.addEventListener(
+												'click',
+												function(e) {
+													e.preventDefault();
+													var value = this
+															.getAttribute('data-value')
+															|| '전체';
+													document
+															.getElementById('userFilterDropdown').innerText = '이용자: '
+															+ (value || '전체');
+													console.log('이용자 필터 선택:',
+															value);
+													// TODO: Ajax 호출 or 테이블 필터링
+												});
+							}
+
+							// 부서(직위) 필터 클릭 이벤트
+							var deptFilterItems = document
+									.querySelectorAll('.dept-filter-item');
+							for (var i = 0; i < deptFilterItems.length; i++) {
+								deptFilterItems[i]
+										.addEventListener(
+												'click',
+												function(e) {
+													e.preventDefault();
+													var value = this
+															.getAttribute('data-value')
+															|| '전체';
+													document
+															.getElementById('deptFilterDropdown').innerText = '부서: '
+															+ (value || '전체');
+													console.log('부서 필터 선택:',
+															value);
+													// TODO: Ajax 호출 or 테이블 필터링
+												});
+							}
+						});
+	</script>
 </body>
 </html>

@@ -34,14 +34,14 @@
 				계정으로 로그인하여 시스템을 이용하세요.</p>
 
 			<!-- 로그인 폼 -->
-			<form action="loginProcess.do" method="post"
+			<form action="${pageContext.request.contextPath}/auth/login" method="post"
 				style="display: flex; flex-direction: column; gap: 16px;">
 
 				<!-- 사원번호 -->
 				<div>
 					<label class="form-label"
 						style="font-weight: 600; font-size: 13px; color: #333;">사원번호</label>
-					<input type="text" name="employeeId" class="form-control"
+					<input type="text" name="email" class="form-control"
 						placeholder="사원번호를 입력하세요."
 						style="font-size: 14px; padding: 10px 12px; border-radius: 8px; border: 1px solid #ddd; background-color: #f8f9fa;">
 				</div>

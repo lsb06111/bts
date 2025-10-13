@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="edu.example.bts.dao.UserDAO">
+	<!-- 이메일로 사원 조회 -->
+	<select id="findEmpByEmail" parameterType="string"
+		resultType="EmpDTO">
+		SELECT * FROM emp
+		WHERE email = #{email}
+		AND estate = '재직중'
+	</select>
+
+	<!-- empno로 유저 조회 -->
+	<select id="findUserByEmpno" parameterType="int"
+		resultType="UserDTO">
+		SELECT * FROM users
+		WHERE empno = #{empno}
+	</select>
+
+	<!-- 신규 유저 등록 -->
+	<insert id="insertUser"
+		parameterType="UserDTO">
+		INSERT INTO users (password, github_username, empno)
+		VALUES (#{password}, #{githubUsername}, #{empno})
+	</insert>
+</mapper>
