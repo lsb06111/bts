@@ -7,8 +7,6 @@
 	</settings>
 	
 	<typeAliases>
-		<typeAlias alias="UserDTO" type="edu.example.bts.domain.user.UserDTO"/>
-		<typeAlias alias="EmpDTO" type="edu.example.bts.domain.emp.EmpDTO"/>
 		<package name="edu.example.bts.domain"/>
 	</typeAliases>
 </configuration>

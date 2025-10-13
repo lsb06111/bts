@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.example.bts.dao.HistoryDAO">
+
+<resultMap id="DevRepoMap" type="DevRepoDTO">
+    <id property="id" column="dev_repo_id"/>
+    <result property="projectName" column="project_name"/>
+    <result property="ownerUsername" column="owner_username"/>
+    <result property="repoName" column="repo_name"/>
+    <result property="currentStage" column="current_stage"/>
+</resultMap>
+
+<resultMap id="StatusMap" type="StatusDTO">
+    <id property="id" column="status_id"/>
+    <result property="description" column="description"/>
+</resultMap>
+
+<!-- Requests + DevRepo 조합 매핑 -->
+<resultMap id="RequestsMap" type="RequestsDTO">
+    <id property="id" column="id"/>
+    <result property="title" column="title"/>
+    <result property="content" column="content"/>
+    <result property="createdAt" column="created_at"/>
+    <result property="isDraft" column="is_draft"/>
+    <result property="delYn" column="del_yn"/>
+    <result property="userId" column="user_id"/>
+
+    <!-- 연관 객체 매핑 -->
+    <association property="devRepo" javaType="DevRepoDTO" resultMap="DevRepoMap"/>
+</resultMap>
+
+<!-- approval + status 조합 매핑 -->
+<resultMap id="ApprovalHistoryMap" type="ApprovalHistoryDTO">
+    <id property="id" column="id"/>
+    <result property="content" column="content"/>
+    <result property="createdAt" column="created_at"/>
+    <result property="reqId" column="req_id"/>
+
+    <!-- 연관 객체 매핑 -->
+    <association property="status" javaType="StatusDTO" resultMap="StatusMap"/>
+</resultMap>
+
+<select id="getLatestRequestsForS" resultMap="RequestsMap" parameterType="long">
+	select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    where user_id = #{userId} order by r.id desc fetch first 3 rows only
+</select>
+
+
+<select id="getRequestsForS" resultMap="RequestsMap" parameterType="long">
+    select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    where user_id = #{userId}
+</select>
+
+<select id="getLatestApproval" resultMap="ApprovalHistoryMap" parameterType="long">
+    select * from approval_history a join status s on a.status_id = s.id 
+    where req_id= #{reqId} order by a.id desc FETCH FIRST 1 ROWS ONLY
+</select>
+
+<select id="getAllProjectsForS" resultType="DevRepoDTO" parameterType="long">
+	select * from dev_repo d where #{userId} in (select m.user_id from project_member m where m.dev_repo_id = d.id)
+</select>
+
+<select id="getAllStatus" resultType="StatusDTO">
+	select * from status
+</select>
+
+<select id="getLatestRequestsForT" resultMap="RequestsMap" parameterType="long">
+	select r.*, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
+	order by r.id desc fetch first 3 rows only
+</select>
+
+<select id="getLatestRequestsForU" resultMap="RequestsMap" parameterType="long">
+	select r.*, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
+	order by r.id desc fetch first 3 rows only
+</select>
+
+</mapper>

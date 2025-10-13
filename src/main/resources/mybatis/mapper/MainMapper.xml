@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.example.bts.dao.MainDAO">
+
+<resultMap id="UserDetailMap" type="UserDTO">
+    <id property="id" column="id"/>
+    <result property="githubUsername" column="github_username"/>
+    <result property="ename" column="ename"/>
+    <result property="ephone" column="ephone"/>
+    <result property="email" column="email"/>
+    <result property="phone" column="phone"/>
+    <result property="estate" column="estate"/>
+
+    <!-- 부서 정보 매핑 -->
+    <association property="dept" javaType="DeptDTO">
+    	<id property="deptno" column="deptno"/>
+        <result property="dname" column="dname"/>
+    </association>
+
+    <!-- 직급 정보 매핑 -->
+    <association property="job" javaType="JobDTO">
+    	<id property="jobno" column="jobno"/>
+        <result property="jname" column="jname"/>
+    </association>
+</resultMap>
+
+<select id="getUserDetail" resultMap="UserDetailMap" parameterType="long">
+    SELECT *
+    FROM users u
+    JOIN emp e USING(empno)
+    JOIN dept d USING(deptno)
+    JOIN job j USING(jobno)
+    WHERE u.id = #{id}
+</select>
+</mapper>
