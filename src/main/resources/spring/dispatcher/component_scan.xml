@@ -7,12 +7,26 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
-	<context:component-scan 
+	<context:component-scan
 		base-package="edu.example.bts">
-		<context:exclude-filter type="annotation" 
-			expression="org.springframework.stereotype.Service"/>
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Service" />
 		<context:exclude-filter type="annotation"
 			expression="org.springframework.stereotype.Repository" />
 	</context:component-scan>
 	<mvc:annotation-driven />
+	<!-- 정적 자원 설정 -->
+	<mvc:resources mapping="/resources/**"
+		location="/resources/" />
+
+	<!-- ✅ JWT 인터셉터 등록 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!-- 인터셉터가 동작할 URL 패턴 -->
+			<mvc:mapping path="/api/**" />
+			<bean class="edu.example.bts.interceptor.JwtInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+
 </beans>

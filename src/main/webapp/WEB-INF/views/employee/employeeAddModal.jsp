@@ -36,6 +36,13 @@
 								<input type="text" class="form-control" placeholder="예: 2023001"
 									style="font-size: 14px;">
 							</div>
+							
+							<div class="col-md-6">
+								<label class="form-label" style="font-weight: 600;">ID(email)</label>
+								<input type="email" class="form-control"
+									placeholder="예: hong@company.com" style="font-size: 14px;">
+							</div>
+							
 							<div class="col-md-6">
 								<label class="form-label" style="font-weight: 600;">내선번호</label>
 								<input type="text" class="form-control" placeholder="예: 1001"
@@ -87,60 +94,6 @@
 							</div>
 						</div>
 					</form>
-					
-					<!-- <form style="display:flex; flex-direction:column; gap:14px;">
-  <div>
-    <label class="form-label" style="font-weight:600;">사원번호</label>
-    <input type="text" class="form-control" placeholder="예: 2023001" style="font-size:14px;">
-  </div>
-
-  <div>
-    <label class="form-label" style="font-weight:600;">내선번호</label>
-    <input type="text" class="form-control" placeholder="예: 1001" style="font-size:14px;">
-  </div>
-
-  <div>
-    <label class="form-label" style="font-weight:600;">휴대전화</label>
-    <input type="text" class="form-control" placeholder="예: 010-1234-5678" style="font-size:14px;">
-  </div>
-
-  <div>
-    <label class="form-label" style="font-weight:600;">이름</label>
-    <input type="text" class="form-control" placeholder="예: 홍길동" style="font-size:14px;">
-  </div>
-
-  <div>
-    <label class="form-label" style="font-weight:600;">부서</label>
-    <select class="form-select" style="font-size:14px;">
-      <option selected>공공사업1 Div</option>
-      <option>공공사업2 Div</option>
-      <option>공공사업3 Div</option>
-      <option>전력사업1 Div</option>
-      <option>전력사업2 Div</option>
-    </select>
-  </div>
-
-  <div>
-    <label class="form-label" style="font-weight:600;">직위</label>
-    <select class="form-select" style="font-size:14px;">
-      <option selected>사원</option>
-      <option>주임</option>
-      <option>대리</option>
-      <option>과장</option>
-      <option>차장</option>
-      <option>부장</option>
-    </select>
-  </div>
-
-  <div>
-    <label class="form-label" style="font-weight:600;">상태</label>
-    <select class="form-select" style="font-size:14px;">
-      <option selected>재직중</option>
-      <option>휴직</option>
-      <option>퇴직</option>
-    </select>
-  </div>
-</form> -->
 				</div>
 
 				<!-- 하단 버튼 -->
