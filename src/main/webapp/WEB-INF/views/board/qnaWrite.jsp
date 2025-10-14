@@ -7,7 +7,7 @@
 <body>
 <%@ include file="/WEB-INF/views/jspf/header.jspf" %> <!-- 헤더 네비부분 고정 -->
 
-<%@ include file="/WEB-INF/views/jspf/board/notice.jspf" %>
+<%@ include file="/WEB-INF/views/jspf/board/qnaWrite.jspf" %>
           
 <%@ include file="/WEB-INF/views/jspf/footer.jspf" %> <!-- 푸터부분 고정 -->    
 </body>
