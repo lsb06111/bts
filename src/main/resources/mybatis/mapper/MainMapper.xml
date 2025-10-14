@@ -32,4 +32,14 @@
     JOIN job j USING(jobno)
     WHERE u.id = #{id}
 </select>
+
+<select id="getUserByEmail" resultMap="UserDetailMap" parameterType="string">
+    SELECT *
+    FROM users u
+    JOIN emp e USING(empno)
+    JOIN dept d USING(deptno)
+    JOIN job j USING(jobno)
+    WHERE  e.email = #{email}
+</select>
+
 </mapper>

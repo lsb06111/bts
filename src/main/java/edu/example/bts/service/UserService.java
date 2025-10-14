@@ -3,6 +3,7 @@ package edu.example.bts.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.example.bts.dao.MainDAO;
 import edu.example.bts.dao.UserDAO;
 import edu.example.bts.domain.emp.EmpDTO;
 import edu.example.bts.domain.user.UserDTO;
@@ -11,6 +12,10 @@ import edu.example.bts.domain.user.UserDTO;
 public class UserService {
 	@Autowired
     private UserDAO userDAO;
+	
+	//추가
+	@Autowired
+	MainDAO mainDAO;
 
     public EmpDTO findEmpByEmail(String email) {
         return userDAO.findEmpByEmail(email);
@@ -22,5 +27,10 @@ public class UserService {
 
     public void insertUser(UserDTO user) {
         userDAO.insertUser(user);
+    }
+    
+    //추가
+    public UserDTO getUserByEmail(String email) {
+    	return mainDAO.getUserByEmail(email);
     }
 }
