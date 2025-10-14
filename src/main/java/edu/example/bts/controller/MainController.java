@@ -2,11 +2,12 @@ package edu.example.bts.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import edu.example.bts.domain.history.RequestsDTO;
@@ -23,15 +24,14 @@ public class MainController {
 	DeployRequestHistoryService historyService;
 	
 	@RequestMapping("/")
-	public String goMain(HttpSession session, Model model) {
-		session.setAttribute("user", service.getUserDetail((long) 1));
-		UserDTO user = (UserDTO) session.getAttribute("user");
-		Long userId = user.getId();
+	public String goMain(@RequestAttribute("loginUser") UserDTO user, Model model) {
+		
 		List<RequestsDTO> latestRequests = getLatestRequests(user);
 		
-		
-		model.addAttribute("latests", historyService.getLatestApproval(latestRequests));
-		model.addAttribute("userDetails", historyService.getUsersByReq(latestRequests));
+		if(latestRequests != null) {
+			model.addAttribute("latests", historyService.getLatestApproval(latestRequests));
+			model.addAttribute("userDetails", historyService.getUsersByReq(latestRequests));
+		}
 		model.addAttribute("latestRequests", latestRequests);
 		return "index";
 	}

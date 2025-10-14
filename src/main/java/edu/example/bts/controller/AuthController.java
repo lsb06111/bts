@@ -52,18 +52,32 @@ public class AuthController {
 
 		// JWT 토큰 생성 및 헤더에 추가
 		String token = jwtService.createToken(email, emp.getEmpno(), role);
-		
-		//추가
+
+		// 추가
 		Cookie cookie = new Cookie("jwt", token);
-	    cookie.setHttpOnly(true);   // JS 접근 불가 (보안)
-	    cookie.setPath("/");   // 모든 경로에서 유효
-	    cookie.setSecure(false);
-	    cookie.setMaxAge(60 * 60);  // 1시간 유효
-	    response.addCookie(cookie);
-		
+		cookie.setHttpOnly(true); // JS 접근 불가 (보안)
+		cookie.setPath("/"); // 모든 경로에서 유효
+		cookie.setSecure(false);
+		cookie.setMaxAge(60 * 60); // 1시간 유효
+		response.addCookie(cookie);
+
 		response.setHeader("Authorization", "Bearer " + token);
 
 		System.out.println("[JWT] 발급된 토큰: " + token);
 		return "redirect:/";
+	}
+
+	/** 로그아웃 처리 */
+	@GetMapping("/logout")
+	public String logout(HttpServletResponse response) {
+		// jwt 쿠키 삭제
+		Cookie cookie = new Cookie("jwt", null);
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		cookie.setMaxAge(0); // 즉시 만료
+		response.addCookie(cookie);
+
+		System.out.println("[JWT] 로그아웃: 쿠키 삭제 완료");
+		return "redirect:/auth/loginForm"; // 로그인 화면으로 이동
 	}
 }

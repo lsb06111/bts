@@ -34,7 +34,8 @@
 				계정으로 로그인하여 시스템을 이용하세요.</p>
 
 			<!-- 로그인 폼 -->
-			<form action="${pageContext.request.contextPath}/auth/login" method="post"
+			<form action="${pageContext.request.contextPath}/auth/login"
+				method="post"
 				style="display: flex; flex-direction: column; gap: 16px;">
 
 				<!-- 사원번호 -->
