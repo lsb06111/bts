@@ -37,6 +37,7 @@ public class JwtInterceptor implements HandlerInterceptor{
         
         // if not exist, check token from cookies -- added
         System.out.println("[DEBUG] Authorization 헤더 = " + req.getHeader("Authorization"));
+        System.out.println("[DEBUG] JwtInterceptor preHandle() 진입");
         if(token == null && req.getCookies() != null) {
         	for (Cookie c : req.getCookies()) {
         		System.out.println("[DEBUG] 쿠키: " + c.getName() + " = " + c.getValue());
