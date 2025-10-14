@@ -39,7 +39,7 @@
     JOIN emp e USING(empno)
     JOIN dept d USING(deptno)
     JOIN job j USING(jobno)
-    WHERE  e.email = = #{email}
+    WHERE  e.email = #{email}
 </select>
 
 </mapper>
