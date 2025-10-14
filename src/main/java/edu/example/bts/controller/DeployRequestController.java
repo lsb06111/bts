@@ -20,7 +20,7 @@ public class DeployRequestController {
 	public String deployRequest(Model modal) {
 		String ownerName = "rwanda95do";
 		String repoName = "vote-and-voice";
-		String token = "";	// 깃토큰
+		String token = "   ";	// 깃토큰
 		
 		//Github repo의 commitList 가져오기
 		List<CommitDTO> commitList = deployGithubService.getCommitList(ownerName, repoName, token);
