@@ -1,0 +1,76 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<div class="container" style="max-width:1000px; margin-top:80px; margin-bottom:100px;">
+
+  <!-- 메인 콘텐츠 박스 -->
+  <div style="
+        background-color:#fff;
+        border-radius:16px;
+        box-shadow:0 4px 18px rgba(0,0,0,0.08);
+        padding:30px 70px;
+        width:100%;
+    ">
+    <div style="margin-bottom:25px; display:flex; align-items:center; gap:12px;">
+      <span style="
+          display:inline-block;
+          background-color:#4a5eff;
+          color:#fff;
+          font-size:0.9rem;
+          font-weight:600;
+          letter-spacing:0.5px;
+          padding:6px 14px;
+          border-radius:30px;
+          box-shadow:0 2px 6px rgba(74,94,255,0.25);
+      ">
+        공지사항
+      </span>
+      <!-- 작성자 ID 배지 -->
+	  <span style="
+	      display:inline-block;
+	      background-color:#f1f3f5;
+	      color:#4a5eff;
+	      font-size:0.9rem;
+	      font-weight:600;
+	      letter-spacing:0.5px;
+	      padding:6px 14px;
+	      border-radius:30px;
+	      border:1px solid #dee2e6;
+	  ">
+	   	 ${notice.dname}
+	  </span>
+    </div>
+    <!-- 제목 영역 -->
+    <div style="border-bottom:2px solid #4a5eff; padding-bottom:18px; margin-bottom:40px;">
+      <h1 style="font-size:2rem; font-weight:700; color:#222; margin-bottom:10px;">
+        ${notice.title}
+      </h1>
+      <div style="font-size:0.9rem; color:#888;">
+        <span>작성일 ${notice.createdAt}</span>
+        <c:if test="${notice.modifiedAt ne null}">
+          <span style="margin-left:8px; color:#aaa;">(수정됨 ${notice.modifiedAt})</span>
+        </c:if>
+      </div>
+    </div>
+
+    <!-- 본문 영역 -->
+    <div style="line-height:1.8; font-size:1.05rem; color:#444; min-height:250px; margin-bottom:60px;">
+      ${notice.content}
+    </div>
+
+    <!-- 구분선 -->
+    <hr style="border:none; border-top:1px solid #e9ecef; margin-bottom:40px;">
+
+    <!-- 버튼 영역 -->
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <a href="${header.referer}" class="btn"
+         style="background-color:#f1f3f5; border:none; border-radius:6px; color:#333; font-weight:500; padding:10px 22px;">
+        ← 목록으로
+      </a>
+
+    </div>
+
+  </div><!-- // main box -->
+
+</div>

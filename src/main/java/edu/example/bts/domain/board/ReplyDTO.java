@@ -7,13 +7,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class NoticeDTO {
+public class ReplyDTO {
+
 	private Long id;
-	private String title;
 	private String content;
 	private String createdAt;
-	private String modifiedAt;
 	private boolean delYn;
-	private Long userId;
-	private String dname;
+	private Long qnaId;
 }

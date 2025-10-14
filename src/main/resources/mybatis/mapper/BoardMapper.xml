@@ -5,10 +5,65 @@
 
 
 <select id="getNoticeList" resultType="NoticeDTO" parameterType="int">
-select * from notice
-    order by id desc
-    offset #{page} * 10 rows fetch next 10 rows only
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       to_char(n.created_at, 'yy/mm/dd') as created_at,
+       d.dname
+from notice n
+join users u on n.user_id = u.id
+join emp e using(empno)
+join dept d using(deptno)
+order by n.id desc
+offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
+<select id="getNoticeCount" resultType="int">
+	select count(*) from notice
+</select>
+
+<select id="getNoticeById" resultType="NoticeDTO">
+	select n.*, d.dname from notice n join users u on n.user_id = u.id join emp e using(empno) join dept d using(deptno) where n.id = #{id}
+</select>
+
+<insert id="writeNotice" parameterType="NoticeDTO">
+	insert into notice (title, content, user_id) values(#{title}, #{content}, #{userId})
+</insert>
+
+
+<select id="getQnaList" resultType="QnaDTO" parameterType="int">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       e.ename,
+       to_char(n.created_at, 'yy/mm/dd') as created_at
+from qna n
+join users u on n.user_id = u.id
+join emp e using(empno)
+order by n.id desc
+offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getQnaCount" resultType="int">
+	select count(*) from qna
+</select>
+
+<select id="getQnaById" resultType="QnaDTO">
+	select n.*, e.ename from qna n join users u on n.user_id = u.id join emp e using(empno) where n.id = #{id}
+</select>
+
+<select id="getReplyByQnaId" resultType="ReplyDTO">
+	select * from reply where qna_id = #{qnaId}
+</select>
+
+<insert id="writeQna" parameterType="QnaDTO">
+	insert into qna (title, content, user_id) values(#{title}, #{content}, #{userId})
+</insert>
+
+<insert id="writeReply" parameterType="ReplyDTO">
+	insert into reply (content, qna_id) values(#{content}, #{qnaId})
+</insert>
 
 </mapper>

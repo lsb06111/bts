@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class NoticeDTO {
+public class QnaDTO {
 	private Long id;
 	private String title;
 	private String content;
@@ -15,5 +15,6 @@ public class NoticeDTO {
 	private String modifiedAt;
 	private boolean delYn;
 	private Long userId;
-	private String dname;
+	private String ename;
+	private ReplyDTO reply;
 }
