@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.example.bts.dao.BoardDAO">
+
+
+
+<select id="getNoticeList" resultType="NoticeDTO" parameterType="int">
+select * from notice
+    order by id desc
+    offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+
+</mapper>
