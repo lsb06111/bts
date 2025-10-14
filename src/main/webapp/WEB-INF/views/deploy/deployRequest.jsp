@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
@@ -35,13 +37,27 @@
 									<h5 class="mb-3">커밋목록</h5>
 									<div class="list-group"
 										style="max-height: 300px; overflow-y: auto;">
+										<c:forEach var="commitList" items="${commitList}">
+											<a href="#" class="list-group-item list-group-item-action">
+												<div class="fw-bold">${commitList.commitMessage}</div> 
+												<small class="text-muted">${fn:substring(commitList.sha, 0, 7)} · 
+												<c:choose>
+													<c:when test="${!empty commitList.userName}">${commitList.userName}</c:when>
+													<c:otherwise>알 수 없음</c:otherwise>
+												</c:choose> (${commitList.authorName}) · 
+												${fn:substring(commitList.authorDate, 0, 10)}</small>
+											</a>
+										</c:forEach>
+										<!-- 
 										<a href="#" class="list-group-item list-group-item-action">
 											<div class="fw-bold">feat: 새로운 사용자 관리 기능 추가</div> <small
 											class="text-muted">f71503a · 김민준(GitID) · 1시간 전</small>
-										</a> <a href="#" class="list-group-item list-group-item-action">
+										</a>
+										<a href="#" class="list-group-item list-group-item-action">
 											<div class="fw-bold">feat: 새로운 사용자 관리 기능 추가</div> <small
 											class="text-muted">f71503a · 김민준(GitID) · 1시간 전</small>
 										</a>
+										 -->
 									</div>
 								</div>
 
