@@ -8,4 +8,6 @@ import edu.example.bts.domain.user.UserDTO;
 public interface MainDAO {
 
 	public UserDTO getUserDetail(Long id);
+	
+	public UserDTO getUserByEmail(String email);
 }

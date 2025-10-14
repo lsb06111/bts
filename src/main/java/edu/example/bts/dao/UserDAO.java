@@ -25,4 +25,5 @@ public class UserDAO {
     public void insertUser(UserDTO user) {
         sqlSession.insert(NAMESPACE + "insertUser", user);
     }
+    
 }

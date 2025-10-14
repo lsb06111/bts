@@ -1,5 +1,6 @@
 package edu.example.bts.controller;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.example.bts.domain.emp.EmpDTO;
 import edu.example.bts.domain.user.UserDTO;
@@ -52,6 +52,15 @@ public class AuthController {
 
 		// JWT 토큰 생성 및 헤더에 추가
 		String token = jwtService.createToken(email, emp.getEmpno(), role);
+		
+		//추가
+		Cookie cookie = new Cookie("jwt", token);
+	    cookie.setHttpOnly(true);   // JS 접근 불가 (보안)
+	    cookie.setPath("/");   // 모든 경로에서 유효
+	    cookie.setSecure(false);
+	    cookie.setMaxAge(60 * 60);  // 1시간 유효
+	    response.addCookie(cookie);
+		
 		response.setHeader("Authorization", "Bearer " + token);
 
 		System.out.println("[JWT] 발급된 토큰: " + token);
