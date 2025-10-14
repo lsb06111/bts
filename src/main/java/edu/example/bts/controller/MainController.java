@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import edu.example.bts.domain.history.RequestsDTO;
@@ -23,12 +24,8 @@ public class MainController {
 	DeployRequestHistoryService historyService;
 	
 	@RequestMapping("/")
-	public String goMain(HttpServletRequest req, Model model) {
-		UserDTO user = (UserDTO) req.getAttribute("loginUser");
-		if (user == null) {
-	        return "redirect:/auth/loginForm";
-	    }
-		Long userId = user.getId();
+	public String goMain(@RequestAttribute("loginUser") UserDTO user, Model model) {
+		
 		List<RequestsDTO> latestRequests = getLatestRequests(user);
 		
 		if(latestRequests != null) {

@@ -5,6 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
 </head>
@@ -34,7 +35,8 @@
 				<div class="d-flex align-items-center gap-2">
 
 					<!-- ✅ 이용자 필터 -->
-					<div class="dropdown" style="position: relative;" data-bs-display="static">
+					<div class="dropdown" style="position: relative;"
+						data-bs-display="static">
 						<button class="btn btn-light dropdown-toggle" type="button"
 							id="userFilterDropdown" data-bs-toggle="dropdown"
 							aria-expanded="false"
@@ -50,7 +52,8 @@
 					</div>
 
 					<!-- ✅ 부서(직위) 필터 -->
-					<div class="dropdown" style="position: relative;" data-bs-display="static">
+					<div class="dropdown" style="position: relative;"
+						data-bs-display="static">
 						<button class="btn btn-light dropdown-toggle" type="button"
 							id="deptFilterDropdown" data-bs-toggle="dropdown"
 							aria-expanded="false"
@@ -174,14 +177,22 @@
 					</ul>
 				</nav>
 			</div>
-
+<p style="color:red;">[DEBUG] role = ${loginUser}</p>
 			<!-- 하단 버튼 -->
 			<div
 				style="display: flex; justify-content: flex-end; margin-top: 25px;">
-				<button type="button" class="btn"
-					style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
-					data-bs-toggle="modal" data-bs-target="#employeeAddModal">
-					사원 추가</button>
+				<c:if test="${loginUser.dept.deptno == 3}">
+					<button type="button" class="btn"
+						style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
+						data-bs-toggle="modal" data-bs-target="#employeeAddModal">
+						사원 추가</button>
+				</c:if>
+				
+					<!-- <button type="button" class="btn"
+						style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
+						data-bs-toggle="modal" data-bs-target="#employeeAddModal">
+						사원 추가</button> -->
+			
 			</div>
 		</div>
 	</div>
