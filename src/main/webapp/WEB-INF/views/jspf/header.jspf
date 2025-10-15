@@ -73,48 +73,43 @@
           </div>
 
           <div class="menu-inner-shadow"></div>
-
+			
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
-            <li class="menu-item active">
-              <a href="/bts" class="menu-link">
+            <li class="menu-item">
+              <a href="/bts/" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Home</div>
               </a>
             </li>
 
-            
-
-            
-            
-            
             <%if(((UserDTO)request.getAttribute("loginUser")).getDept().getDeptno() != 3){ %>
            
             <!-- Cards -->
             <li class="menu-item">
-              <a href="/bts/history?page=1" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
+              <a href="/bts/deployRequest" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-send"></i>
                 <div data-i18n="Basic">배포 신청</div>
               </a>
             </li>
             
             <li class="menu-item">
               <a href="/bts/history?page=1" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-crown"></i>
+                <i class="menu-icon tf-icons bx bx-history"></i>
                 <div data-i18n="Boxicons">배포 신청 내역</div>
               </a>
             </li>  
             <%} %>      
             <li class="menu-item">
               <a href="/bts/project" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-crown"></i>
+                <i class="menu-icon tf-icons bx bx-folder"></i>
                 <div data-i18n="Boxicons">프로젝트 관리</div>
               </a>
             </li>
 
             <li class="menu-item">
               <a href="/bts/employee" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-crown"></i>
+                <i class="menu-icon tf-icons bx bx-group"></i>
                 <div data-i18n="Boxicons">사원 관리</div>
               </a>
             </li>            
@@ -124,7 +119,7 @@
             <!-- Extended components -->
             <li class="menu-item">
               <a href="javascript:void(0)" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-copy"></i>
+                <i class="menu-icon tf-icons bx bx-message-dots"></i>
                 <div data-i18n="Extended UI">게시판</div>
               </a>
               <ul class="menu-sub">
@@ -190,7 +185,7 @@
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                   <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                      <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                      <img src="/bts/resources/assets/img/profile_setting.png" alt class="w-px-40 h-auto rounded-circle" />
                     </div>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
@@ -199,12 +194,12 @@
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
-                              <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                              <img src="/bts/resources/assets/img/profile_setting.png" alt class="w-px-40 h-auto rounded-circle" />
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-semibold d-block">John Doe</span>
-                            <small class="text-muted">Admin</small>
+                            <span class="fw-semibold d-block">${loginUser.ename }</span>
+                            <small class="text-muted">${loginUser.dept.dname}</small>
                           </div>
                         </div>
                       </a>
@@ -239,7 +234,7 @@
                     <li>
                       <a class="dropdown-item" href="${pageContext.request.contextPath}/auth/logout">
                         <i class="bx bx-power-off me-2"></i>
-                        <span class="align-middle">Log Out</span>
+                        <span class="align-middle">로그아웃</span>
                       </a>
                     </li>
                   </ul>
@@ -249,4 +244,24 @@
             </div>
           </nav>
         
-        
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const currentPath = window.location.pathname; // 쿼리 제외한 경로만 비교
+
+  document.querySelectorAll('.menu-link').forEach(link => {
+    const linkPath = new URL(link.href).pathname;
+
+    if (currentPath === linkPath) {
+      const item = link.closest('.menu-item');
+      if (item) {
+        item.classList.add('active');
+
+        const parentMenu = item.closest('.menu-sub')?.closest('.menu-item');
+        if (parentMenu) {
+          parentMenu.classList.add('open');
+        }
+      }
+    }
+  });
+});
+</script>    
