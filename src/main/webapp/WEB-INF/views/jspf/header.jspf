@@ -109,9 +109,12 @@
 
             <li class="menu-item">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               <a href="/bts/employee" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-group"></i>
 =======
+=======
+>>>>>>> Stashed changes
               <a href="/bts/emp/list" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-crown"></i>
 >>>>>>> Stashed changes
