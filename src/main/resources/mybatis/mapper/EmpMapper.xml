@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="edu.example.bts.dao.EmpDAO">
+
+	<!-- 전체 사원 조회 -->
+	<select id="findAllEmps" resultType="EmpDTO">
+		SELECT
+		empno, ename, ephone,
+		email, phone, estate, deptno, jobno
+		FROM emp
+		ORDER BY empno
+	</select>
+
+	<select id="findEmpsByDept" parameterType="int"
+		resultType="EmpDTO">
+		SELECT
+		empno, ename, ephone, email, phone, estate, deptno, jobno
+		FROM emp
+		WHERE deptno = #{deptno}
+		ORDER BY empno
+	</select>
+
+	<select id="findEmpByEmpno" parameterType="int"
+		resultType="EmpDTO">
+		SELECT empno, email, to_char(birthdate, 'YYMMDD') as
+		birthdate, ename, ephone, phone,
+		deptno, jobno, estate
+		FROM emp
+		WHERE
+		empno = #{empno}
+	</select>
+</mapper>

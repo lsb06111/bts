@@ -20,4 +20,5 @@ public class EmpDTO {
     private String estate;
     private int deptno;
     private int jobno;
+    private String birthdate;
 }

@@ -18,9 +18,49 @@
 	</select>
 
 	<!-- 신규 유저 등록 -->
-	<insert id="insertUser"
-		parameterType="UserDTO">
-		INSERT INTO users (password, github_username, empno)
-		VALUES (#{password}, #{githubUsername}, #{empno})
+	<insert id="insertUser" parameterType="UserDTO">
+		INSERT INTO users
+		(password, github_username, empno)
+		VALUES (#{password},
+		#{githubUsername}, #{empno})
 	</insert>
+
+	<select id="findAllUsers"
+		resultType="edu.example.bts.domain.user.UserDTO">
+		SELECT
+		users.id AS id,
+		users.github_username,
+		users.password,
+		users.empno,
+		emp.ename,
+		emp.ephone,
+		emp.email,
+		emp.phone,
+		emp.estate,
+		emp.deptno,
+		emp.jobno
+		FROM users
+		LEFT JOIN emp ON users.empno = emp.empno
+		ORDER BY users.id
+	</select>
+
+	<select id="findUsersByDept" parameterType="int"
+		resultType="edu.example.bts.domain.user.UserDTO">
+		SELECT
+		users.id AS id,
+		users.github_username,
+		users.password,
+		users.empno,
+		emp.ename,
+		emp.ephone,
+		emp.email,
+		emp.phone,
+		emp.estate,
+		emp.deptno,
+		emp.jobno
+		FROM users
+		LEFT JOIN emp ON users.empno = emp.empno
+		WHERE emp.deptno = #{deptno}
+		ORDER BY users.id
+	</select>
 </mapper>

@@ -64,17 +64,17 @@
 							<li><a class="dropdown-item dept-filter-item" href="#"
 								data-value="">전체</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="사원">사원</a></li>
+								data-value="1">사원</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="대리">대리</a></li>
+								data-value="2">대리</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="팀장">팀장</a></li>
+								data-value="3">팀장</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="과장">과장</a></li>
+								data-value="4">과장</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="차장">차장</a></li>
+								data-value="5">차장</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="부장">부장</a></li>
+								data-value="6">부장</a></li>
 						</ul>
 					</div>
 
@@ -107,77 +107,31 @@
 						</tr>
 					</thead>
 					<tbody style="text-align: center; color: #333;">
-						<tr>
-							<td>20230101</td>
-							<td>1001</td>
-							<td>010-1234-5678</td>
-							<td>이동명</td>
-							<td>공공사업1 Div</td>
-							<td>과장</td>
-							<td><span class="badge rounded-pill bg-success"
-								style="padding: 6px 10px; font-weight: 500;">재직중</span></td>
-						</tr>
-						<tr>
-							<td>20230102</td>
-							<td>1002</td>
-							<td>010-2345-6789</td>
-							<td>이하빈</td>
-							<td>공공사업1 Div</td>
-							<td>사원</td>
-							<td><span class="badge rounded-pill bg-success"
-								style="padding: 6px 10px; font-weight: 500;">재직중</span></td>
-						</tr>
-						<tr>
-							<td>20230109</td>
-							<td>1010</td>
-							<td>010-9072-3456</td>
-							<td>오시현</td>
-							<td>전력사업2 Div</td>
-							<td>차장</td>
-							<td><span class="badge rounded-pill bg-danger"
-								style="padding: 6px 10px; font-weight: 500;">퇴사</span></td>
-						</tr>
-						<tr>
-							<td>20230114</td>
-							<td>1014</td>
-							<td>010-4455-6677</td>
-							<td>송현준</td>
-							<td>운영팀2</td>
-							<td>대리</td>
-							<td><span class="badge rounded-pill bg-success"
-								style="padding: 6px 10px; font-weight: 500;">재직중</span></td>
-						</tr>
-						<tr>
-							<td>20230115</td>
-							<td>1015</td>
-							<td>010-5566-7788</td>
-							<td>문태준</td>
-							<td>운영팀2</td>
-							<td>부장</td>
-							<td><span class="badge rounded-pill bg-success"
-								style="padding: 6px 10px; font-weight: 500;">재직중</span></td>
-						</tr>
+						<c:forEach var="emp" items="${empList}">
+							<tr>
+								<td>${emp.empno}</td>
+								<td>${emp.ephone}</td>
+								<td>${emp.phone}</td>
+								<td>${emp.ename}</td>
+								<td>${emp.deptno}</td>
+								<td>${emp.jobno}</td>
+								<td><span
+									class="badge rounded-pill ${emp.estate eq '재직중' ? 'bg-success' : 'bg-danger'}"
+									style="padding: 6px 10px; font-weight: 500;">
+										${emp.estate} </span></td>
+							</tr>
+						</c:forEach>
 					</tbody>
 				</table>
-
-				<!-- 페이지네이션 -->
-				<nav
-					style="display: flex; justify-content: center; margin-top: 25px;">
-					<ul class="pagination pagination-sm" style="margin: 0;">
-						<li class="page-item disabled"><a class="page-link" href="#"
-							style="border: none; color: #aaa;">&lt;</a></li>
-						<li class="page-item active"><a class="page-link" href="#"
-							style="background-color: #4f46e5; border: none;">1</a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							style="color: #555; border: none;">2</a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							style="color: #555; border: none;">3</a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							style="color: #555; border: none;">&gt;</a></li>
-					</ul>
-				</nav>
 			</div>
-<p style="color:red;">[DEBUG] role = ${loginUser}</p>
+
+			<!-- 페이지네이션 -->
+			<nav aria-label="Page navigation" class="mt-3">
+				<ul id="pagination-container"
+					class="pagination pagination-sm justify-content-center mb-0"></ul>
+			</nav>
+
+			<p style="color: red;">[DEBUG] role = ${loginUser}</p>
 			<!-- 하단 버튼 -->
 			<div
 				style="display: flex; justify-content: flex-end; margin-top: 25px;">
@@ -187,12 +141,6 @@
 						data-bs-toggle="modal" data-bs-target="#employeeAddModal">
 						사원 추가</button>
 				</c:if>
-				
-					<!-- <button type="button" class="btn"
-						style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
-						data-bs-toggle="modal" data-bs-target="#employeeAddModal">
-						사원 추가</button> -->
-			
 			</div>
 		</div>
 	</div>
@@ -212,52 +160,129 @@
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
 	<script>
-		document
-				.addEventListener(
-						"DOMContentLoaded",
-						function() {
-							// 이용자 필터 클릭 이벤트
-							var userFilterItems = document
-									.querySelectorAll('.user-filter-item');
-							for (var i = 0; i < userFilterItems.length; i++) {
-								userFilterItems[i]
-										.addEventListener(
-												'click',
-												function(e) {
-													e.preventDefault();
-													var value = this
-															.getAttribute('data-value')
-															|| '전체';
-													document
-															.getElementById('userFilterDropdown').innerText = '이용자: '
-															+ (value || '전체');
-													console.log('이용자 필터 선택:',
-															value);
-													// TODO: Ajax 호출 or 테이블 필터링
-												});
-							}
+	// 이용자 필터 클릭 시
+	document.querySelectorAll('.user-filter-item').forEach(item => {
+	    item.addEventListener('click', e => {
+	        e.preventDefault();
+	        const userType = item.dataset.value; // 전체 / BTS
+	        const deptValue = document.querySelector('#deptFilterDropdown').dataset.value || '';
+	        loadTable(userType, deptValue);
+	    });
+	});
 
-							// 부서(직위) 필터 클릭 이벤트
-							var deptFilterItems = document
-									.querySelectorAll('.dept-filter-item');
-							for (var i = 0; i < deptFilterItems.length; i++) {
-								deptFilterItems[i]
-										.addEventListener(
-												'click',
-												function(e) {
-													e.preventDefault();
-													var value = this
-															.getAttribute('data-value')
-															|| '전체';
-													document
-															.getElementById('deptFilterDropdown').innerText = '부서: '
-															+ (value || '전체');
-													console.log('부서 필터 선택:',
-															value);
-													// TODO: Ajax 호출 or 테이블 필터링
-												});
-							}
-						});
+	// 부서 필터 클릭 시
+	document.querySelectorAll('.dept-filter-item').forEach(item => {
+  		item.addEventListener('click', e => {
+    	e.preventDefault();
+    	const deptValue = item.getAttribute('data-value');
+
+    // 드롭다운 표시 변경
+    document.getElementById('deptFilterDropdown').innerText = '부서: ' + (deptValue || '전체');
+
+    // 빈값이면 전체 조회로 돌림
+    if (!deptValue) {
+      	loadTable('/bts/emp/list'); // 전체 사원 불러오기
+      	return;
+    }
+
+    // 부서별 조회 요청
+    loadTable(`/bts/emp/listByDept?dept=${deptValue}`);
+  });
+});
+
+	// ✅ Ajax로 데이터 새로 로딩
+	const contextPath = '${pageContext.request.contextPath}';
+	function loadTable(url) {
+		  fetch(contextPath + url)
+		    .then(res => {
+		      if (!res.ok) throw new Error("서버 응답 오류");
+		      return res.text();
+		    })
+		    .then(html => {
+		      const tbody = document.querySelector('tbody');
+		      const newTbody = new DOMParser().parseFromString(html, 'text/html').querySelector('tbody');
+		      tbody.innerHTML = newTbody.innerHTML;
+		      applyPagination();
+		    })
+		    .catch(err => console.error("❌ loadTable 실패:", err));
+		}
+	
+	
+	// ✅ 페이지네이션 함수
+	function applyPagination() {
+	  const rowsPerPage = 10;
+	  const table = document.querySelector("table tbody");
+	  const rows = Array.from(table.querySelectorAll("tr"));
+	  const pagination = document.getElementById("pagination-container");
+	  const totalPages = Math.ceil(rows.length / rowsPerPage);
+	  let currentPage = 1;
+
+	  console.log("총 행:", rows.length, "총 페이지:", totalPages);
+
+	  if (rows.length <= rowsPerPage) {
+	    pagination.innerHTML = "";
+	    return;
+	  }
+
+	  const displayPage = (page) => {
+	    const start = (page - 1) * rowsPerPage;
+	    const end = start + rowsPerPage;
+	    rows.forEach((row, i) => {
+	      row.style.display = (i >= start && i < end) ? "" : "none";
+	    });
+	  };
+
+	  const renderPagination = () => {
+	    pagination.innerHTML = "";
+
+	    const prevLi = document.createElement("li");
+	    prevLi.className = "page-item" + (currentPage === 1 ? " disabled" : "");
+	    prevLi.innerHTML = `<a class="page-link" href="#">«</a>`;
+	    prevLi.addEventListener("click", (e) => {
+	      e.preventDefault();
+	      if (currentPage > 1) {
+	        currentPage--;
+	        displayPage(currentPage);
+	        renderPagination();
+	      }
+	    });
+	    pagination.appendChild(prevLi);
+
+	    for (let i = 1; i <= totalPages; i++) {
+	      const li = document.createElement("li");
+	      li.className = "page-item" + (i === currentPage ? " active" : "");
+	      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+	      li.addEventListener("click", (e) => {
+	        e.preventDefault();
+	        currentPage = i;
+	        displayPage(currentPage);
+	        renderPagination();
+	      });
+	      pagination.appendChild(li);
+	    }
+
+	    const nextLi = document.createElement("li");
+	    nextLi.className = "page-item" + (currentPage === totalPages ? " disabled" : "");
+	    nextLi.innerHTML = `<a class="page-link" href="#">»</a>`;
+	    nextLi.addEventListener("click", (e) => {
+	      e.preventDefault();
+	      if (currentPage < totalPages) {
+	        currentPage++;
+	        displayPage(currentPage);
+	        renderPagination();
+	      }
+	    });
+	    pagination.appendChild(nextLi);
+	  };
+
+	  displayPage(currentPage);
+	  renderPagination();
+	}
+
+	// ✅ 페이지 로드 시 최초 실행
+	document.addEventListener("DOMContentLoaded", () => {
+	  applyPagination();
+	});
 	</script>
 </body>
 </html>
