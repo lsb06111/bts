@@ -1,8 +1,16 @@
 package edu.example.bts.service;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.PagedIterable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +34,8 @@ public class DeployRequestGithubAPIService {
 	private DeployRequestDAO dao;
 	
 	//Github repo의 commitList 가져오기
-	public List<CommitDTO> getCommitList(String ownerName, String repoName, String token) {
+	public List<CommitDTO> getCommitList(String ownerName, String repoName, String token)  {
+		/*
 		String url = "https://api.github.com/repos/"+ ownerName +"/"+ repoName + "/commits";
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -36,29 +45,36 @@ public class DeployRequestGithubAPIService {
 		
 		HttpEntity<Void> request = new HttpEntity<>(headers);	// 요청
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<JsonNode> response = restTemplate.exchange(url, HttpMethod.GET, request, JsonNode.class); // 응답
-	
+		*/
 		List<CommitDTO> commitList = new ArrayList<CommitDTO>();
-		
-		if(response.getStatusCode() == HttpStatus.OK) {
-			JsonNode items = response.getBody();
-			for(JsonNode item : items) {
-				CommitDTO commitDto = new CommitDTO();
+
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
+			PagedIterable<GHCommit> ghcommitList = repository.listCommits();
+			
+			int count= 0;
+			for(GHCommit commit : ghcommitList) {
+				Date date = commit.getCommitShortInfo().getAuthor().getDate();     //Date authorDate = commit.getCommitShortInfo().getAuthoredDate();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 				
-				commitDto.setSha(item.get("sha").asText());
-				commitDto.setCommitMessage(item.get("commit").get("message").asText());
-				commitDto.setAuthorName(item.get("commit").get("author").get("name").asText());
-				commitDto.setAuthorDate(item.get("commit").get("author").get("date").asText());
+				String sha = commit.getSHA1();
+				String commitMessage = commit.getCommitShortInfo().getMessage();
+				String authorName = commit.getCommitShortInfo().getAuthor().getName();    //String authorName = commit.getAuthor().getLogin();
+				String authorDate = dateFormat.format(date);
 				
-				// GIT-ID에 맞춰서 사람 이름 가져오기 
-				String empUserName = dao.findEmpNameByGitId(item.get("commit").get("author").get("name").asText());
-				commitDto.setUserName(empUserName);
+				String userName = dao.findEmpNameByGitId(authorName);
 				
-				//System.out.println(commitDto.toString());
-				commitList.add(commitDto);
+				CommitDTO dto = new CommitDTO(sha, commitMessage, authorName, authorDate, userName);
+				commitList.add(dto);
+
+				if(++count>10) break;  // 10개만 출력중... DB쪽을 너무 많이 다녀오는데 생각좀;;; 
 			}
+			
+		}catch(Exception e) {
+			System.err.println("Github API 호출중 에러 발생 : " + e.getMessage() );
 		}
-		//System.out.println(commitList.size());
+		
 		return commitList;
 	}
 

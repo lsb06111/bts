@@ -38,7 +38,7 @@
 									<div class="list-group"
 										style="max-height: 300px; overflow-y: auto;">
 										<c:forEach var="commitList" items="${commitList}">
-											<a href="#" class="list-group-item list-group-item-action">
+											<a href="#" class="list-group-item list-group-item-action commit-item" data-sha="${commitList.sha}">
 												<div class="fw-bold">${commitList.commitMessage}</div> 
 												<small class="text-muted">${fn:substring(commitList.sha, 0, 7)} · 
 												<c:choose>
@@ -48,16 +48,6 @@
 												${fn:substring(commitList.authorDate, 0, 10)}</small>
 											</a>
 										</c:forEach>
-										<!-- 
-										<a href="#" class="list-group-item list-group-item-action">
-											<div class="fw-bold">feat: 새로운 사용자 관리 기능 추가</div> <small
-											class="text-muted">f71503a · 김민준(GitID) · 1시간 전</small>
-										</a>
-										<a href="#" class="list-group-item list-group-item-action">
-											<div class="fw-bold">feat: 새로운 사용자 관리 기능 추가</div> <small
-											class="text-muted">f71503a · 김민준(GitID) · 1시간 전</small>
-										</a>
-										 -->
 									</div>
 								</div>
 
@@ -135,5 +125,25 @@
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 	<%@ include file="/WEB-INF/views/deploy/deployRequestCompareModal.jsp"%>
+	
+	<script>
+	/* 커밋목록 선택후, 해당 커밋으로 조회 */
+	$(document).ready(function(){
+		$(".list-group").on("click", ".commit-item", function(e){  // 무한스크롤-이벤트위임
+			//alert($(this).data("sha"));   //alert(e.currentTarget.dataset.sha);
+			const sha = $(this).data("sha");
+			
+			/* $.ajax({
+				url:,
+				method:,
+				data:,
+				dataType:,
+				success:,
+				error:
+			}); 
+			*/
+		});
+	});
+	</script>
 </body>
 </html>
