@@ -48,7 +48,7 @@
 
 <select id="getRequestsForS" resultMap="RequestsMap" parameterType="long">
     select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
-    where user_id = #{userId}
+    where user_id = #{userId} order by r.id desc
 </select>
 
 <select id="getLatestApproval" resultMap="ApprovalHistoryMap" parameterType="long">
@@ -58,6 +58,10 @@
 
 <select id="getAllProjectsForS" resultType="DevRepoDTO" parameterType="long">
 	select * from dev_repo d where #{userId} in (select m.user_id from project_member m where m.dev_repo_id = d.id)
+</select>
+
+<select id="getRequestsCount" parameterType="long" resultType="int">
+	select count(*) from requests where user_id = #{userId}
 </select>
 
 <select id="getAllStatus" resultType="StatusDTO">
@@ -70,10 +74,86 @@
 	order by r.id desc fetch first 3 rows only
 </select>
 
+<select id="getRequestsForT" resultMap="RequestsMap" parameterType="long">
+select r.*, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
+	order by r.id desc
+</select>
+
+<select id="getApprovalHistoryForT" resultMap="ApprovalHistoryMap" parameterType="long">
+select * from approval_history a join status s on a.status_id = s.id 
+where a.req_id=#{reqId} order by a.id desc
+</select>
+
 <select id="getLatestRequestsForU" resultMap="RequestsMap" parameterType="long">
 	select r.*, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
 	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
 	order by r.id desc fetch first 3 rows only
+</select>
+
+<select id="getRequestsByPageForS" resultMap="RequestsMap">
+    select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    where user_id = #{userId} order by r.id desc offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getLatestNotice" resultType="NoticeDTO">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       to_char(n.created_at, 'yy/mm/dd') as created_at,
+       d.dname
+from notice n
+join users u on n.user_id = u.id
+join emp e using(empno)
+join dept d using(deptno)
+order by n.id desc
+fetch first 6 rows only
+</select>
+
+<select id="getAllQnaList" resultType="QnaDTO" parameterType="int">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       e.ename,
+       to_char(n.created_at, 'yy/mm/dd') as created_at
+from qna n
+join users u on n.user_id = u.id
+join emp e using(empno)
+order by n.id desc
+</select>
+
+<select id="getRequestsCountByProjects" resultType="int" parameterType="long">
+	select count(*) from requests r where r.dev_repo_id in 
+	(select d.id from project_member pm join dev_repo d on pm.dev_repo_id = d.id where pm.user_id = #{userId})
+</select>
+
+<select id="getRequestsByPageForSU"  resultMap="RequestsMap">
+select 
+    r.*, 
+    d.*
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    )
+order by 
+    r.id desc offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
 </mapper>

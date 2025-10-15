@@ -3,14 +3,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 
-<div class="container my-5" style="max-width:1000px;">
+<div class="container my-5" style="max-width:1200px;">
 
   <!-- 전체 카드 박스 -->
   <div style="
         background-color:#fff;
         border-radius:16px;
         box-shadow:0 4px 18px rgba(0,0,0,0.08);
-        padding:40px 60px;
+        padding:20px 30px;
         width:100%;
     ">
 
