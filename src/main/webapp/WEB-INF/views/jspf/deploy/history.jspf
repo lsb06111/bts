@@ -29,7 +29,7 @@
               onchange="filterSelection()">
         <option value="">상태</option>
         <c:forEach var="status" items="${statusList}">
-          <option value="${status.id}">${status.description}</option>
+          <option value="${status.id==1? '대기중' : status.description}">${status.id==1? '대기중' : status.description}</option>
         </c:forEach>
       </select>
     </div>
@@ -66,9 +66,13 @@
               <td>${request.devRepo.projectName}</td>
               <td>${request.title}</td>
               <td>
-                <span class="badge rounded-pill bg-primary">
-                  ${latests[status.index].status.description}
-                </span>
+                <span class="badge rounded-pill 
+				    bg-${latests[status.index] == '반려' ? 'danger' : 
+				        (latests[status.index] == '승인요망' ? 'warning' : 
+				        (latests[status.index] == '대기중' ? 'primary' : 
+				        (latests[status.index] == '완료' ? 'success' : 'secondary')))}">
+				  ${latests[status.index]}
+				</span>
               </td>
               <td>${userDetails[status.index].ename}</td>
               <td>${request.createdAt}</td>
@@ -83,17 +87,40 @@
   </div>
 
   <!-- Pagination -->
-  <nav aria-label="Page navigation" class="mt-4">
-    <ul class="pagination justify-content-center mb-0">
-      <li class="page-item disabled"><a class="page-link">&lt;</a></li>
-      <li class="page-item active"><a class="page-link" href="#" style="border:none; background-color:#4a5eff;">1</a></li>
-      <li class="page-item"><a class="page-link" href="#">2</a></li>
-      <li class="page-item"><a class="page-link" href="#">3</a></li>
-      <li class="page-item"><a class="page-link" href="#">4</a></li>
-      <li class="page-item"><a class="page-link" href="#">5</a></li>
-      <li class="page-item"><a class="page-link" href="#">&gt;</a></li>
-    </ul>
-  </nav>
+<nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center mb-0">
+        <%
+          int pageN = (int) request.getAttribute("page");
+          int totalPage = (int) request.getAttribute("totalPage");
+          int startPage = ((pageN - 1) / 5) * 5 + 1;
+          int endPage = Math.min(startPage + 4, totalPage);
+        %>
+
+        <!-- 이전 버튼 -->
+        <li class="page-item <%= (pageN == 1) ? "disabled" : "" %>">
+          <a class="page-link" href="/bts/history?page=<%= pageN - 1 %>" style="color:#4a5eff;">&lt;</a>
+        </li>
+
+        <!-- 페이지 번호 -->
+        <%
+          for (int i = startPage; i <= endPage; i++) {
+        %>
+          <li class="page-item <%= (i == pageN) ? "active" : "" %>">
+            <a class="page-link" href="/bts/history?page=<%= i %>"
+               style="<%= (i == pageN) ? "background-color:#4a5eff; border:none;" : "color:#4a5eff;" %>">
+              <%= i %>
+            </a>
+          </li>
+        <%
+          }
+        %>
+
+        <!-- 다음 버튼 -->
+        <li class="page-item <%= (pageN == totalPage) ? "disabled" : "" %>">
+          <a class="page-link" href="/bts/history?page=<%= pageN + 1 %>" style="color:#4a5eff;">&gt;</a>
+        </li>
+      </ul>
+    </nav>
 
   <!-- Button -->
   <div class="text-end mt-4">

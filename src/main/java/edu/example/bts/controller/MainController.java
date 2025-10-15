@@ -19,7 +19,7 @@ import edu.example.bts.service.MainService;
 public class MainController {
 
 	@Autowired
-	MainService service;
+	MainService mainService;
 	@Autowired
 	DeployRequestHistoryService historyService;
 	
@@ -27,12 +27,19 @@ public class MainController {
 	public String goMain(@RequestAttribute("loginUser") UserDTO user, Model model) {
 		
 		List<RequestsDTO> latestRequests = getLatestRequests(user);
-		
-		if(latestRequests != null) {
-			model.addAttribute("latests", historyService.getLatestApproval(latestRequests));
-			model.addAttribute("userDetails", historyService.getUsersByReq(latestRequests));
+		//만약 인사팀이라면
+		if(user.getDept().getDeptno() == 3) {
+			model.addAttribute("qnaList", historyService.getLatestQnaList());
+		}else {
+			if(latestRequests != null) {
+				model.addAttribute("statusT", historyService.getStatus(latestRequests, user));
+				model.addAttribute("userDetails", historyService.getUsersByReq(latestRequests));
+			}
 		}
+		
+		
 		model.addAttribute("latestRequests", latestRequests);
+		model.addAttribute("latestNotice", mainService.getLatestNotice());
 		return "index";
 	}
 	
@@ -42,12 +49,12 @@ public class MainController {
 		switch(user.getDept().getDeptno().intValue()) {
 			case 1: // dev team
 				if(user.getJob().getJobno().intValue() == 2) // 사원
-					latestRequests = service.getLatestRequestsForS(user.getId());
+					latestRequests = historyService.getRequestsForS(user.getId());
 				else
-					latestRequests = service.getLatestRequestsForT(user.getId());
+					latestRequests = historyService.getRequestsForT(user.getId(), 1);
 				break;
 			case 2: // 운영
-				latestRequests = service.getLatestRequestsForU(user.getId());
+				latestRequests = historyService.getRequestsForT(user.getId(), 2);
 				break;
 		}
 		

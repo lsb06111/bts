@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8" import="edu.example.bts.domain.user.UserDTO"%>
 
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
@@ -88,22 +88,23 @@
             
             
             
-            
+            <%if(((UserDTO)request.getAttribute("loginUser")).getDept().getDeptno() != 3){ %>
+           
             <!-- Cards -->
             <li class="menu-item">
-              <a href="/bts/history" class="menu-link">
+              <a href="/bts/history?page=1" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">배포 신청</div>
               </a>
             </li>
             
             <li class="menu-item">
-              <a href="/bts/history" class="menu-link">
+              <a href="/bts/history?page=1" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-crown"></i>
                 <div data-i18n="Boxicons">배포 신청 내역</div>
               </a>
             </li>  
-                      
+            <%} %>      
             <li class="menu-item">
               <a href="/bts/project" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-crown"></i>
