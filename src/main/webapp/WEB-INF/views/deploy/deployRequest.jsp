@@ -5,6 +5,22 @@
 
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
+<style>
+.modal-almost-fullscreen {
+	width: calc(100% - 60px); /* 좌우 30px 여백 */
+	max-width: none;
+	height: calc(100% - 60px); /* 상하 30px 여백 */
+	margin: 30px auto;
+}
+
+.modal-almost-fullscreen .modal-content {
+	height: 100%;
+}
+
+.modal-almost-fullscreen .modal-body {
+	overflow-y: auto;
+}
+</style>
 </head>
 
 <body
@@ -84,16 +100,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<!-- 
-										<tr>
-											<td>f71503a</td>
-											<td>src/main/java/com/.../AdminUsersController.java</td>
-											<td>
-												<button class="btn btn-sm btn-outline-secondary"
-													data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
-											</td>
-										</tr>
-										 -->
+										
 									</tbody>
 								</table>
 							</div>
@@ -114,13 +121,11 @@
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
 	
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<%@ include file="/WEB-INF/views/deploy/deployRequestCompareModal.jsp"%>
-	
+	<%@ include file="/WEB-INF/views/deploy/deployRequestCompareModal2.jspf"%>
 	<script>
-	/* 커밋목록 선택후, 해당 커밋으로 조회 */
 	$(document).ready(function(){
+				
+	/* 커밋목록 선택후, 해당 커밋으로 조회 */
 		$(".list-group").on("click", ".commit-item", function(e){  // 무한스크롤-이벤트위임
 			//alert($(this).data("sha"));   //alert(e.currentTarget.dataset.sha);
 			$(".file-item").empty();
@@ -154,36 +159,37 @@
 			});
 			
 		});
-	});
-	</script>
-	<script>
+	
+	
+	
+	
 	/*（파일 항목 -> 선택된 배포 항목) 파일 추가 */
-	$(document).ready(function(){
 		$(".file-item").on("click", ".file-item-btn" ,function(){
-
-			const fileSha = $(this).attr("id").slice(0,7);
+			const fileSha = $(this).attr("id");
+			const fileShaShort = $(this).attr("id").slice(0,7);
 			const fileName = $(this).data("filename");
-			
+
 			$("tbody").append(`
 					<tr>
-						<td>\${fileSha}</td>
+						<td>\${fileShaShort}</td>
 						<td>\${fileName}</td>
 						<td>
 							<button class="btn btn-sm btn-outline-secondary file-comapare-btn"
+								data-sha="\${fileSha}" data-filename="\${fileName}"
 								data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
 						</td>
 					</tr>
 					`);
 		});		
+	
+	
+	
+	
+	
 	});
+
+
 	</script>
-	<script>
-	/* (선택된 배포 항목)비교 버튼  */
-	$(document).ready(function(){
-		$("tbody").on("click", ".file-comapare-btn", function(){
-			alert("파일비교버튼")
-		});
-	});
-	</script>
+
 </body>
 </html>

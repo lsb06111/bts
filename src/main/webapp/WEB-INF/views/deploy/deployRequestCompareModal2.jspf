@@ -1,35 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
 
-<style>
-.modal-almost-fullscreen {
-	width: calc(100% - 60px); /* 좌우 30px 여백 */
-	max-width: none;
-	height: calc(100% - 60px); /* 상하 30px 여백 */
-	margin: 30px auto;
-}
-
-.modal-almost-fullscreen .modal-content {
-	height: 100%;
-}
-
-.modal-almost-fullscreen .modal-body {
-	overflow-y: auto;
-}
-</style>
-
-</head>
-<body>
 	<div class="modal fade" id="deployRequestCompareModal" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog modal-almost-fullscreen" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" mb-0 id="modalFullTitle">
+					<h5 class="modal-title" id="modalFullTitle">
 						<span class="fw-semibold text-secondary mb-0">Compare</span> 
 					    <span class="text-dark fw-normal fileName"></span>
 				    </h5>
@@ -78,7 +54,7 @@
 										<div class="border rounded p-3 bg-light"
 											style="height: 500px; overflow-y: auto;">
 											<pre class="mb-0">
-												
+												</pre>
 										</div>
 									</div>
 								</div>
@@ -103,7 +79,6 @@
 	</div>
 	
 	
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 	function displayCodeWithLineNumbers(code, codeId, lineId) {
@@ -176,6 +151,3 @@
 
 
 </script>
-
-</body>
-</html>

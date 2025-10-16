@@ -35,6 +35,8 @@ public class DeployRequestController {
 		return "/deploy/deployRequest";
 	}
 	
+	
+	
 	@GetMapping(value = "/deployRequest/commits/sha", produces="application/json; charset=UTF-8")
 	@ResponseBody
 	public List<CommitFileDTO> getCommitFileName(@RequestParam String sha) {
@@ -45,5 +47,12 @@ public class DeployRequestController {
 	}
 	
 	
+// 같은 파일의 커밋 목록(sha)가져오기 
+	@GetMapping(value="/deployRequest/commit/queryCommit/fileName", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public List<String> getFileCommitList(@RequestParam String fileName){
+		List<String> fileShaList = deployGithubService.getFileCommitList(ownerName, repoName, token, fileName);
+		return fileShaList;
+	}
 	
 }

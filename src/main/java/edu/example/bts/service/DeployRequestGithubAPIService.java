@@ -110,4 +110,23 @@ public class DeployRequestGithubAPIService {
 		
 	}
 
+	
+// 같은 파일의 커밋 목록(sha)가져오기 
+	public List<String> getFileCommitList(String ownerName, String repoName, String token, String fileName) {
+		List<String> fileShaList = new ArrayList<>();
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
+			PagedIterable<GHCommit> queryCommitPath = repository.queryCommits().path(fileName).list();
+					
+			for(GHCommit fileCommit : queryCommitPath) {
+				//System.out.println(fileCommit + "-" + fileCommit.getSHA1());
+				fileShaList.add(fileCommit.getSHA1());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fileShaList;
+	}
+
 }
