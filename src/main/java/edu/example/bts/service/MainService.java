@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import edu.example.bts.dao.HistoryDAO;
 import edu.example.bts.dao.MainDAO;
+import edu.example.bts.domain.board.NoticeDTO;
 import edu.example.bts.domain.history.RequestsDTO;
 import edu.example.bts.domain.user.UserDTO;
 
@@ -14,23 +15,28 @@ import edu.example.bts.domain.user.UserDTO;
 public class MainService {
 
 	@Autowired
-	MainDAO dao;
+	MainDAO mainDAO;
 	
 	@Autowired
-	HistoryDAO historyDao;
+	HistoryDAO historyDAO;
 	
 	public UserDTO getUserDetail(Long id) {
-		return dao.getUserDetail(id);
+		return mainDAO.getUserDetail(id);
 	}
 	
 	public List<RequestsDTO> getLatestRequestsForS(Long userId){
-		return historyDao.getLatestRequestsForS(userId);
+		return historyDAO.getLatestRequestsForS(userId);
 	}
 	
 	public List<RequestsDTO> getLatestRequestsForT(Long userId){
-		return historyDao.getLatestRequestsForT(userId);
+		return historyDAO.getLatestRequestsForT(userId);
 	}
+	
 	public List<RequestsDTO> getLatestRequestsForU(Long userId){
-		return historyDao.getLatestRequestsForU(userId);
+		return historyDAO.getLatestRequestsForU(userId);
+	}
+	
+	public List<NoticeDTO> getLatestNotice(){
+		return historyDAO.getLatestNotice();
 	}
 }
