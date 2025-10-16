@@ -45,7 +45,7 @@
 													<c:when test="${!empty commitList.userName}">${commitList.userName}</c:when>
 													<c:otherwise>알 수 없음</c:otherwise>
 												</c:choose> (${commitList.authorName}) · 
-												${fn:substring(commitList.authorDate, 0, 10)}</small>
+												${commitList.authorDate}</small>
 											</a>
 										</c:forEach>
 									</div>
@@ -54,18 +54,15 @@
 								<!-- 파일 목록 -->
 								<div class="col-md-6">
 									<h5 class="mb-3">파일목록</h5>
-									<div class="list-group"
+									<div class="list-group file-item"
 										style="max-height: 300px; overflow-y: auto;">
+										<!-- 
 										<div
 											class="d-flex justify-content-between align-items-center list-group-item">
 											<span class="text-truncate" style="max-width: 80%;">src/main/java/com/.../AdminUsersController.java</span>
 											<button class="btn btn-sm btn-primary">추가</button>
 										</div>
-										<div
-											class="d-flex justify-content-between align-items-center list-group-item">
-											<span class="text-truncate" style="max-width: 80%;">src/main/java/com/.../AdminUsersController.java</span>
-											<button class="btn btn-sm btn-primary">추가</button>
-										</div>
+										 -->
 									</div>
 								</div>
 
@@ -87,6 +84,7 @@
 										</tr>
 									</thead>
 									<tbody>
+										<!-- 
 										<tr>
 											<td>f71503a</td>
 											<td>src/main/java/com/.../AdminUsersController.java</td>
@@ -95,13 +93,7 @@
 													data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
 											</td>
 										</tr>
-										<tr>
-											<td>e9a2b1c</td>
-											<td>src/main/resources/application.properties</td>
-											<td>
-												<button class="btn btn-sm btn-outline-secondary">비교</button>
-											</td>
-										</tr>
+										 -->
 									</tbody>
 								</table>
 							</div>
@@ -131,17 +123,65 @@
 	$(document).ready(function(){
 		$(".list-group").on("click", ".commit-item", function(e){  // 무한스크롤-이벤트위임
 			//alert($(this).data("sha"));   //alert(e.currentTarget.dataset.sha);
+			$(".file-item").empty();
+			
 			const sha = $(this).data("sha");
 			
-			/* $.ajax({
-				url:,
-				method:,
-				data:,
-				dataType:,
-				success:,
-				error:
-			}); 
-			*/
+			$.ajax({
+				url: "/bts/deployRequest/commits/sha",
+				method: "GET",
+				data: {"sha": sha},
+				dataType: "json",  
+				success: function(res){
+					for(let file of res){
+						const fileName = file.fileName;
+						const fileSha = file.sha;
+						console.log(fileName);
+						console.log(fileSha);
+						
+						$(".file-item").append(
+							`<div class="d-flex justify-content-between align-items-center list-group-item">
+					          <span class="text-truncate" style="max-width: 80%;">\${fileName}</span>
+					          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" data-filename="\${fileName}">추가</button>
+					        </div>`
+						);
+					};
+					
+				},
+				error: function(){
+					alert("요청 실패!");
+				}
+			});
+			
+		});
+	});
+	</script>
+	<script>
+	/*（파일 항목 -> 선택된 배포 항목) 파일 추가 */
+	$(document).ready(function(){
+		$(".file-item").on("click", ".file-item-btn" ,function(){
+
+			const fileSha = $(this).attr("id").slice(0,7);
+			const fileName = $(this).data("filename");
+			
+			$("tbody").append(`
+					<tr>
+						<td>\${fileSha}</td>
+						<td>\${fileName}</td>
+						<td>
+							<button class="btn btn-sm btn-outline-secondary file-comapare-btn"
+								data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
+						</td>
+					</tr>
+					`);
+		});		
+	});
+	</script>
+	<script>
+	/* (선택된 배포 항목)비교 버튼  */
+	$(document).ready(function(){
+		$("tbody").on("click", ".file-comapare-btn", function(){
+			alert("파일비교버튼")
 		});
 	});
 	</script>

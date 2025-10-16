@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHCommit.File;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.example.bts.dao.DeployRequestDAO;
 import edu.example.bts.domain.deployRequest.CommitDTO;
+import edu.example.bts.domain.deployRequest.CommitFileDTO;
 
 @Service
 public class DeployRequestGithubAPIService {
@@ -76,6 +78,36 @@ public class DeployRequestGithubAPIService {
 		}
 		
 		return commitList;
+	}
+
+	// 선택한 커밋에 해당하는 파일정보 가져오기
+	public List<CommitFileDTO> getCommitDetail(String ownerName, String repoName, String token, String sha) {
+		List<CommitFileDTO> fileList = new ArrayList<>();
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
+			GHCommit commit = repository.getCommit(sha);
+			List<GHCommit.File> commitFileList = commit.getFiles();
+		
+			for(File file : commitFileList) {
+				String fileSha = file.getSha();
+				String fileName = file.getFileName();
+				int lineAdded = file.getLinesAdded();
+				int lineDeleted = file.getLinesDeleted();
+				String status = file.getStatus();
+				String patch = file.getPatch();
+				
+				CommitFileDTO dto = new CommitFileDTO(fileSha, fileName, lineAdded, lineDeleted, status, patch);
+				fileList.add(dto);
+			}
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return fileList;
+		
 	}
 
 }
