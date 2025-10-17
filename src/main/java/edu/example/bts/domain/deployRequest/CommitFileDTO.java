@@ -6,7 +6,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CommitFileDTO {
-	private String sha;   // DB저장
+	private String commitSha;	// DB저장
+	
+	private String fileSha;   // 파일 SHA : 커밋 SHA와 다름
 	private String fileName;  // DB저장
 	private int lineAdded;
 	private int lineDeleted;

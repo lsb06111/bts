@@ -51,10 +51,9 @@
 												<!-- <option selected>d20db258b92f3a49f7e5c5c3125f4e10cc88fb25</option> -->
 											</select>
 										</div>
-										<div class="border rounded p-3 bg-light"
-											style="height: 500px; overflow-y: auto;">
-											<pre class="mb-0">
-												</pre>
+										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
+											<div class="line-numbers" id="right-line-numbers"></div>
+											<pre class="code-content mb-0" id="right-code"></pre>
 										</div>
 									</div>
 								</div>
@@ -83,30 +82,44 @@
 <script>
 	function displayCodeWithLineNumbers(code, codeId, lineId) {
 	  const lines = code.split("\n");
-	  //const lineNumbers = lines.map((_, i) => i + 1);
-	  
-	  //document.getElementById(lineId).textContent = lineNumbers;
-	  //document.getElementById(codeId).textContent =  code;
 	  
 	  lines.forEach(function(item, index){
 		  console.log(index, item);
 		  document.getElementById(codeId).textContent += (index+1) + "\t" + item +"\n";
-	  })  
+	  });  
 	}
 
-	// 예시 데이터 (git API 결과 대신)
-	const sampleCode= `
-	import java.util.List;
-	import java.util.Map;
-	
-	@Controller
-	@RequestMapping("/user")
-	public class UserService {
-	    @Autowired
-	    private VoteService voteService;
-	}`;
-
-	displayCodeWithLineNumbers(sampleCode, "left-code", "left-line-numbers");
+// 좌우 구분하기 +(좌) -(우)
+	function displayCodeWithLineNumbers(code, leftCode, leftLineNum, rightCode, rightCodeNum) {
+	  const lines = code.split("\n");
+	  
+	  let lineNum=0;
+	  lines.forEach(function(item, index){
+		  //console.log(index, item);
+		  if(item.slice(0,1)== '@'){
+			let startnum = Number(item.indexOf("-"))+1;
+			let endnum = Number(item.indexOf(","));
+			lineNum = Number(item.slice(startnum, endnum));
+			lineNum--;
+			
+			document.getElementById(leftCode).textContent +=  "\t" + item +"\n";
+			document.getElementById(rightCode).textContent += "\t" + item +"\n";
+		  }else if(item.slice(0,1)== '+') {			  
+			document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";			  
+			document.getElementById(rightCode).textContent +=(lineNum) + "\n";
+		  }else if(item.slice(0,1)== '-') {
+			document.getElementById(leftCode).textContent += (lineNum) + "\n";			  
+			document.getElementById(rightCode).textContent += (lineNum) + "\t" + item + "\n";
+		  }else if(item.slice(0,1)==" ") { 
+			document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";
+			document.getElementById(rightCode).textContent += (lineNum) + "\t" + item +"\n";			  
+		  }
+		  
+		  lineNum++;
+		  
+		 // document.getElementById(leftCode).textContent += (index+1) + "\t" + item +"\n";
+	  });  
+	}
 </script>
 
 <script>
@@ -117,10 +130,17 @@
 		const button = event.relatedTarget;
 		const fileSha = button.getAttribute('data-sha');
 		const fileName = button.getAttribute('data-filename');
+		const commitSha = button.getAttribute('data-commitsha');
+		
+		const patch = patchMap.get(fileSha);
+		console.log(patch)
+		//displayCodeWithLineNumbers(patch, "left-code", "left-line-numbers");
+		displayCodeWithLineNumbers(patch, "left-code", "left-line-numbers", "right-code", "right-line-number");
+
 		
 		$(".fileName").text('"' + fileName + '"');
-		$("#selectedCommit").val(fileSha);
-	
+		$("#selectedCommit").val(commitSha);
+
 		
 		
 	/* 같은 파일의 커밋 목록(sha)가져오기 */
@@ -131,8 +151,8 @@
 			dataType: "json",
 			success: function(res){
 				console.log(res);
-				for(let queryPathFileSha of res) {
-					$("#compareDropdown").append("<option>" + queryPathFileSha + "</option>");
+				for(let queryPathCommitSha of res) {
+					$("#compareDropdown").append("<option>" + queryPathCommitSha + "</option>");
 				}
 			},
 			error: function(e){

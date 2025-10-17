@@ -90,14 +90,15 @@ public class DeployRequestGithubAPIService {
 			List<GHCommit.File> commitFileList = commit.getFiles();
 		
 			for(File file : commitFileList) {
-				String fileSha = file.getSha();
+				String fileSha = file.getSha();  // 파일SHA와 커밋 SHA는 다름 
 				String fileName = file.getFileName();
 				int lineAdded = file.getLinesAdded();
 				int lineDeleted = file.getLinesDeleted();
 				String status = file.getStatus();
 				String patch = file.getPatch();
 				
-				CommitFileDTO dto = new CommitFileDTO(fileSha, fileName, lineAdded, lineDeleted, status, patch);
+				CommitFileDTO dto = new CommitFileDTO(sha, fileSha, fileName, lineAdded, lineDeleted, status, patch);
+				
 				fileList.add(dto);
 			}
 			

@@ -123,8 +123,11 @@
 	
 	<%@ include file="/WEB-INF/views/deploy/deployRequestCompareModal2.jspf"%>
 	<script>
-	$(document).ready(function(){
-				
+	
+	/* 전역 : 파일의 patch값을 저장해서 모달까지 넘기기 위해서  */
+	const patchMap = new Map(); 
+	
+	$(document).ready(function(){				
 	/* 커밋목록 선택후, 해당 커밋으로 조회 */
 		$(".list-group").on("click", ".commit-item", function(e){  // 무한스크롤-이벤트위임
 			//alert($(this).data("sha"));   //alert(e.currentTarget.dataset.sha);
@@ -140,14 +143,18 @@
 				success: function(res){
 					for(let file of res){
 						const fileName = file.fileName;
-						const fileSha = file.sha;
-						console.log(fileName);
-						console.log(fileSha);
+						const fileSha = file.fileSha;
+						const commitSha = file.commitSha;
+						patchMap.set(fileSha, file.patch);
+						//console.log(patchMap.get("patch"));
+						//console.log(fileName);
+						//console.log(fileSha);
 						
 						$(".file-item").append(
 							`<div class="d-flex justify-content-between align-items-center list-group-item">
 					          <span class="text-truncate" style="max-width: 80%;">\${fileName}</span>
-					          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" data-filename="\${fileName}">추가</button>
+					          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" 
+					          	data-filename="\${fileName}" data-commitsha="\${commitSha}">추가</button>
 					        </div>`
 						);
 					};
@@ -166,21 +173,24 @@
 	/*（파일 항목 -> 선택된 배포 항목) 파일 추가 */
 		$(".file-item").on("click", ".file-item-btn" ,function(){
 			const fileSha = $(this).attr("id");
-			const fileShaShort = $(this).attr("id").slice(0,7);
+			//const fileShaShort = $(this).attr("id").slice(0,7);
 			const fileName = $(this).data("filename");
-
+			const commitSha = $(this).data("commitsha");
+			const commitShaShort = commitSha.slice(0,7);
+			
+			
 			$("tbody").append(`
 					<tr>
-						<td>\${fileShaShort}</td>
+						<td>\${commitShaShort}</td>
 						<td>\${fileName}</td>
 						<td>
 							<button class="btn btn-sm btn-outline-secondary file-comapare-btn"
-								data-sha="\${fileSha}" data-filename="\${fileName}"
+								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}"
 								data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
 						</td>
 					</tr>
 					`);
-		});		
+		});
 	
 	
 	

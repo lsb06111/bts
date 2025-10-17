@@ -42,7 +42,6 @@ public class DeployRequestController {
 	public List<CommitFileDTO> getCommitFileName(@RequestParam String sha) {
 		System.out.println(sha);
 		List<CommitFileDTO> fileList = deployGithubService.getCommitDetail(ownerName, repoName, token, sha);
-		
 		return fileList;
 	}
 	
