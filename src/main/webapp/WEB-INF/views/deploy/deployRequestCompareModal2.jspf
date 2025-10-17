@@ -178,7 +178,7 @@
 		   dataType: "text",
 			success: function(res){
 				console.log(res);
-				$("#left-code").text("");    // document.getElementById("left-code").textContent = "";
+				$("#left-code").text("");    // JS : document.getElementById("left-code").textContent = "";
 				$("#left-line-numbers").text("");
 				$("#right-code").text("");
 				$("#right-line-number").text("");
