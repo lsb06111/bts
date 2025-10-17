@@ -27,11 +27,11 @@ public class DeployRequestController {
 	String token = "";	// 깃토큰
 
 	@GetMapping("/deployRequest")
-	public String deployRequest(Model modal) {
+	public String deployRequest(Model model) {
 		//Github repo의 commitList 가져오기
 		List<CommitDTO> commitList = deployGithubService.getCommitList(ownerName, repoName, token);
 		
-		modal.addAttribute("commitList", commitList);
+		model.addAttribute("commitList", commitList);
 		return "/deploy/deployRequest";
 	}
 	
@@ -53,5 +53,16 @@ public class DeployRequestController {
 		List<String> fileShaList = deployGithubService.getFileCommitList(ownerName, repoName, token, fileName);
 		return fileShaList;
 	}
+	
+// 같은 파일 커밋으로 비교하기 : 모달.select.과거SHA
+	@GetMapping(value="/deployRequest/commit/compare/basehead", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public String compareFileWithCommitSha(@RequestParam String fileName, @RequestParam String sha, @RequestParam String compareSha) {
+		String diffPatch = deployGithubService.compareFileWithCommitSha(ownerName, repoName, token, fileName, sha, compareSha);
+		return diffPatch;
+	}
+	
+	
+	
 	
 }

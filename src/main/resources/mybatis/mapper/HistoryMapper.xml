@@ -96,6 +96,15 @@ where a.req_id=#{reqId} order by a.id desc
     where user_id = #{userId} order by r.id desc offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
+<select id="getAllRequestsForS" resultMap="RequestsMap">
+    select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    where user_id = #{userId} 
+    <if test="projectName != null and projectName != ''">
+    	and d.project_name = #{projectName}
+  	</if>
+    order by r.id desc
+</select>
+
 <select id="getLatestNotice" resultType="NoticeDTO">
 select n.id,
        n.title,
@@ -154,6 +163,64 @@ where
     )
 order by 
     r.id desc offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getAllRequestsForSU"  resultMap="RequestsMap">
+select 
+    r.*, 
+    d.*
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    )
+    <if test="projectName != null and projectName != ''">
+    	and d.project_name = #{projectName}
+  	</if>
+order by 
+    r.id desc
+</select>
+
+
+<select id="getAllRequestsForSUByProject"  resultMap="RequestsMap">
+select 
+    r.*, 
+    d.*
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    ) and d.project_name = #{projectName}
+order by 
+    r.id desc
 </select>
 
 </mapper>

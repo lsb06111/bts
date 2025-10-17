@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHCommit.File;
+import org.kohsuke.github.GHCompare;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
@@ -100,8 +101,9 @@ public class DeployRequestGithubAPIService {
 				CommitFileDTO dto = new CommitFileDTO(sha, fileSha, fileName, lineAdded, lineDeleted, status, patch);
 				
 				fileList.add(dto);
+				//System.out.println("fileSHA: " + fileSha);
+				//System.out.println("fileName: " + fileName);
 			}
-			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -128,6 +130,34 @@ public class DeployRequestGithubAPIService {
 			e.printStackTrace();
 		}
 		return fileShaList;
+	}
+
+	public String compareFileWithCommitSha(String ownerName, String repoName, String token, String fileName, String sha,
+			String compareSha) {
+
+		String diffPatch = "";
+
+		try {
+			GitHub gitHub = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = gitHub.getRepository(ownerName + "/" + repoName);
+			
+			GHCompare GHCompare = repository.getCompare(compareSha, sha);
+			//System.out.println("jjjjjj : " + GHCompare.getDiffUrl());
+			//System.out.println("jjjjjj : " + GHCompare.getFiles());
+			
+			for ( File file : GHCompare.getFiles()) {
+				System.out.println(file.getFileName().equals(fileName));
+				if(file.getFileName().equals(fileName)) {
+					//System.out.println("diff 내용:\n" + file.getPatch());
+					diffPatch = file.getPatch();
+				}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return diffPatch;
 	}
 
 }

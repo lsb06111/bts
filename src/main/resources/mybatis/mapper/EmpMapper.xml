@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="edu.example.bts.dao.EmpDAO">
+
+	<!-- ✅ 전체 사원 조회 (부서명, 직위명 포함) -->
+	<select id="findAllEmps" resultMap="empMap">
+		SELECT
+		e.empno,
+		e.ename,
+		e.ephone,
+		e.email,
+		e.phone,
+		e.estate,
+		d.deptno,
+		d.dname,
+		j.jobno,
+		j.jname
+		FROM emp e
+		JOIN dept d ON e.deptno = d.deptno
+		JOIN job j ON e.jobno =
+		j.jobno
+		ORDER BY e.empno
+	</select>
+
+	<!-- ✅ 부서 + 직위 매핑 -->
+	<resultMap id="empMap"
+		type="edu.example.bts.domain.emp.EmpDTO">
+		<id property="empno" column="empno" />
+		<result property="ename" column="ename" />
+		<result property="ephone" column="ephone" />
+		<result property="email" column="email" />
+		<result property="phone" column="phone" />
+		<result property="estate" column="estate" />
+		<result property="birthdate" column="birthdate" />
+
+		<association property="dept"
+			javaType="edu.example.bts.domain.main.DeptDTO">
+			<id property="deptno" column="deptno" />
+			<result property="dname" column="dname" />
+		</association>
+
+		<association property="job"
+			javaType="edu.example.bts.domain.main.JobDTO">
+			<id property="jobno" column="jobno" />
+			<result property="jname" column="jname" />
+		</association>
+	</resultMap>
+
+	<!-- ✅ 부서별 사원 조회 -->
+	<select id="findEmpsByDept" parameterType="int"
+		resultMap="empMap">
+		SELECT
+		e.empno,
+		e.ename,
+		e.ephone,
+		e.email,
+		e.phone,
+		e.estate,
+		d.deptno,
+		d.dname,
+		j.jobno,
+		j.jname
+		FROM emp e
+		JOIN dept d ON e.deptno =
+		d.deptno
+		JOIN job j ON e.jobno = j.jobno
+		WHERE e.deptno = #{deptno}
+		ORDER BY e.empno
+	</select>
+
+	<!-- ✅ 사원번호로 사원 조회 -->
+	<select id="findEmpByEmpno" parameterType="int"
+		resultMap="empMap">
+		SELECT
+		e.empno,
+		e.email,
+		TO_CHAR(e.birthdate, 'YYMMDD') AS
+		birthdate,
+		e.ename,
+		e.ephone,
+		e.phone,
+		e.estate,
+		d.deptno,
+		d.dname,
+		j.jobno,
+		j.jname
+		FROM emp e
+		JOIN dept d ON e.deptno = d.deptno
+		JOIN job j ON
+		e.jobno = j.jobno
+		WHERE e.empno = #{empno}
+	</select>
+
+	<!-- ✅ 사원 정보 수정 -->
+	<update id="updateEmp"
+		parameterType="EmpDTO">
+		UPDATE emp
+		SET
+		email = #{email},
+		ename = #{ename},
+		ephone = #{ephone},
+		phone = #{phone},
+		estate = #{estate},
+		deptno = #{deptno},
+		jobno = #{jobno}
+		WHERE empno = #{empno}
+	</update>
+</mapper>

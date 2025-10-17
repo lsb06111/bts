@@ -47,7 +47,7 @@
 												선택
 											</label>
 											<select id="compareDropdown"
-												class="form-select form-select-sm">
+												class="form-select form-select-sm" onchange="chageCompareSHA()">
 												<!-- <option selected>d20db258b92f3a49f7e5c5c3125f4e10cc88fb25</option> -->
 											</select>
 										</div>
@@ -80,17 +80,17 @@
 	
 
 <script>
-	function displayCodeWithLineNumbers(code, codeId, lineId) {
+/* 	function displayCodeWithLineNumbers(code, codeId, lineId) {
 	  const lines = code.split("\n");
 	  
 	  lines.forEach(function(item, index){
 		  console.log(index, item);
 		  document.getElementById(codeId).textContent += (index+1) + "\t" + item +"\n";
 	  });  
-	}
+	} */
 
 // 좌우 구분하기 +(좌) -(우)
-	function displayCodeWithLineNumbers(code, leftCode, leftLineNum, rightCode, rightCodeNum) {
+	function displayCodeWithLineNumbers(code, leftCode, leftLineNum, rightCode, rightCodeNum) {		
 	  const lines = code.split("\n");
 	  
 	  let lineNum=0;
@@ -138,7 +138,7 @@
 		displayCodeWithLineNumbers(patch, "left-code", "left-line-numbers", "right-code", "right-line-number");
 
 		
-		$(".fileName").text('"' + fileName + '"');
+		$(".fileName").text(fileName);
 		$("#selectedCommit").val(commitSha);
 
 		
@@ -158,16 +158,38 @@
 			error: function(e){
 				alert("같은 파일 목록 못가져옴");
 			}
-		});
-		
-	
-	/* 두 파일(sha)을 비교하기 */
-		
+		});	
 	});
 	
 
-
-
+/* select 변경 : 같은 파일의 다른 SHA */
+ 	function chageCompareSHA(){
+		const compareSha = $("#compareDropdown").val();
+		const fileName = document.querySelector('.fileName').textContent;
+		const sha = document.querySelector('#selectedCommit').value;
+		
+		
+		$.ajax({
+			url:"/bts/deployRequest/commit/compare/basehead",
+			method: "GET",
+			data: {fileName: fileName,
+				   sha : sha,
+				   compareSha: compareSha},
+		   dataType: "text",
+			success: function(res){
+				console.log(res);
+				$("#left-code").text("");    // document.getElementById("left-code").textContent = "";
+				$("#left-line-numbers").text("");
+				$("#right-code").text("");
+				$("#right-line-number").text("");
+					
+				displayCodeWithLineNumbers(res, "left-code", "left-line-numbers", "right-code", "right-line-number");
+			},
+			error: function(e){
+				alert("파일비교 안됨;;;;")
+			}
+		}); 
+	} 
 
 
 </script>
