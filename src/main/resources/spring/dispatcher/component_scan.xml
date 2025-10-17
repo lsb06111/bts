@@ -26,6 +26,7 @@
 			<mvc:exclude-mapping path="/css/**" />
 			<mvc:exclude-mapping path="/js/**" />
 			<mvc:exclude-mapping path="/images/**" />
+			<mvc:exclude-mapping path="/jenkins/**" />
 			<bean class="edu.example.bts.interceptor.JwtInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>

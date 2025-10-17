@@ -64,12 +64,65 @@ public class DeployRequestHistoryService {
 	public List<RequestsDTO> getRequestsByPageForS(Long userId, int page){
 		return historyDAO.getRequestsByPageForS(userId, page);
 	}
+	
+	public int getReqSizeForS(UserDTO user, String status, String projectName) {
+		int count=0;
+		List<RequestsDTO> allReq = historyDAO.getAllRequestsForS(user.getId(), projectName);
+		List<String> statusList = getStatus(allReq, user);
+		for(int i=0; i < allReq.size(); i++) {
+			if(statusList.get(i).equals(status))
+				count++;
+		}
+		return count;
+	}
+	public int getReqSizeForSU(UserDTO user, String status, String projectName) {
+		int count=0;
+		List<RequestsDTO> allReq = historyDAO.getAllRequestsForSU(user.getId(), projectName);
+		List<String> statusList = getStatus(allReq, user);
+		for(int i=0; i < allReq.size(); i++) {
+			if(statusList.get(i).equals(status))
+				count++;
+		}
+		return count;
+	}
+	
+	public List<RequestsDTO> getRequestsByPageForS2(UserDTO user, int page, String projectName, String status){
+		List<RequestsDTO> result = new ArrayList<>();
+		List<RequestsDTO> allReq = historyDAO.getAllRequestsForS(user.getId(), projectName);
+		List<String> statusList = null;
+		if(!status.isEmpty())
+			statusList = getStatus(allReq, user);
+		for(int i=page*10; i < allReq.size(); i++) {
+			if(result.size() == 10)
+				break;
+			if(statusList == null || (statusList!=null && statusList.get(i).equals(status)))
+				result.add(allReq.get(i));
+		}
+		
+		return result;
+	}
+	
 	public Integer getRequestsCountByProjects(Long userId) {
 		return historyDAO.getRequestsCountByProjects(userId);
 	}
 	
 	public List<RequestsDTO> getRequestsByPageForSU(Long userId, int page){
 		return historyDAO.getRequestsByPageForSU(userId, page);
+	}
+	
+	public List<RequestsDTO> getRequestsByPageForSU2(UserDTO user, int page, String projectName, String status){
+		List<RequestsDTO> result = new ArrayList<>();
+		List<RequestsDTO> allReq = historyDAO.getAllRequestsForSU(user.getId(), projectName);
+		List<String> statusList = null;
+		if(!status.isEmpty())
+			statusList = getStatus(allReq, user);
+		for(int i=page*10; i < allReq.size(); i++) {
+			if(result.size() == 10)
+				break;
+			if(statusList == null || (statusList!=null && statusList.get(i).equals(status)))
+				result.add(allReq.get(i));
+		}
+		return result;
 	}
 	
 	//

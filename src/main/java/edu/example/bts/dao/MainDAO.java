@@ -10,4 +10,9 @@ public interface MainDAO {
 	public UserDTO getUserDetail(Long id);
 	
 	public UserDTO getUserByEmail(String email);
+	
+	public boolean updateGithubUsername(UserDTO userDTO);
+	
+	public boolean updatePassword(UserDTO userDTO);
+
 }
