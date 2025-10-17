@@ -60,14 +60,12 @@
             </li>
 
             <li class="menu-item">
-              <a href="/bts/employee" class="menu-link">
+              <a href="/bts/emp/list" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-group"></i>
                 <div data-i18n="Boxicons">사원 관리</div>
               </a>
             </li>            
             
-            
-
             <!-- Extended components -->
             <li class="menu-item">
               <a href="javascript:void(0)" class="menu-link menu-toggle">

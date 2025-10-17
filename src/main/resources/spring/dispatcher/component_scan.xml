@@ -9,11 +9,8 @@
 
 	<context:component-scan
 		base-package="edu.example.bts">
-		<context:exclude-filter type="annotation"
-			expression="org.springframework.stereotype.Service" />
-		<context:exclude-filter type="annotation"
-			expression="org.springframework.stereotype.Repository" />
 	</context:component-scan>
+	
 	<mvc:annotation-driven />
 	<!-- 정적 자원 설정 -->
 	<mvc:resources mapping="/resources/**"

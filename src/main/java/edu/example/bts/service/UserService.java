@@ -1,5 +1,7 @@
 package edu.example.bts.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,26 +13,40 @@ import edu.example.bts.domain.user.UserDTO;
 @Service
 public class UserService {
 	@Autowired
-    private UserDAO userDAO;
-	
-	//추가
+	private UserDAO userDAO;
+
+	// 추가
 	@Autowired
 	MainDAO mainDAO;
 
-    public EmpDTO findEmpByEmail(String email) {
-        return userDAO.findEmpByEmail(email);
-    }
+	public EmpDTO findEmpByEmail(String email) {
+		return userDAO.findEmpByEmail(email);
+	}
 
-    public UserDTO findUserByEmpno(int empno) {
-        return userDAO.findUserByEmpno(empno);
-    }
+	public UserDTO findUserByEmpno(int empno) {
+		return userDAO.findUserByEmpno(empno);
+	}
 
-    public void insertUser(UserDTO user) {
-        userDAO.insertUser(user);
-    }
-    
-    //추가
-    public UserDTO getUserByEmail(String email) {
-    	return mainDAO.getUserByEmail(email);
-    }
+	public void insertUser(UserDTO user) {
+		userDAO.insertUser(user);
+	}
+
+	// 신규 유저 등록
+	public void addUser(UserDTO user) {
+		userDAO.insertUser(user);
+	}
+
+	// 추가
+	public UserDTO getUserByEmail(String email) {
+		return mainDAO.getUserByEmail(email);
+	}
+
+	// 전체 유저 목록 조회
+	public List<UserDTO> findAllUsers() {
+		return userDAO.findAllUsers();
+	}
+	
+	public List<UserDTO> findUsersByDept(int deptno) {
+	    return userDAO.findUsersByDept(deptno);
+	}
 }
