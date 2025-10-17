@@ -37,7 +37,9 @@
                 onchange="filterSelection()">
           <option value="">프로젝트</option>
           <c:forEach var="project" items="${projectList}">
-            <option value="${project.id}">${project.projectName}</option>
+            <option value="${project.projectName}"
+            	<c:if test="${param.project == project.projectName}">selected</c:if>>
+            	${project.projectName}</option>
           </c:forEach>
         </select>
 
@@ -46,7 +48,8 @@
                 onchange="filterSelection()">
           <option value="">상태</option>
           <c:forEach var="status" items="${statusList}">
-            <option value="${status.id==1? '대기중' : status.description}">
+            <option value="${status.id==1? '대기중' : status.description}"
+            <c:if test="${param.status == (status.id == 1 ? '대기중' : status.description)}">selected</c:if>>
               ${status.id==1? '대기중' : status.description}
             </option>
           </c:forEach>
@@ -122,14 +125,14 @@
         %>
 
         <li class="page-item <%= (pageN == 1) ? "disabled" : "" %>">
-          <a class="page-link" href="/bts/history?page=<%= pageN - 1 %>" style="color:#4a5eff;">&lt;</a>
+          <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= pageN - 1 %>" style="color:#4a5eff;">&lt;</a>
         </li>
 
         <%
           for (int i = startPage; i <= endPage; i++) {
         %>
           <li class="page-item <%= (i == pageN) ? "active" : "" %>">
-            <a class="page-link" href="/bts/history?page=<%= i %>"
+            <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= i %>"
                style="<%= (i == pageN) ? "background-color:#4a5eff; border:none;" : "color:#4a5eff;" %>">
               <%= i %>
             </a>
@@ -139,7 +142,7 @@
         %>
 
         <li class="page-item <%= (pageN == totalPage) ? "disabled" : "" %>">
-          <a class="page-link" href="/bts/history?page=<%= pageN + 1 %>" style="color:#4a5eff;">&gt;</a>
+          <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= pageN + 1 %>" style="color:#4a5eff;">&gt;</a>
         </li>
       </ul>
     </nav>
@@ -153,6 +156,6 @@
 function filterSelection(){
   const pValue = document.querySelector('.selection-project').value;
   const sValue = document.querySelector('.selection-status').value;
-  location.href = '/bts/history?project=' + pValue + '&status=' + sValue;
+  location.href = '/bts/history?project=' + pValue + '&status=' + sValue+'&page=1';
 }
 </script>

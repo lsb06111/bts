@@ -42,4 +42,12 @@
     WHERE  e.email = #{email}
 </select>
 
+<update id="updateGithubUsername" parameterType="UserDTO">
+	update users set github_username = #{githubUsername} where id = #{id}
+</update>
+
+<update id="updatePassword" parameterType="UserDTO">
+	update users set password = #{password} where id = #{id}
+</update>
+
 </mapper>

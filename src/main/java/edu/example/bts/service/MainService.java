@@ -39,4 +39,17 @@ public class MainService {
 	public List<NoticeDTO> getLatestNotice(){
 		return historyDAO.getLatestNotice();
 	}
+	
+	public boolean updateInfo(UserDTO userDTO) {
+		String githubUsername = userDTO.getGithubUsername();
+		String password = userDTO.getPassword();
+		Long userId = userDTO.getId();
+		
+		if(!githubUsername.isEmpty() && !mainDAO.updateGithubUsername(userDTO))
+			return false;
+		if(!password.isEmpty() && !mainDAO.updatePassword(userDTO))
+			return false;
+		
+		return true;
+	}
 }

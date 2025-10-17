@@ -29,6 +29,12 @@ public interface HistoryDAO {
 	
 	public List<RequestsDTO> getLatestRequestsForU(Long userId);
 	
+	public List<RequestsDTO> getAllRequestsForS(@Param("userId") Long userId,
+												@Param("projectName") String projectName);
+	
+	public List<RequestsDTO> getAllRequestsForSU(@Param("userId") Long userId,
+												 @Param("projectName") String projectName);
+	
 	public List<NoticeDTO> getLatestNotice();
 	
 	public List<QnaDTO> getAllQnaList();
@@ -38,6 +44,10 @@ public interface HistoryDAO {
 	public Integer getRequestsCountByProjects(Long userId);
 	
 	public List<RequestsDTO> getRequestsByPageForSU(@Param("userId") Long userId, @Param("page") int page);
+	
+	public List<RequestsDTO> getAllRequestsForSUByProject(@Param("userId") Long userId,
+														  @Param("projectName") String projectName);
+	
 	
 	public List<RequestsDTO> getRequestsByPageForS(@Param("userId") Long userId, @Param("page") int page);
 	
