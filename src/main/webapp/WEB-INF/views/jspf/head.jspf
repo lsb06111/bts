@@ -65,3 +65,52 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="/bts/resources/assets/js/config.js"></script>
+	<style>
+	.bts-expand {
+  display: inline-flex;
+  gap: 3px;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #4a5eff;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 기본 상태: BTS만 보이도록 */
+.bts-letter {
+  position: relative;
+  display: inline-block;
+  text-transform: uppercase; /* B, T, S는 대문자 */
+}
+
+.bts-letter .rest {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  display: inline-block;
+  transform: translateX(-5px);
+  transition:
+    opacity 0.4s ease,
+    max-width 0.4s ease,
+    transform 0.4s ease;
+
+  /* rest 전용 스타일 */
+  font-size: 0.5em;        /* BTS보다 작게 */
+  font-weight: 400;        /* 얇게 */
+  text-transform: lowercase; /* 소문자 강제 */
+  vertical-align: baseline; 
+}
+
+/* hover 시: 부드럽게 확장 */
+.bts-expand:hover .rest {
+  opacity: 1;
+  max-width: 200px;
+  transform: translateX(0);
+}
+
+/* 전체 hover 시 살짝 spacing 변화 */
+.bts-expand:hover {
+  
+  transition: letter-spacing 0.3s ease;
+}
+	</style>

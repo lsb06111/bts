@@ -23,7 +23,7 @@ public class DeployRequestHistoryController {
 	@RequestMapping("history")
 	public String goHistory(@RequestAttribute("loginUser") UserDTO user,
 							@RequestParam("page") Integer page,
-							@RequestParam(value = "projectId", required=false) Long projectId,
+							@RequestParam(value = "project", required=false) String projectName,
 							@RequestParam(value = "status", required=false) String status,
 							Model model) {
 		
@@ -31,20 +31,25 @@ public class DeployRequestHistoryController {
 		List<RequestsDTO> requests = null; 
 		List<DevRepoDTO> projectList = null;
 		int totalPage = 0;
+		
 		if(user.getDept().getDeptno().intValue() == 1 && user.getJob().getJobno().intValue() == 2) {
-			int totalCount = historyService.getRequestsCount(userId);
+			int totalCount = (status.isEmpty() && projectName.isEmpty())? 
+					historyService.getRequestsCount(userId) : historyService.getReqSizeForS(user,status, projectName);
 		    totalPage = (int) Math.ceil((double) totalCount / 10);
 		    
-		    requests = historyService.getRequestsByPageForS(userId, page-1);
+		    requests = historyService.getRequestsByPageForS2(user, page-1, projectName, status);
 		    
 		}else {
-			int totalCount = historyService.getRequestsCountByProjects(userId);
+			int totalCount = (status.isEmpty() && projectName.isEmpty())?
+					historyService.getRequestsCountByProjects(userId) : historyService.getReqSizeForSU(user,status, projectName);
 		    totalPage = (int) Math.ceil((double) totalCount / 10);
-		    requests = historyService.getRequestsByPageForSU(userId, page-1);
+		    requests = historyService.getRequestsByPageForSU2(user, page-1, projectName, status);
 		}
+		
+		
+		
+		
 		projectList = historyService.getAllProjectForS(userId);
-		
-		
 		model.addAttribute("requests", requests);
 		model.addAttribute("latests", historyService.getStatus(requests, user));
 		model.addAttribute("userDetails", historyService.getUsersByReq(requests));
