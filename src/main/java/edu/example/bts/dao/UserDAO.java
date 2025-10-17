@@ -10,13 +10,6 @@ import edu.example.bts.domain.user.UserDTO;
 
 @Mapper
 public interface UserDAO {
-	
-	// 전 유저 조회
-	public List<UserDTO> findAllUsers();
-	
-	// 부서별 유저 조회
-    public List<UserDTO> findUsersByDept(int deptno);
-    
 	// 이메일로 사원 조회
 	public EmpDTO findEmpByEmail(@Param("email") String email);
 
@@ -26,5 +19,9 @@ public interface UserDAO {
 	// 신규 유저 등록
 	public void insertUser(UserDTO user);
 
-}
+	// 전체 유저 목록 조회
+	public List<UserDTO> findAllUsers();
 	
+	public List<UserDTO> findUsersByDept(@Param("deptno") int deptno);
+
+}

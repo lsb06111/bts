@@ -2,7 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace="edu.example.bts.dao.UserDAO">
-	<!-- 이메일로 사원 조회 -->
+	<resultMap id="userMap"
+		type="edu.example.bts.domain.user.UserDTO">
+		<id property="id" column="id" />
+		<result property="githubUsername" column="github_username" />
+		<result property="password" column="password" />
+		<result property="ename" column="ename" />
+		<result property="ephone" column="ephone" />
+		<result property="email" column="email" />
+		<result property="phone" column="phone" />
+		<result property="estate" column="estate" />
+		<result property="empno" column="empno" />
+
+		<!-- ✅ 부서 매핑 -->
+		<association property="dept"
+			javaType="edu.example.bts.domain.main.DeptDTO">
+			<id property="deptno" column="deptno" />
+			<result property="dname" column="dname" />
+		</association>
+
+		<!-- ✅ 직위 매핑 -->
+		<association property="job"
+			javaType="edu.example.bts.domain.main.JobDTO">
+			<id property="jobno" column="jobno" />
+			<result property="jname" column="jname" />
+		</association>
+	</resultMap>
+
+	<!-- 로그인 처리 1.이메일로 사원 조회 -->
 	<select id="findEmpByEmail" parameterType="string"
 		resultType="EmpDTO">
 		SELECT * FROM emp
@@ -10,7 +37,7 @@
 		AND estate = '재직중'
 	</select>
 
-	<!-- empno로 유저 조회 -->
+	<!-- 로그인 처리 2.empno로 유저 조회 -->
 	<select id="findUserByEmpno" parameterType="int"
 		resultType="UserDTO">
 		SELECT * FROM users
@@ -25,42 +52,51 @@
 		#{githubUsername}, #{empno})
 	</insert>
 
-	<select id="findAllUsers"
-		resultType="edu.example.bts.domain.user.UserDTO">
+	<select id="findAllUsers" resultMap="userMap">
 		SELECT
-		users.id AS id,
-		users.github_username,
-		users.password,
-		users.empno,
-		emp.ename,
-		emp.ephone,
-		emp.email,
-		emp.phone,
-		emp.estate,
-		emp.deptno,
-		emp.jobno
-		FROM users
-		LEFT JOIN emp ON users.empno = emp.empno
-		ORDER BY users.id
+		u.id,
+		u.github_username,
+		u.password,
+		e.empno,
+		e.ename,
+		e.ephone,
+		e.email,
+		e.phone,
+		e.estate,
+		d.deptno,
+		d.dname,
+		j.jobno,
+		j.jname
+		FROM users u
+		JOIN emp
+		e ON u.empno = e.empno
+		JOIN dept d ON e.deptno = d.deptno
+		JOIN job j ON
+		e.jobno = j.jobno
+		ORDER BY e.empno
 	</select>
 
 	<select id="findUsersByDept" parameterType="int"
-		resultType="edu.example.bts.domain.user.UserDTO">
+		resultMap="userMap">
 		SELECT
-		users.id AS id,
-		users.github_username,
-		users.password,
-		users.empno,
-		emp.ename,
-		emp.ephone,
-		emp.email,
-		emp.phone,
-		emp.estate,
-		emp.deptno,
-		emp.jobno
-		FROM users
-		LEFT JOIN emp ON users.empno = emp.empno
-		WHERE emp.deptno = #{deptno}
-		ORDER BY users.id
+		u.id,
+		u.github_username,
+		u.password,
+		e.empno,
+		e.ename,
+		e.ephone,
+		e.email,
+		e.phone,
+		e.estate,
+		d.deptno,
+		d.dname,
+		j.jobno,
+		j.jname
+		FROM users u
+		JOIN emp e ON u.empno = e.empno
+		JOIN dept d ON e.deptno = d.deptno
+		JOIN job j ON e.jobno = j.jobno
+		WHERE e.deptno = #{deptno}
+		ORDER BY e.empno
 	</select>
 </mapper>

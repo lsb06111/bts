@@ -17,13 +17,17 @@ public class EmpService {
 		return empDAO.findEmpByEmpno(empno);
 	}
 
-	// 전체 사원 조회
+	// 전체 사원 목록 조회
 	public List<EmpDTO> findAllEmps() {
+		System.out.println("=== [DEBUG] 전체 사원 목록 조회 실행 ===");
 		return empDAO.findAllEmps();
 	}
 	
-	// 부서별 사원 조회
 	public List<EmpDTO> findEmpsByDept(int deptno) {
-        return empDAO.findEmpsByDept(deptno);
-    }
+	    return empDAO.findEmpsByDept(deptno);
+	}
+	
+	public void updateEmployee(EmpDTO emp) {
+	    empDAO.updateEmp(emp);
+	}
 }

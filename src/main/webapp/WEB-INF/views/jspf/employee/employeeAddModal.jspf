@@ -1,14 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
-	<!-- 사원 추가 모달 -->
-	<div class="modal fade" id="employeeAddModal" tabindex="-1"
+    pageEncoding="UTF-8"%>
+<div class="modal fade" id="employeeAddModal" tabindex="-1"
 		aria-labelledby="employeeAddModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-lg">
 			<div class="modal-content"
@@ -45,8 +37,8 @@
 
 							<div class="col-md-6">
 								<label class="form-label" style="font-weight: 600;">password</label>
-								<input type="email" id="passwordInput" class="form-control"
-									placeholder="예: hong@company.com" style="font-size: 14px;">
+								<input type="text" id="passwordInput" class="form-control"
+									placeholder="초기 비밀번호: 생년월일" style="font-size: 14px;">
 							</div>
 
 							<div class="col-md-6">
@@ -70,30 +62,30 @@
 							<div class="col-md-6">
 								<label class="form-label" style="font-weight: 600;">부서</label> <select
 									id="deptInput" class="form-select" style="font-size: 14px;">
-									<option selected>개발팀</option>
-									<option value="1">운영팀</option>
-									<option value="2">인사팀</option>
+									<option value="1">개발팀</option>
+									<option value="2">운영팀</option>
+									<option value="3">인사팀</option>
 								</select>
 							</div>
 
 							<div class="col-md-3">
 								<label class="form-label" style="font-weight: 600;">직위</label> <select
 									id="jobInput" class="form-select" style="font-size: 14px;">
-									<option selected>사원</option>
-									<option value="1">주임</option>
-									<option value="2">대리</option>
-									<option value="3">과장</option>
-									<option value="4">차장</option>
-									<option value="5">부장</option>
+									<option value="1">사원</option>
+									<option value="2">주임</option>
+									<option value="3">대리</option>
+									<option value="4">과장</option>
+									<option value="5">차장</option>
+									<option value="6">부장</option>
 								</select>
 							</div>
 
 							<div class="col-md-3">
 								<label class="form-label" style="font-weight: 600;">상태</label> <select
 									id="estateInput" class="form-select" style="font-size: 14px;">
-									<option selected>재직중</option>
-									<option value="1">휴직</option>
-									<option value="2">퇴직</option>
+									<option value="재직중">재직중</option>
+									<option value="휴직">휴직</option>
+									<option value="퇴직">퇴직</option>
 								</select>
 							</div>
 						</div>
@@ -114,93 +106,86 @@
 			</div>
 		</div>
 	</div>
-</body>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-	$(document).ready(function() {
+$(document).ready(function () {
 
-		// Enter 키 입력 시 blur 강제 발생
-		$('#empnoInput').on('keydown', function(event) {
-			if (event.key === 'Enter') {
-				event.preventDefault();
-				$(this).blur();
-			}
-		});
+    // Enter 키 입력 시 blur 강제 발생
+    $('#empnoInput').on('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            $(this).blur();
+        }
+    });
 
-		// 사원번호 입력 시 자동 조회
-		$('#empnoInput').on('blur', function() {
-			const empno = $(this).val().trim();
-			if (empno === '')
-				return;
+    // 사원번호 입력 시 자동 조회
+    $('#empnoInput').on('blur', function () {
+        const empno = $(this).val().trim();
+        if (empno === '') return;
 
-			$.ajax({
-				url : '${pageContext.request.contextPath}/emp/find',
-				type : 'GET',
-				data : {
-					empno : empno
-				},
-				success : function(emp) {
-					if (emp) {
-						$('#emailInput').val(emp.email);
-						$('#passwordInput').val(emp.birthdate);
-						$('#nameInput').val(emp.ename);
-						$('#ephoneInput').val(emp.ephone);
-						$('#phoneInput').val(emp.phone);
-						$('#deptInput').val(emp.deptno);
-						$('#jobInput').val(emp.jobno);
-						$('#estateInput').val(emp.estate);
-						console.log("사원정보 자동입력 완료", emp);
-					} else {
-						alert('해당 사원번호에 대한 정보가 없습니다.');
-					}
-				},
-				error : function() {
-					alert('사원 정보를 불러오지 못했습니다.');
-				}
-			});
-		});
+        $.ajax({
+            url: '${pageContext.request.contextPath}/emp/find',
+            type: 'GET',
+            data: { empno: empno },
+            success: function (emp) {
+                if (emp) {
+                    $('#emailInput').val(emp.email);
+                    $('#passwordInput').val(emp.birthdate);
+                    $('#nameInput').val(emp.ename);
+                    $('#ephoneInput').val(emp.ephone);
+                    $('#phoneInput').val(emp.phone);
+                    $('#deptInput').val(emp.dept.deptno);
+                    $('#jobInput').val(emp.job.jobno);
+                    $('#estateInput').val(emp.estate);
+                    console.log("사원정보 자동입력 완료", emp);
+                } else {
+                    alert('해당 사원번호에 대한 정보가 없습니다.');
+                }
+            },
+            error: function () {
+                alert('사원 정보를 불러오지 못했습니다.');
+            }
+        });
+    });
 
-		// 추가 버튼 클릭 시
-		$('#addUserBtn').on('click', function() {
-			if (!confirm('사원을 추가하시겠습니까?'))
-				return; // 확인창
+    // 추가 버튼 클릭 시
+    $('#addUserBtn').on('click', function () {
+        if (!confirm('사원을 추가하시겠습니까?')) return;
 
-			const userData = {
-				empno : $('#empnoInput').val().trim(),
-				email : $('#emailInput').val().trim(),
-				password : $('#passwordInput').val().trim()
-			};
+        const userData = {
+            empno: $('#empnoInput').val().trim(),
+            email: $('#emailInput').val().trim(),
+            password: $('#passwordInput').val().trim()
+        };
 
-			// 필수값 검증
-			if (!userData.empno || !userData.email || !userData.password) {
-				alert('사원번호, 이메일, 패스워드는 필수 입력입니다.');
-				return;
-			}
+        // 필수값 검증
+        if (!userData.empno || !userData.email || !userData.password) {
+            alert('사원번호, 이메일, 패스워드는 필수 입력입니다.');
+            return;
+        }
 
-			$.ajax({
-				url : '${pageContext.request.contextPath}/user/add',
-				type : 'POST',
-				contentType : 'application/json',
-				data : JSON.stringify(userData),
-				success : function(response) {
-					alert('사원이 성공적으로 추가되었습니다.');
-					
-					$('#employeeAddModal').modal('hide');
-					
-					// 검은 배경 제거 (Bootstrap backdrop)
-			        $('.modal-backdrop').remove();
-			        $('body').removeClass('modal-open');
-			        $('body').css('overflow', 'auto');
+        $.ajax({
+            url: '${pageContext.request.contextPath}/user/add',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(userData),
+            success: function (response) {
+                alert('사원이 성공적으로 추가되었습니다.');
 
-			        window.location.href = '${pageContext.request.contextPath}/emp';
-				},
-				error : function() {
-					alert('사원 추가 중 오류가 발생했습니다.');
-				}
-			});
-		});
+                $('#employeeAddModal').modal('hide');
 
-	});
+                // 검은 배경 제거 (Bootstrap backdrop)
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+                $('body').css('overflow', 'auto');
+
+                window.location.href = '${pageContext.request.contextPath}/emp/list';
+            },
+            error: function () {
+                alert('사원 추가 중 오류가 발생했습니다.');
+            }
+        });
+    });
+});
 </script>
-</html>

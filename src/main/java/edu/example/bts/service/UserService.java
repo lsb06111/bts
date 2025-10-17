@@ -18,14 +18,6 @@ public class UserService {
 	// 추가
 	@Autowired
 	MainDAO mainDAO;
-	
-	public List<UserDTO> findAllUsers() {
-        return userDAO.findAllUsers();
-    }
-
-    public List<UserDTO> findUsersByDept(int deptno) {
-        return userDAO.findUsersByDept(deptno);
-    }
 
 	public EmpDTO findEmpByEmail(String email) {
 		return userDAO.findEmpByEmail(email);
@@ -47,5 +39,14 @@ public class UserService {
 	// 추가
 	public UserDTO getUserByEmail(String email) {
 		return mainDAO.getUserByEmail(email);
+	}
+
+	// 전체 유저 목록 조회
+	public List<UserDTO> findAllUsers() {
+		return userDAO.findAllUsers();
+	}
+	
+	public List<UserDTO> findUsersByDept(int deptno) {
+	    return userDAO.findUsersByDept(deptno);
 	}
 }
