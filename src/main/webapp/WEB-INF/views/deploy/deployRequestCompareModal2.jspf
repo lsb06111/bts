@@ -31,7 +31,8 @@
 
 										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
 											<div class="line-numbers" id="left-line-numbers"></div>
-											<pre class="code-content mb-0" id="left-code"></pre>
+											<div class="code-content mb-0" id="left-code">
+											</div>
 										</div>
 										
 									</div>
@@ -102,16 +103,21 @@
 			lineNum = Number(item.slice(startnum, endnum));
 			lineNum--;
 			
-			document.getElementById(leftCode).textContent +=  "\t" + item +"\n";
+			
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(0, 123, 255, 0.1);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
+			//document.getElementById(leftCode).textContent +=  "\t" + item +"\n";
 			document.getElementById(rightCode).textContent += "\t" + item +"\n";
 		  }else if(item.slice(0,1)== '+') {			  
-			document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";			  
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='color: green;  white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
+			//document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";			  
 			document.getElementById(rightCode).textContent +=(lineNum) + "\n";
 		  }else if(item.slice(0,1)== '-') {
-			document.getElementById(leftCode).textContent += (lineNum) + "\n";			  
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;</pre>";
+			//document.getElementById(leftCode).textContent += (lineNum) + "\n";			  
 			document.getElementById(rightCode).textContent += (lineNum) + "\t" + item + "\n";
 		  }else if(item.slice(0,1)==" ") { 
-			document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
+			//document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";
 			document.getElementById(rightCode).textContent += (lineNum) + "\t" + item +"\n";			  
 		  }
 		  
@@ -161,6 +167,11 @@
 		});	
 	});
 	
+/* 스크롤 동시 움직이기  */	
+	$('#left-code').parent().on('scroll', function(){
+		const leftScrollVal = $(this).scrollTop();	
+		$('#right-code').parent().scrollTop(leftScrollVal);
+	});
 
 /* select 변경 : 같은 파일의 다른 SHA */
  	function chageCompareSHA(){
@@ -182,6 +193,8 @@
 				$("#left-line-numbers").text("");
 				$("#right-code").text("");
 				$("#right-line-number").text("");
+				
+				$('#left-code').parent().scrollTop(0)   // 스크롤 상단으로 고정 
 					
 				displayCodeWithLineNumbers(res, "left-code", "left-line-numbers", "right-code", "right-line-number");
 			},
