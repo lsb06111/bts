@@ -15,12 +15,13 @@ from notice n
 join users u on n.user_id = u.id
 join emp e using(empno)
 join dept d using(deptno)
+where n.del_yn = 0
 order by n.id desc
 offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
 <select id="getNoticeCount" resultType="int">
-	select count(*) from notice
+	select count(*) from notice where del_yn = 0
 </select>
 
 <select id="getNoticeById" resultType="NoticeDTO">
@@ -42,12 +43,13 @@ select n.id,
 from qna n
 join users u on n.user_id = u.id
 join emp e using(empno)
+where n.del_yn = 0
 order by n.id desc
 offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
 <select id="getQnaCount" resultType="int">
-	select count(*) from qna
+	select count(*) from qna where del_yn = 0
 </select>
 
 <select id="getQnaById" resultType="QnaDTO">
@@ -55,7 +57,7 @@ offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
 <select id="getReplyByQnaId" resultType="ReplyDTO">
-	select * from reply where qna_id = #{qnaId}
+	select id, content, to_char(created_at, 'yy/mm/dd') created_at, del_yn, qna_id from reply where qna_id = #{qnaId} and del_yn = 0
 </select>
 
 <insert id="writeQna" parameterType="QnaDTO">
@@ -65,5 +67,18 @@ offset #{page} * 10 rows fetch next 10 rows only
 <insert id="writeReply" parameterType="ReplyDTO">
 	insert into reply (content, qna_id) values(#{content}, #{qnaId})
 </insert>
+
+<update id="deleteNotice" parameterType="long">
+	update notice set del_yn = 1 where id = #{id}
+</update>
+
+<update id="deleteQna" parameterType="long">
+	update qna set del_yn = 1 where id = #{id}
+</update>
+
+<update id="deleteQnaReply" parameterType="long">
+	update reply set del_yn = 1 where qna_id = #{qnaId}
+</update>
+
 
 </mapper>

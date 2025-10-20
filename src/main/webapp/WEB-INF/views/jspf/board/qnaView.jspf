@@ -105,6 +105,9 @@
       </h5>
       <div style="font-size:0.9rem; color:#888;">
         작성일 <span style="color:#555; font-weight:500;">${reply.createdAt}</span>
+        <c:if test="${loginUser.dept.deptno == 3 }">
+        	<button onclick="deleteQnaReply(${reply.qnaId})" style="background:none;border:none;"><i class="bx bx-trash"></i></button>
+        </c:if>
       </div>
     </div>
 
@@ -139,6 +142,16 @@
 
 </div>
 <script>
+function deleteQnaReply(qnaId){
+	$.get('/bts/qna/deleteReply?id='+qnaId,
+			function(data, status){
+				if(status == 'success'){
+					alert('성공적으로 삭제되었습니다.')
+					location.reload();
+				}
+		});
+}
+
 function submitReply(qnaId){
 	const form = $('form')[0];
 	const formData = new FormData(form);

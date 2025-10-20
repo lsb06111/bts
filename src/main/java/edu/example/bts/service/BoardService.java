@@ -64,4 +64,16 @@ public class BoardService {
 	public boolean writeReply(ReplyDTO replyDTO) {
 		return boardDAO.writeReply(replyDTO);
 	}
+	
+	public boolean deleteNotice(Long id) {
+		return boardDAO.deleteNotice(id);
+	}
+	
+	public boolean deleteQna(Long id) {
+		return boardDAO.deleteQna(id);
+	}
+	
+	public boolean deleteQnaReply(Long qnaId) {
+		return boardDAO.deleteQnaReply(qnaId);
+	}
 }
