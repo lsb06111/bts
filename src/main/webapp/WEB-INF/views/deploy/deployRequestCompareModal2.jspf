@@ -31,8 +31,7 @@
 
 										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
 											<div class="line-numbers" id="left-line-numbers"></div>
-											<div class="code-content mb-0" id="left-code">
-											</div>
+											<pre class="code-content mb-0" id="left-code"></pre>
 										</div>
 										
 									</div>
@@ -104,21 +103,25 @@
 			lineNum--;
 			
 			
-			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(0, 123, 255, 0.1);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(207, 242, 250, 0.4);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(0, 123, 255, 0.1);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
 			//document.getElementById(leftCode).textContent +=  "\t" + item +"\n";
-			document.getElementById(rightCode).textContent += "\t" + item +"\n";
+			//document.getElementById(rightCode).textContent += "\t" + item +"\n";
 		  }else if(item.slice(0,1)== '+') {			  
-			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='color: green;  white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(178, 251, 165, 0.2);  white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;</pre>";
 			//document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";			  
-			document.getElementById(rightCode).textContent +=(lineNum) + "\n";
+			//document.getElementById(rightCode).textContent +=(lineNum) + "\n";
 		  }else if(item.slice(0,1)== '-') {
 			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(251, 165, 187, 0.2); white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;"+ item +"</pre>";
 			//document.getElementById(leftCode).textContent += (lineNum) + "\n";			  
-			document.getElementById(rightCode).textContent += (lineNum) + "\t" + item + "\n";
+			//document.getElementById(rightCode).textContent += (lineNum) + "\t" + item + "\n";
 		  }else if(item.slice(0,1)==" ") { 
 			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
 			//document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";
-			document.getElementById(rightCode).textContent += (lineNum) + "\t" + item +"\n";			  
+			//document.getElementById(rightCode).textContent += (lineNum) + "\t" + item +"\n";			  
 		  }
 		  
 		  lineNum++;
@@ -157,9 +160,22 @@
 			dataType: "json",
 			success: function(res){
 				console.log(res);
-				for(let queryPathCommitSha of res) {
+				 /* for(let queryPathCommitSha of res) {
 					$("#compareDropdown").append("<option>" + queryPathCommitSha + "</option>");
+				}  */
+				$('#compareDropdown option').remove();
+				
+				for(let i=0; i<res.length; i++){
+					if(res[i] == $('#selectedCommit').val()) {continue;}
+					else if(i==1) {$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+					else{$("#compareDropdown").append("<option>" + res[i] + "</option>");}
 				}
+				
+				/*
+				res.forEach((SHA, index)=>{
+					console.log(SHA);
+					console.log(index);
+				}) */
 			},
 			error: function(e){
 				alert("같은 파일 목록 못가져옴");
