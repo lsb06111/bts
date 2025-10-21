@@ -1,0 +1,237 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
+	<div class="modal fade" id="deployRequestCompareModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-almost-fullscreen" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalFullTitle">
+						<span class="fw-semibold text-secondary mb-0">Compare</span> 
+					    <span class="text-dark fw-normal fileName"></span>
+				    </h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+
+
+				<div class="modal-body">
+					<div class="container-fluid py-2">
+						<div class="row g-3">
+
+							<!-- Left Column -->
+							<div class="col-md-6">
+								<div class="card border-light shadow-sm">
+									<div class="card-body">
+										<div class="mb-2 d-flex justify-content-between align-items-center">
+											<label for="selectedCommit" class="form-label me-2 mb-0 fw-semibold text-secondary" style="min-width: 50px;">
+												고정
+											</label>
+											<input type="text" id="selectedCommit" class="form-control form-control-sm bg-light border text-primary"
+											  value="" readonly>
+										</div>
+
+										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
+											<div class="line-numbers" id="left-line-numbers"></div>
+											<pre class="code-content mb-0" id="left-code"></pre>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+
+							<!-- Right Column -->
+							<div class="col-md-6">
+								<div class="card border-light shadow-sm">
+									<div class="card-body">
+										<div class="mb-2 d-flex justify-content-between align-items-center">
+											<label for="compareDropdown" class="form-label me-2 mb-0 fw-semibold text-secondary" style="min-width: 50px;">
+												선택
+											</label>
+											<select id="compareDropdown"
+												class="form-select form-select-sm" onchange="chageCompareSHA()">
+												<!-- <option selected>d20db258b92f3a49f7e5c5c3125f4e10cc88fb25</option> -->
+											</select>
+										</div>
+										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
+											<div class="line-numbers" id="right-line-numbers"></div>
+											<pre class="code-content mb-0" id="right-code"></pre>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- row -->
+					</div>
+					<!-- container-fluid -->
+				</div>
+				<!-- modal-body -->
+
+
+
+				<!-- <div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary"
+						data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div> -->
+			</div>
+		</div>
+	</div>
+	
+	
+
+<script>
+// 좌우 구분하기 +(좌) -(우)
+	function displayCodeWithLineNumbers(code, leftCode, leftLineNum, rightCode, rightCodeNum) {		
+	  const lines = code.split("\n");
+	  
+	  let lineNum=0;
+	  lines.forEach(function(item1, index){
+		  //console.log(index, item);
+		  let item = item1.replaceAll('\t',' ').replaceAll('<','&lt;').replaceAll('>','&gt;');
+		  if(item.slice(0,1)== '@'){
+			let startnum = Number(item.indexOf("-"))+1;
+			let endnum = Number(item.indexOf(","));
+			lineNum = Number(item.slice(startnum, endnum));
+			lineNum--;
+			
+			
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(207, 242, 250, 0.4);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(0, 123, 255, 0.1);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
+			//document.getElementById(leftCode).textContent +=  "\t" + item +"\n";
+			//document.getElementById(rightCode).textContent += "\t" + item +"\n";
+		  }else if(item.slice(0,1)== '+') {			  
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(178, 251, 165, 0.2);  white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;</pre>";
+			/* const pre = document.createElement("pre");
+			pre.className = "mb-0";
+			pre.style.backgroundColor = "rgba(178, 251, 165, 0.2)";
+			pre.style.whiteSpace = "pre-wrap";
+			pre.style.wordBreak = "break-word";
+			
+			// line number + item 합쳐서 안전하게 텍스트로 추가
+			pre.textContent = lineNum + " " + item; // &emsp; 대신 실제 공백(또는 \u2003)
+			
+			document.getElementById(leftCode).appendChild(pre); */
+			
+			//document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";			  
+			//document.getElementById(rightCode).textContent +=(lineNum) + "\n";
+		  }else if(item.slice(0,1)== '-') {
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(251, 165, 187, 0.2); white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;"+item +"</pre>";
+			
+			
+			/* const pre = document.createElement("pre");
+			pre.className = "mb-0";
+			pre.style.backgroundColor = "rgba(251, 165, 187, 0.2)";
+			pre.style.whiteSpace = "pre-wrap";
+			pre.style.wordBreak = "break-word";
+			
+			// line number + item 합쳐서 안전하게 텍스트로 추가
+			pre.textContent = lineNum + " " + item; // &emsp; 대신 실제 공백(또는 \u2003)
+			
+			document.getElementById(rightCode).appendChild(pre); */
+			//document.getElementById(leftCode).textContent += (lineNum) + "\n";			  
+			//document.getElementById(rightCode).textContent += (lineNum) + "\t" + item + "\n";
+		  }else if(item.slice(0,1)==" ") { 
+			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
+			//document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";
+			//document.getElementById(rightCode).textContent += (lineNum) + "\t" + item +"\n";			  
+		  }
+		  
+		  lineNum++;
+	  });  
+	}
+</script>
+
+<script>
+	const compareModal = $("#deployRequestCompareModal");
+	
+	compareModal.on("show.bs.modal", function(event){
+	/* deployRequest 비교 버튼 - 모달 데이터 받아오기 */
+		const button = event.relatedTarget;
+		const fileSha = button.getAttribute('data-sha');
+		const fileName = button.getAttribute('data-filename');
+		const commitSha = button.getAttribute('data-commitsha');
+		
+		const patch = patchMap.get(fileSha);
+		console.log(patch)
+		//displayCodeWithLineNumbers(patch, "left-code", "left-line-numbers");
+		displayCodeWithLineNumbers(patch, "left-code", "left-line-numbers", "right-code", "right-line-number");
+
+		
+		$(".fileName").text(fileName);
+		$("#selectedCommit").val(commitSha);
+
+		
+		
+	/* 같은 파일의 커밋 목록(sha)가져오기 */
+		$.ajax({
+			url: "/bts/deployRequest/commit/queryCommit/fileName",
+			method: "GET",
+			data: {"fileName" : fileName},
+			dataType: "json",
+			success: function(res){
+				console.log(res);
+				 /* for(let queryPathCommitSha of res) {
+					$("#compareDropdown").append("<option>" + queryPathCommitSha + "</option>");
+				}  */
+				$('#compareDropdown option').remove();
+				
+				for(let i=0; i<res.length; i++){
+					if(res[i] == $('#selectedCommit').val()) {continue;}
+					else if(i==1) {$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+					else{$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+				}
+				
+				/*
+				res.forEach((SHA, index)=>{
+					console.log(SHA);
+					console.log(index);
+				}) */
+			},
+			error: function(e){
+				alert("같은 파일 목록 못가져옴");
+			}
+		});	
+	});
+	
+/* 스크롤 동시 움직이기  */	
+	$('#left-code').parent().on('scroll', function(){
+		const leftScrollVal = $(this).scrollTop();	
+		$('#right-code').parent().scrollTop(leftScrollVal);
+	});
+
+/* select 변경 : 같은 파일의 다른 SHA */
+ 	function chageCompareSHA(){
+		const compareSha = $("#compareDropdown").val();
+		const fileName = document.querySelector('.fileName').textContent;
+		const sha = document.querySelector('#selectedCommit').value;
+		
+		
+		$.ajax({
+			url:"/bts/deployRequest/commit/compare/basehead",
+			method: "GET",
+			data: {fileName: fileName,
+				   sha : sha,
+				   compareSha: compareSha},
+		   dataType: "text",
+			success: function(res){
+				console.log(res);
+				$("#left-code").text("");    // JS : document.getElementById("left-code").textContent = "";
+				$("#left-line-numbers").text("");
+				$("#right-code").text("");
+				$("#right-line-number").text("");
+				
+				$('#left-code').parent().scrollTop(0)   // 스크롤 상단으로 고정 
+					
+				displayCodeWithLineNumbers(res, "left-code", "left-line-numbers", "right-code", "right-line-number");
+			},
+			error: function(e){
+				alert("파일비교 안됨;;;;")
+			}
+		}); 
+	} 
+
+
+</script>

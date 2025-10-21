@@ -31,7 +31,7 @@
 				<div class="modal-header">
 					<h5 class="modal-title" mb-0 id="modalFullTitle">
 						<span class="fw-semibold text-secondary mb-0">Compare</span> 
-					    <span class="text-dark fw-normal">"src/main/java/com/vrs/platform/service/UserService.java"</span>
+					    <span class="text-dark fw-normal fileName"></span>
 				    </h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
@@ -50,7 +50,7 @@
 												고정
 											</label>
 											<input type="text" id="selectedCommit" class="form-control form-control-sm bg-light border text-primary"
-											  value="e3a1a5c8b92f3a49f7e5c5c3125f4e10cc88fb25" readonly>
+											  value="" readonly>
 										</div>
 
 										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
@@ -72,10 +72,7 @@
 											</label>
 											<select id="compareDropdown"
 												class="form-select form-select-sm">
-												<option>553834e8b92f3a49f7e5c5c3125f4e10cc88fb25</option>
-												<option selected>d20db258b92f3a49f7e5c5c3125f4e10cc88fb25</option>
-												<option>473dc7a8b92f3a49f7e5c5c3125f4e10cc88fb25</option>
-												<option>e3a1a5c8b92f3a49f7e5c5c3125f4e10cc88fb25</option>
+												<!-- <option selected>d20db258b92f3a49f7e5c5c3125f4e10cc88fb25</option> -->
 											</select>
 										</div>
 										<div class="border rounded p-3 bg-light"
@@ -123,7 +120,7 @@
 	}
 
 	// 예시 데이터 (git API 결과 대신)
-	const sampleCode = `
+	const sampleCode= `
 	import java.util.List;
 	import java.util.Map;
 	
@@ -135,11 +132,50 @@
 	}`;
 
 	displayCodeWithLineNumbers(sampleCode, "left-code", "left-line-numbers");
-
-	
-
 </script>
 
+<script>
+	const compareModal = $("#deployRequestCompareModal");
+	
+	compareModal.on("show.bs.modal", function(event){
+	/* deployRequest 비교 버튼 - 모달 데이터 받아오기 */
+		const button = event.relatedTarget;
+		const fileSha = button.getAttribute('data-sha');
+		const fileName = button.getAttribute('data-filename');
+		
+		$(".fileName").text('"' + fileName + '"');
+		$("#selectedCommit").val(fileSha);
+	
+		
+		
+	/* 같은 파일의 커밋 목록(sha)가져오기 */
+		$.ajax({
+			url: "/bts/deployRequest/commit/queryCommit/fileName",
+			method: "GET",
+			data: {"fileName" : fileName},
+			dataType: "json",
+			success: function(res){
+				console.log(res);
+				for(let queryPathFileSha of res) {
+					$("#compareDropdown").append("<option>" + queryPathFileSha + "</option>");
+				}
+			},
+			error: function(e){
+				alert("같은 파일 목록 못가져옴");
+			}
+		});
+		
+	
+	/* 두 파일(sha)을 비교하기 */
+		
+	});
+	
+
+
+
+
+
+</script>
 
 </body>
 </html>

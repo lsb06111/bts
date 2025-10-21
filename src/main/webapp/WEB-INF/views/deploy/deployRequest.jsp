@@ -5,6 +5,23 @@
 
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
+<style>
+.modal-almost-fullscreen {
+	width: calc(100% - 60px); /* 좌우 30px 여백 */
+	max-width: none;
+	height: calc(100% - 60px); /* 상하 30px 여백 */
+	margin: 30px auto;
+}
+
+.modal-almost-fullscreen .modal-content {
+	height: 100%;
+}
+
+.modal-almost-fullscreen .modal-body {
+	overflow-y: auto;
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 
 <body
@@ -38,44 +55,31 @@
 									<div class="list-group"
 										style="max-height: 300px; overflow-y: auto;">
 										<c:forEach var="commitList" items="${commitList}">
-											<a href="#" class="list-group-item list-group-item-action">
+											<a href="#" class="list-group-item list-group-item-action commit-item" data-sha="${commitList.sha}">
 												<div class="fw-bold">${commitList.commitMessage}</div> 
 												<small class="text-muted">${fn:substring(commitList.sha, 0, 7)} · 
 												<c:choose>
 													<c:when test="${!empty commitList.userName}">${commitList.userName}</c:when>
 													<c:otherwise>알 수 없음</c:otherwise>
 												</c:choose> (${commitList.authorName}) · 
-												${fn:substring(commitList.authorDate, 0, 10)}</small>
+												${commitList.authorDate}</small>
 											</a>
 										</c:forEach>
-										<!-- 
-										<a href="#" class="list-group-item list-group-item-action">
-											<div class="fw-bold">feat: 새로운 사용자 관리 기능 추가</div> <small
-											class="text-muted">f71503a · 김민준(GitID) · 1시간 전</small>
-										</a>
-										<a href="#" class="list-group-item list-group-item-action">
-											<div class="fw-bold">feat: 새로운 사용자 관리 기능 추가</div> <small
-											class="text-muted">f71503a · 김민준(GitID) · 1시간 전</small>
-										</a>
-										 -->
 									</div>
 								</div>
 
 								<!-- 파일 목록 -->
 								<div class="col-md-6">
 									<h5 class="mb-3">파일목록</h5>
-									<div class="list-group"
+									<div class="list-group file-item"
 										style="max-height: 300px; overflow-y: auto;">
+										<!-- 
 										<div
 											class="d-flex justify-content-between align-items-center list-group-item">
 											<span class="text-truncate" style="max-width: 80%;">src/main/java/com/.../AdminUsersController.java</span>
 											<button class="btn btn-sm btn-primary">추가</button>
 										</div>
-										<div
-											class="d-flex justify-content-between align-items-center list-group-item">
-											<span class="text-truncate" style="max-width: 80%;">src/main/java/com/.../AdminUsersController.java</span>
-											<button class="btn btn-sm btn-primary">추가</button>
-										</div>
+										 -->
 									</div>
 								</div>
 
@@ -97,21 +101,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>f71503a</td>
-											<td>src/main/java/com/.../AdminUsersController.java</td>
-											<td>
-												<button class="btn btn-sm btn-outline-secondary"
-													data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
-											</td>
-										</tr>
-										<tr>
-											<td>e9a2b1c</td>
-											<td>src/main/resources/application.properties</td>
-											<td>
-												<button class="btn btn-sm btn-outline-secondary">비교</button>
-											</td>
-										</tr>
+										
 									</tbody>
 								</table>
 							</div>
@@ -132,8 +122,90 @@
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
 	
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<%@ include file="/WEB-INF/views/deploy/deployRequestCompareModal.jsp"%>
+	<%@ include file="/WEB-INF/views/deploy/deployRequestCompareModal2.jspf"%>
+	<script>
+	
+	/* 전역 : 파일의 patch값을 저장해서 모달까지 넘기기 위해서  */
+	const patchMap = new Map(); 
+	
+	$(document).ready(function(){				
+	/* 커밋목록 선택후, 해당 커밋으로 조회 */
+		$(".list-group").on("click", ".commit-item", function(e){  // 무한스크롤-이벤트위임
+			//alert($(this).data("sha"));   //alert(e.currentTarget.dataset.sha);
+			$(".file-item").empty();
+			
+			const sha = $(this).data("sha");
+			
+			$.ajax({
+				url: "/bts/deployRequest/commits/sha",
+				method: "GET",
+				data: {"sha": sha},
+				dataType: "json",  
+				success: function(res){
+					for(let file of res){
+						const fileName = file.fileName;
+						const fileSha = file.fileSha;
+						const commitSha = file.commitSha;
+						patchMap.set(fileSha, file.patch);
+						//console.log(patchMap.get("patch"));
+						//console.log(fileName);
+						//console.log(fileSha);
+						
+						$(".file-item").append(
+							`<div class="d-flex justify-content-between align-items-center list-group-item">
+					          <span class="text-truncate" style="max-width: 80%;">\${fileName}</span>
+					          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" 
+					          	data-filename="\${fileName}" data-commitsha="\${commitSha}">추가</button>
+					        </div>`
+						);
+					};
+					
+				},
+				error: function(){
+					alert("요청 실패!");
+				}
+			});
+			
+		});
+	
+	
+	
+	
+	/*（파일 항목 -> 선택된 배포 항목) 파일 추가 */
+		$(".file-item").on("click", ".file-item-btn" ,function(){
+			const fileSha = $(this).attr("id");
+			//const fileShaShort = $(this).attr("id").slice(0,7);
+			const fileName = $(this).data("filename");
+			const commitSha = $(this).data("commitsha");
+			const commitShaShort = commitSha.slice(0,7);
+			
+			
+			$("tbody").append(`
+					<tr>
+						<td>\${commitShaShort}</td>
+						<td>\${fileName}</td>
+						<td>
+							<button class="btn btn-sm btn-outline-primary file-comapare-btn"
+								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}"
+								data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
+							<button id="removeFileItemBtn" class="btn btn-sm btn-outline-secondary file-comapare-btn"
+								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}">
+								<i class="tf-icons bi bi-trash3-fill"></i></button>
+						</td>
+					</tr>
+					`);
+		});
+
+	
+	});
+	
+/* 제거버튼 눌렀을 때 비교 항목 목록에서 제거  */	
+	$("tbody").on("click", "#removeFileItemBtn", function(){
+		$(this).closest("tr").remove();
+	});
+
+
+	</script>
+
 </body>
 </html>
