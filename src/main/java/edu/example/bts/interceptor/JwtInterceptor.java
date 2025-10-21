@@ -61,7 +61,8 @@ public class JwtInterceptor implements HandlerInterceptor{
         
 
         res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        res.getWriter().write("토큰이 유효하지 않습니다.");
+        System.out.println("[DEBUG] 토큰이 유효하지 않음, 로그인 페이지로 리다이렉트");
+        res.sendRedirect(req.getContextPath() + "/auth/loginForm");
         return false;
     }
 }
