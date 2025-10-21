@@ -28,7 +28,7 @@
         <div class="card shadow-sm h-100" style="border:none; border-radius:15px;">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
-              <h6 style="font-weight:600; color:#333;">프로젝트1 배포 성공률</h6>
+              <h5 style="font-weight:600; color:#333;">프로젝트1 배포 성공률</h5>
               <select class="form-select form-select-sm" style="width:auto; border-radius:8px;">
                 <option>프로젝트1</option>
               </select>
@@ -44,7 +44,7 @@
       <div class="col-md-6">
         <div class="card shadow-sm h-100" style="border:none; border-radius:15px;">
           <div class="card-body">
-            <h6 style="font-weight:600; color:#333; margin-bottom:15px;">최신 공지사항</h6>
+            <h5 style="font-weight:600; color:#333; margin-bottom:15px;">최신 공지사항</h5>
             <table class="table align-middle mb-0" style="font-size:0.9rem;">
               <thead style="background-color:#f8f9fc;">
                 <tr style="color:#555; font-weight:600;">

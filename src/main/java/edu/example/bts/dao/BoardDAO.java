@@ -30,4 +30,10 @@ public interface BoardDAO {
 	public boolean writeQna(QnaDTO qnaDTO); 
 	
 	public boolean writeReply(ReplyDTO replyDTO);
+	
+	public boolean deleteNotice(Long id);
+	
+	public boolean deleteQna(Long id);
+	
+	public boolean deleteQnaReply(Long qnaId);
 }

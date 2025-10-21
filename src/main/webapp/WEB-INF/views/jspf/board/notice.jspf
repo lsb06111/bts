@@ -41,6 +41,9 @@
             <th style="width:45%;">제목</th>
             <th style="width:20%;">등록 부서</th>
             <th style="width:20%;">날짜</th>
+            <c:if test="${loginUser.dept.deptno > 1 }">
+            	<th style="width:20%;">삭제</th>
+            </c:if>
           </tr>
         </thead>
         <tbody>
@@ -55,6 +58,11 @@
               </td>
               <td style="color:#4a5eff; font-weight:600;">${notice.dname}</td>
               <td style="color:#777;">${notice.createdAt}</td>
+              <c:if test="${loginUser.dept.dname == notice.dname }">
+              	<td>
+              	<button onclick="deleteNotice(${notice.id})" style="background:none;border:none;"><i class="bx bx-trash"></i></button>
+              	</td>
+              </c:if>
             </tr>
           </c:forEach>
 
@@ -106,3 +114,16 @@
   </div><!-- // 메인 박스 끝 -->
 
 </div>
+
+<script>
+	function deleteNotice(id){
+		$.get('/bts/notice/delete?id='+id,
+				function(data,status){
+					if(status == 'success'){
+						alert('성공적으로 삭제되었습니다.')
+						location.reload();
+					}
+			});
+		
+	}
+</script>
