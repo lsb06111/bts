@@ -59,6 +59,7 @@ public class DeployRequestController {
 	@ResponseBody
 	public String compareFileWithCommitSha(@RequestParam String fileName, @RequestParam String sha, @RequestParam String compareSha) {
 		String diffPatch = deployGithubService.compareFileWithCommitSha(ownerName, repoName, token, fileName, sha, compareSha);
+		System.out.println(diffPatch);
 		return diffPatch;
 	}
 	

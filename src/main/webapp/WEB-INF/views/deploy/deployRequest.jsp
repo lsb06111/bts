@@ -21,6 +21,7 @@
 	overflow-y: auto;
 }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 
 <body
@@ -184,15 +185,23 @@
 						<td>\${commitShaShort}</td>
 						<td>\${fileName}</td>
 						<td>
-							<button class="btn btn-sm btn-outline-secondary file-comapare-btn"
+							<button class="btn btn-sm btn-outline-primary file-comapare-btn"
 								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}"
 								data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
+							<button id="removeFileItemBtn" class="btn btn-sm btn-outline-secondary file-comapare-btn"
+								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}">
+								<i class="tf-icons bi bi-trash3-fill"></i></button>
 						</td>
 					</tr>
 					`);
 		});
 
 	
+	});
+	
+/* 제거버튼 눌렀을 때 비교 항목 목록에서 제거  */	
+	$("tbody").on("click", "#removeFileItemBtn", function(){
+		$(this).closest("tr").remove();
 	});
 
 
