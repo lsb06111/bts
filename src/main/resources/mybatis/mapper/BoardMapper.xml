@@ -25,7 +25,7 @@ offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
 <select id="getNoticeById" resultType="NoticeDTO">
-	select n.*, d.dname from notice n join users u on n.user_id = u.id join emp e using(empno) join dept d using(deptno) where n.id = #{id}
+	select n.id, n.title, n.content, to_char(n.created_at, 'yy/mm/dd hh24:mm:ss') created_at, to_char(n.modified_at, 'yy/mm/dd hh24:mm:ss') modified_at, n.del_yn, n.user_id, d.dname from notice n join users u on n.user_id = u.id join emp e using(empno) join dept d using(deptno) where n.id = #{id}
 </select>
 
 <insert id="writeNotice" parameterType="NoticeDTO">
@@ -53,7 +53,7 @@ offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
 <select id="getQnaById" resultType="QnaDTO">
-	select n.*, e.ename from qna n join users u on n.user_id = u.id join emp e using(empno) where n.id = #{id}
+	select n.id, n.title, n.content, to_char(n.created_at, 'yy/mm/dd hh24:mm:ss') created_at, to_char(n.modified_at, 'yy/mm/dd hh24:mm:ss') modified_at, n.del_yn, n.user_id, e.ename from qna n join users u on n.user_id = u.id join emp e using(empno) where n.id = #{id}
 </select>
 
 <select id="getReplyByQnaId" resultType="ReplyDTO">

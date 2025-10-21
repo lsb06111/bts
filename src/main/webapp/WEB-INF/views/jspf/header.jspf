@@ -37,6 +37,7 @@
 
             <%if(((UserDTO)request.getAttribute("loginUser")).getDept().getDeptno() != 3){ %>
            
+           <c:if test="${loginUser.dept.deptno == 1 && loginUser.job.jobno == 2 }">
             <!-- Cards -->
             <li class="menu-item">
               <a href="/bts/deployRequest" class="menu-link">
@@ -44,7 +45,7 @@
                 <div data-i18n="Basic">배포 신청</div>
               </a>
             </li>
-            
+            </c:if>
             <li class="menu-item">
               <a href="/bts/history?project=&status=&page=1" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-history"></i>

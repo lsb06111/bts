@@ -25,7 +25,7 @@
 </head>
 
 <body
-	style="background-color: #f7f7fb; font-family: 'Noto Sans KR', sans-serif;">
+	style="background-color: #f7f7fb;">
 	<%@ include file="/WEB-INF/views/jspf/header.jspf"%>
 	<!-- 헤더 네비부분 고정 -->
 

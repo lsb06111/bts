@@ -3,26 +3,60 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="container my-5" style="max-width:1200px;">
+<!-- 카드 호버 및 확장 버튼 아이콘을 위한 스타일 -->
+<style>
+  .status-card-hover {
+    transition: all 0.2s ease-in-out;
+  }
+  .status-card-hover:hover {
+    transform: translateY(-4px);
+    /* 기본 shadow-sm을 덮어쓰기 위해 !important 사용 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important; 
+  }
+  
+  /* 확장 버튼 아이콘 회전 애니메이션 */
+  #expandBtn {
+    transition: transform 0.3s ease-in-out;
+  }
+</style>
+
+<div class="container my-3" >
 
   <!-- 전체 카드 박스 -->
-  <div style="
-        background-color:#fff;
-        border-radius:16px;
-        box-shadow:0 4px 18px rgba(0,0,0,0.08);
-        padding:20px 30px;
-        width:100%;
-    ">
+  <div style="width:100%;">
 
     <!-- 헤더 -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-      <h2 style="font-weight:700; color:#333;">
-        <span style="color:#696cff;">${loginUser.ename} ${loginUser.job.jname}</span>님, 반갑습니다 😊
-      </h2>
+    <div class="card shadow-sm mb-3" style="border:none; border-radius:15px;">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h5 style="font-weight:700; color:#333;">프로젝트별 서비스 상태</h5>
+          <div class="d-flex align-items-center">
+            <small class="text-muted me-3">* 최근 5분 내 응답 상태 기준</small>
+            <!-- 확장/축소 버튼 -->
+            <a id="expandBtn" class="text-secondary" data-bs-toggle="collapse" href="#collapseStatus" role="button" aria-expanded="false" aria-controls="collapseStatus" style="display: none;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 상태 카드 영역 (첫 4개) -->
+        <div class="row gy-3 gx-3 justify-content-start mb-3" id="serviceStatusRow">
+          <!-- JS로 동적 생성 -->
+        </div>
+
+        <!-- 확장 시 보이는 카드 영역 -->
+        <div class="collapse" id="collapseStatus">
+          <div class="row gy-3 gx-3 justify-content-start" id="serviceStatusRowCollapsed">
+            <!-- JS로 동적 생성 -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 메인 콘텐츠 -->
-    <div class="row g-4">
+    <div class="row g-3">
       <!-- 좌측: 그래프 -->
       <div class="col-md-6">
         <div class="card shadow-sm h-100" style="border:none; border-radius:15px;">
@@ -35,7 +69,7 @@
             </div>
             <p class="text-muted" style="font-size:0.9rem;">지난 달 배포 성공률</p>
             <canvas id="deployChart" style="max-width:200px; margin:auto;"></canvas>
-            <h3 class="text-center mt-3" style="font-weight:700; color:#696cff;">85%</h3>
+            <h3 class="text-center mt-3 success-rate" style="font-weight:700; color:#696cff;"></h3>
           </div>
         </div>
       </div>
@@ -47,13 +81,13 @@
             <h5 style="font-weight:600; color:#333; margin-bottom:15px;">최신 공지사항</h5>
             <table class="table align-middle mb-0" style="font-size:0.9rem;">
               <thead style="background-color:#f8f9fc;">
-                <tr style="color:#555; font-weight:600;">
+                <tr style="color:#555; font-weight:600;text-align:center">
                   <th>번호</th><th>제목</th><th>등록 부서</th><th>날짜</th>
                 </tr>
               </thead>
               <tbody>
                 <c:forEach var="notice" items="${latestNotice}">
-                  <tr style="border-bottom:1px solid #f1f1f1;">
+                  <tr style="border-bottom:1px solid #f1f1f1;text-align:center">
                     <td style="color:#666;">${notice.id}</td>
                     <td>
                       <a href="/bts/notice/view?id=${notice.id}"
@@ -73,7 +107,7 @@
     </div>
 
     <!-- 하단: 최근 배포 신청/답변 대기 목록 -->
-    <div class="mt-5">
+    <div class="mt-3">
       <%@ include file="/WEB-INF/views/jspf/main/latestRequests.jspf" %> 
     </div>
 
@@ -83,24 +117,106 @@
 
 <!-- Chart.js -->
 <script>
-const ctx = document.getElementById('deployChart');
-new Chart(ctx, {
-  type: 'doughnut',
-  data: {
-    labels: ['성공', '실패'],
-    datasets: [{
-      data: [85, 15],
-      backgroundColor: ['#696cff', '#dee2e6']
-    }]
-  },
-  options: {
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { boxWidth: 12, color: '#333', font: { size: 13 } }
-      }
-    },
-    cutout: '70%'
+document.addEventListener('DOMContentLoaded', function() {
+  const ctx = document.getElementById('deployChart');
+  
+  $.get('/bts/jenkins/getSuccessRate?projectName=test1',
+		  function(data,status){
+	  		let succ = 85;
+	  		let fail = 15;
+	  		const succRateDom = document.querySelector('.success-rate');
+	  		if(status == 'success'){
+	  			succ = data[0];
+	  			fail = data[1];
+	  			
+	  		}
+	  		succRateDom.textContent = succ+'%';
+	  		
+	  		new Chart(ctx, {
+	  		    type: 'doughnut',
+	  		    data: {
+	  		      labels: ['성공', '실패'],
+	  		      datasets: [{
+	  		        data: [succ, fail],
+	  		        backgroundColor: ['#696cff', '#dee2e6'],
+	  		        borderWidth: 0, // 도넛 차트 경계선 제거
+	  		      }]
+	  		    },
+	  		    options: {
+	  		      plugins: {
+	  		        legend: {
+	  		          position: 'bottom',
+	  		          labels: { boxWidth: 12, color: '#333', font: { size: 13 } }
+	  		        }
+	  		      },
+	  		      cutout: '70%'
+	  		    }
+	  		  });
+	  		
+  		});
+  
+
+  // ✅ 프로젝트별 서비스 상태 표시 (확장/축소 기능 추가)
+  const services = [
+    { name: '프로젝트1', url: '/api/status/project1' },
+    { name: '프로젝트2', url: '/api/status/project2' },
+    { name: '프로젝트3', url: '/api/status/project3' },
+    { name: '프로젝트4', url: '/api/status/project4' },
+    { name: '프로젝트5', url: '/api/status/project5' },
+    { name: '프로젝트6', url: '/api/status/project6' },
+    { name: '프로젝트7', url: '/api/status/project7' },
+    { name: '프로젝트8', url: '/api/status/project8' },
+    { name: '프로젝트9', url: '/api/status/project9' }
+  ];
+
+  const row = document.querySelector('#serviceStatusRow');
+  const collapsedRow = document.querySelector('#serviceStatusRowCollapsed');
+  const expandBtn = document.querySelector('#expandBtn');
+  const collapseElement = document.getElementById('collapseStatus');
+
+  // 프로젝트가 4개 초과일 때만 확장 버튼 표시
+  if (services.length > 4) {
+    expandBtn.style.display = 'block';
   }
+
+  services.forEach((svc, index) => {
+    const isUp = Math.random() > 0.2; 
+    const iconUrl = isUp 
+      ? '/bts/resources/assets/img/sun.gif'
+      : '/bts/resources/assets/img/rain.gif';
+
+    const col = document.createElement('div');
+    col.className = 'col-lg-3 col-md-4 col-sm-6';
+    
+    col.innerHTML = `
+      <div class="bg-white border h-100 p-3 shadow-sm status-card-hover" style="border-radius: 12px; cursor: pointer;">
+        <div class="d-flex justify-content-between align-items-center h-100">
+          <div>
+            <div class="fw-semibold text-dark mb-1" style="font-size: 1.05rem;">\${svc.name}</div>
+            <div class="fw-medium \${isUp ? 'text-success' : 'text-danger'}" style="font-size: 0.9rem;">
+              \${isUp ? '정상' : '오류 감지'}
+            </div>
+          </div>
+          <img src="\${iconUrl}" alt="\${isUp ? '정상' : '에러'}" style="width: 40px; height: 40px;">
+        </div>
+      </div>
+    `;
+    
+    // 4개까지는 기본 행에, 나머지는 접힌 행에 추가
+    if (index < 4) {
+        row.appendChild(col);
+    } else {
+        collapsedRow.appendChild(col);
+    }
+  });
+
+  // Bootstrap Collapse 이벤트에 맞춰 아이콘 회전
+  collapseElement.addEventListener('show.bs.collapse', function () {
+    expandBtn.style.transform = 'rotate(180deg)';
+  });
+  collapseElement.addEventListener('hide.bs.collapse', function () {
+    expandBtn.style.transform = 'rotate(0deg)';
+  });
 });
 </script>
+
