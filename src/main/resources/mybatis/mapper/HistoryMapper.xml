@@ -41,13 +41,13 @@
 </resultMap>
 
 <select id="getLatestRequestsForS" resultMap="RequestsMap" parameterType="long">
-	select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+	select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
     where user_id = #{userId} order by r.id desc fetch first 3 rows only
 </select>
 
 
 <select id="getRequestsForS" resultMap="RequestsMap" parameterType="long">
-    select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
     where user_id = #{userId} order by r.id desc
 </select>
 
@@ -69,13 +69,13 @@
 </select>
 
 <select id="getLatestRequestsForT" resultMap="RequestsMap" parameterType="long">
-	select r.*, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+	select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
 	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
 	order by r.id desc fetch first 3 rows only
 </select>
 
 <select id="getRequestsForT" resultMap="RequestsMap" parameterType="long">
-select r.*, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
 	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
 	order by r.id desc
 </select>
@@ -86,18 +86,18 @@ where a.req_id=#{reqId} order by a.id desc
 </select>
 
 <select id="getLatestRequestsForU" resultMap="RequestsMap" parameterType="long">
-	select r.*, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+	select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
 	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
 	order by r.id desc fetch first 3 rows only
 </select>
 
 <select id="getRequestsByPageForS" resultMap="RequestsMap">
-    select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
     where user_id = #{userId} order by r.id desc offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
 <select id="getAllRequestsForS" resultMap="RequestsMap">
-    select r.*, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
     where user_id = #{userId} 
     <if test="projectName != null and projectName != ''">
     	and d.project_name = #{projectName}
@@ -116,6 +116,7 @@ from notice n
 join users u on n.user_id = u.id
 join emp e using(empno)
 join dept d using(deptno)
+where n.del_yn = 0
 order by n.id desc
 fetch first 6 rows only
 </select>
@@ -130,6 +131,7 @@ select n.id,
 from qna n
 join users u on n.user_id = u.id
 join emp e using(empno)
+where n.del_yn = 0
 order by n.id desc
 </select>
 
@@ -140,7 +142,7 @@ order by n.id desc
 
 <select id="getRequestsByPageForSU"  resultMap="RequestsMap">
 select 
-    r.*, 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, 
     d.*
 from 
     requests r
@@ -167,7 +169,7 @@ order by
 
 <select id="getAllRequestsForSU"  resultMap="RequestsMap">
 select 
-    r.*, 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, 
     d.*
 from 
     requests r
@@ -198,7 +200,7 @@ order by
 
 <select id="getAllRequestsForSUByProject"  resultMap="RequestsMap">
 select 
-    r.*, 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, 
     d.*
 from 
     requests r

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,5 +104,29 @@ public class BoardController {
 			return new ResponseEntity<>("글쓰기 성공", HttpStatus.OK);
 		
 		return new ResponseEntity<>("글쓰기 실패", HttpStatus.CONFLICT);
+	}
+	
+	@ResponseBody
+	@GetMapping("notice/delete")
+	public ResponseEntity<String> deleteNotice(Long id){
+		if(boardService.deleteNotice(id))
+			return new ResponseEntity<>("공지사항 삭제 성공", HttpStatus.OK);
+		return new ResponseEntity<>("공지사항 삭제 실패", HttpStatus.CONFLICT);
+	}
+	
+	@ResponseBody
+	@GetMapping("qna/delete")
+	public ResponseEntity<String> deleteQna(Long id){
+		if(boardService.deleteQna(id))
+			return new ResponseEntity<>("QnA 삭제 성공", HttpStatus.OK);
+		return new ResponseEntity<>("QnA 삭제 실패", HttpStatus.CONFLICT);
+	}
+	
+	@ResponseBody
+	@GetMapping("qna/deleteReply")
+	public ResponseEntity<String> deleteQnaReply(Long id){
+		if(boardService.deleteQnaReply(id))
+			return new ResponseEntity<>("답변 삭제 성공", HttpStatus.OK);
+		return new ResponseEntity<>("답변 삭제 실패", HttpStatus.CONFLICT);
 	}
 }
