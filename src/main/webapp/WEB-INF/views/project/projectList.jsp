@@ -1,16 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body
-	style="background-color: #f7f7fb; font-family: 'Noto Sans KR', sans-serif;">
+	style="background-color: #f7f7fb;">
 	<%@ include file="/WEB-INF/views/jspf/header.jspf"%>
 	<!-- 헤더 네비부분 고정 -->
 	<div style="display: flex; min-height: 100vh;">
@@ -152,8 +148,7 @@
 		</div>
 	</div>
 
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 	<%@ include file="/WEB-INF/views/project/projectAddModal.jsp"%>
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->

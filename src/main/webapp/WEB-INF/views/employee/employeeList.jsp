@@ -1,26 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
-</head>
 <style>
-.dropdown-menu {
+.dropdown-menu-custom {
 	min-width: 110px !important;
 }
 
-.dropdown-menu {
+.dropdown-menu-custom {
 	right: auto !important;
 	left: 0 !important;
 }
 </style>
+</head>
+
 <body data-ctx="<%=request.getContextPath()%>"
-	style="background-color: #f7f7fb; font-family: 'Noto Sans KR', sans-serif;">
+	style="background-color: #f7f7fb;">
 	<%@ include file="/WEB-INF/views/jspf/header.jspf"%>
 	<!-- 헤더 네비부분 고정 -->
 	<div style="display: flex; min-height: 100vh;">
@@ -42,7 +38,7 @@
 							aria-expanded="false"
 							style="font-size: 13px; border: 1px solid #ddd; border-radius: 8px; color: #555;">
 							이용자: 전체</button>
-						<ul class="dropdown-menu dropdown-menu-start shadow-sm"
+						<ul class="dropdown-menu dropdown-menu-custom dropdown-menu-start shadow-sm"
 							aria-labelledby="userFilterDropdown" style="font-size: 13px;">
 							<li><a class="dropdown-item user-filter-item" href="#"
 								data-value="ALL">전체</a></li>
@@ -59,7 +55,7 @@
 							aria-expanded="false"
 							style="font-size: 13px; border: 1px solid #ddd; border-radius: 8px; color: #555;">
 							부서: 전체</button>
-						<ul class="dropdown-menu dropdown-menu-start shadow-sm"
+						<ul class="dropdown-menu dropdown-menu-custom dropdown-menu-start shadow-sm"
 							aria-labelledby="deptFilterDropdown" style="font-size: 13px;">
 							<li><a class="dropdown-item dept-filter-item" href="#"
 								data-value="">전체</a></li>
