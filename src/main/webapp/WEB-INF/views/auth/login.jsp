@@ -5,6 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -40,6 +41,21 @@
 
 				<!-- 사원번호 -->
 				<div>
+					<c:if test="${not empty errorEmail}">
+						<div class="alert alert-danger text-center" role="alert"
+							style="margin-bottom: 10px; padding: 6px 0; font-size: 13px; border-radius: 6px;">
+							${errorEmail}</div>
+					</c:if>
+					<c:if test="${not empty errorNotUser}">
+						<div class="alert alert-danger text-center" role="alert"
+							style="margin-bottom: 10px; padding: 6px 0; font-size: 13px; border-radius: 6px;">
+							${errorNotUser}</div>
+					</c:if>
+					<c:if test="${not empty errorPassword}">
+						<div class="alert alert-danger text-center" role="alert"
+							style="margin-bottom: 10px; padding: 6px 0; font-size: 13px; border-radius: 6px;">
+							${errorPassword}</div>
+					</c:if>
 					<label class="form-label"
 						style="font-weight: 600; font-size: 13px; color: #333;">사원번호</label>
 					<input type="text" name="email" class="form-control"

@@ -27,8 +27,14 @@ public class EmpController {
 
 	@Autowired
 	private UserService userService;
+	//////////////////////////////////////
 	
-	//
+	@GetMapping("/list2")
+	public String employee() {
+		return "employee/employeeList2";
+	}
+	
+	//////////////////////////////////////
 	// 사원 전체 목록 페이지
 	@GetMapping
 	@RequestMapping("/list")
