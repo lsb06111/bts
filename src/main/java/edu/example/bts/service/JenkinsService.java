@@ -34,17 +34,17 @@ public class JenkinsService {
 		List<Integer> data = new ArrayList<>();
 		
 		try {
-			// 1. URL 연결 설정
+			
 	        URL url = new URL(jenkinsUrl);
 	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	        conn.setRequestMethod("GET");
 
-	        // 2. 인증 헤더 추가 (Basic Auth)
+	        
 	        String auth = user + ":" + token;
 	        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 	        conn.setRequestProperty("Authorization", "Basic " + encodedAuth);
 
-	        // 3. 응답 읽기
+	        
 	        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 	        StringBuilder response = new StringBuilder();
 	        String line;
@@ -53,7 +53,7 @@ public class JenkinsService {
 	        }
 	        br.close();
 
-	        // 4. JSON 파싱
+	        
 	        JSONObject json = new JSONObject(response.toString());
 	        JSONArray builds = json.getJSONArray("builds");
 
@@ -67,10 +67,10 @@ public class JenkinsService {
 	                successCount++;
 	            }
 	        }
-	        System.out.println("**********successCount: "+successCount);
-	        System.out.println("**********total: "+total);
+	        //System.out.println("**********successCount: "+successCount);
+	        //System.out.println("**********total: "+total);
 	        int successRate = (int)(((double)successCount/total) * 100);
-	        System.out.println("**********successRate: "+successRate);
+	        //System.out.println("**********successRate: "+successRate);
 	        int failRate = 100 - successRate;
 			data.add(successRate);
 			data.add(failRate);

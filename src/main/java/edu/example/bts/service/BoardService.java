@@ -39,9 +39,9 @@ public class BoardService {
 	
 	public List<ReplyDTO> getReplyList(List<QnaDTO> qnaList){
 		List<ReplyDTO> replyList = new ArrayList<>();
-		for(QnaDTO qna : qnaList) {
+		/*for(QnaDTO qna : qnaList) {
 			replyList.add(boardDAO.getReplyByQnaId(qna.getId()));
-		}
+		}*/
 		
 		return replyList;
 	}
@@ -53,7 +53,7 @@ public class BoardService {
 	public QnaDTO getQnaById(Long id) {
 		return boardDAO.getQnaById(id);
 	}
-	public ReplyDTO getReplyByQnaId(Long qnaId) {
+	public List<ReplyDTO> getReplyByQnaId(Long qnaId) {
 		return boardDAO.getReplyByQnaId(qnaId);
 	}
 	
@@ -73,7 +73,7 @@ public class BoardService {
 		return boardDAO.deleteQna(id);
 	}
 	
-	public boolean deleteQnaReply(Long qnaId) {
-		return boardDAO.deleteQnaReply(qnaId);
+	public boolean deleteQnaReply(Long id) {
+		return boardDAO.deleteQnaReply(id);
 	}
 }

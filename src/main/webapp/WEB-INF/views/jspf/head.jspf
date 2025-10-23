@@ -65,6 +65,12 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="/bts/resources/assets/js/config.js"></script>
+    
+    <!-- suneditor -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" />
+    
+    
+    
 	<style>
 	.bts-expand {
   display: inline-flex;
