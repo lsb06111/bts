@@ -209,6 +209,10 @@
             <input id="github_username" type="text" class="form-control" value="${loginUser.githubUsername}" style="border-radius:8px;" placeholder="GitHub ID를 입력해주세요">
           </div>
           </c:if>
+          <div class="mb-1">
+            <label class="form-label fw-semibold">전화번호</label>
+            <input id="phone_number" type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" class="form-control" value="${loginUser.phone}" style="border-radius:8px;" placeholder="전화번호를 입력해주세요">
+          </div>
           <div class="row mb-3">
 			  <div class="col-md-6">
 			    <label class="form-label fw-semibold">새 비밀번호</label>

@@ -50,4 +50,8 @@
 	update users set password = #{password} where id = #{id}
 </update>
 
+<update id="updatePhone" parameterType="UserDTO">
+	update emp set phone = #{phone} where empno = (select empno from users where id = #{id})
+</update>
+
 </mapper>
