@@ -27,5 +27,6 @@ public class UserDTO {
 	private String estate;
 	private DeptDTO dept;
 	private JobDTO job;
-	private int empno;
+	private Long empno;
+	private String company;
 }

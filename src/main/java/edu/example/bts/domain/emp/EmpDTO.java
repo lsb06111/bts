@@ -17,7 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class EmpDTO {
-	private int empno;
+	private Long empno;
     private String ename;
     private String ephone;
     private String email;
@@ -28,4 +28,5 @@ public class EmpDTO {
     private String birthdate;
     private DeptDTO dept;
     private JobDTO job;
+    private String company;
 }

@@ -1,156 +1,131 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <div class="modal fade" id="employeeAddModal" tabindex="-1"
-		aria-labelledby="employeeAddModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-lg">
-			<div class="modal-content"
-				style="border-radius: 16px; border: none; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);">
+	aria-labelledby="employeeAddModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content"
+			style="border-radius: 16px; border: none; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);">
 
-				<!-- 헤더 -->
-				<div class="modal-header"
-					style="border: none; padding: 24px 24px 10px;">
-					<div>
-						<h5 class="modal-title" id="employeeAddModalLabel"
-							style="font-weight: 700; color: #222;">사원 추가</h5>
-						<p style="font-size: 13px; color: #777; margin-top: 6px;">새로운
-							직원의 정보를 입력하여 목록에 추가합니다.</p>
-					</div>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
+			<!-- 헤더 -->
+			<div class="modal-header"
+				style="border: none; padding: 24px 24px 10px;">
+				<div>
+					<h5 class="modal-title" id="employeeAddModalLabel"
+						style="font-weight: 700; color: #222;">사원 추가</h5>
+					<p style="font-size: 13px; color: #777; margin-top: 6px;">새로운
+						직원의 정보를 입력하여 목록에 추가합니다.</p>
 				</div>
-
-				<!-- 본문 -->
-				<div class="modal-body" style="padding: 0 24px 24px;">
-					<form>
-						<div class="row g-3">
-							<div class="col-md-6">
-								<label class="form-label" style="font-weight: 600;">사원번호</label>
-								<input type="text" id="empnoInput" class="form-control"
-									placeholder="예: 2023001" style="font-size: 14px;">
-							</div>
-
-							<div class="col-md-6">
-								<label class="form-label" style="font-weight: 600;">ID(email)</label>
-								<input type="email" id="emailInput" class="form-control"
-									placeholder="예: hong@company.com" style="font-size: 14px;">
-							</div>
-
-							<div class="col-md-6">
-								<label class="form-label" style="font-weight: 600;">password</label>
-								<input type="text" id="passwordInput" class="form-control"
-									placeholder="초기 비밀번호: 생년월일" style="font-size: 14px;">
-							</div>
-
-							<div class="col-md-6">
-								<label class="form-label" style="font-weight: 600;">이름</label> <input
-									type="text" id="nameInput" class="form-control"
-									placeholder="예: 홍길동" style="font-size: 14px;">
-							</div>
-
-							<div class="col-md-6">
-								<label class="form-label" style="font-weight: 600;">내선번호</label>
-								<input type="text" id="ephoneInput" class="form-control"
-									placeholder="예: 1001" style="font-size: 14px;">
-							</div>
-
-							<div class="col-md-6">
-								<label class="form-label" style="font-weight: 600;">휴대전화</label>
-								<input type="text" id="phoneInput" class="form-control"
-									placeholder="예: 010-1234-5678" style="font-size: 14px;">
-							</div>
-
-							<div class="col-md-6">
-								<label class="form-label" style="font-weight: 600;">부서</label> <select
-									id="deptInput" class="form-select" style="font-size: 14px;">
-									<option value="1">개발팀</option>
-									<option value="2">운영팀</option>
-									<option value="3">인사팀</option>
-								</select>
-							</div>
-
-							<div class="col-md-3">
-								<label class="form-label" style="font-weight: 600;">직위</label> <select
-									id="jobInput" class="form-select" style="font-size: 14px;">
-									<option value="1">사원</option>
-									<option value="2">주임</option>
-									<option value="3">대리</option>
-									<option value="4">과장</option>
-									<option value="5">차장</option>
-									<option value="6">부장</option>
-								</select>
-							</div>
-
-							<div class="col-md-3">
-								<label class="form-label" style="font-weight: 600;">상태</label> <select
-									id="estateInput" class="form-select" style="font-size: 14px;">
-									<option value="재직중">재직중</option>
-									<option value="휴직">휴직</option>
-									<option value="퇴직">퇴직</option>
-								</select>
-							</div>
-						</div>
-					</form>
-				</div>
-
-				<!-- 하단 버튼 -->
-				<div class="modal-footer"
-					style="border: none; padding: 16px 24px 24px;">
-					<button type="button" class="btn btn-light" data-bs-dismiss="modal"
-						style="border: 1px solid #ddd; color: #555; border-radius: 8px; font-size: 14px; padding: 8px 20px;">
-						취소</button>
-					<button type="button" id="addUserBtn" class="btn"
-						style="background-color: #4f46e5; color: #fff; border-radius: 8px; font-weight: 500; font-size: 14px; padding: 8px 20px;">
-						추가</button>
-				</div>
-
+				<button type="button" class="btn-close" data-bs-dismiss="modal"
+					aria-label="Close"></button>
 			</div>
+
+			<!-- 본문 -->
+			<div class="modal-body" style="padding: 0 24px 24px;">
+				<form>
+					<div class="row g-3">
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">ID(email)</label>
+							<input type="email" id="emailInput" class="form-control"
+								placeholder="예: hong@company.com" style="font-size: 14px;">
+						</div>
+						
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">소속</label><select
+								id="companyInput" class="form-select" style="font-size: 14px;">
+								<option value="1">OTI</option>
+								<option value="2">EXA</option>
+								<option value="3">ETC</option>
+							</select>
+						</div>
+						
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">password</label>
+							<input type="text" id="passwordInput" class="form-control"
+								placeholder="초기 비밀번호: 생년월일" style="font-size: 14px;">
+						</div>
+
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">이름</label> <input
+								type="text" id="nameInput" class="form-control"
+								placeholder="예: 홍길동" style="font-size: 14px;">
+						</div>
+
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">내선번호</label>
+							<input type="text" id="ephoneInput" class="form-control"
+								placeholder="예: 1001" style="font-size: 14px;">
+						</div>
+
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">휴대전화</label>
+							<input type="text" id="phoneInput" class="form-control"
+								placeholder="예: 010-1234-5678" style="font-size: 14px;">
+						</div>
+
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">부서</label> <select
+								id="deptInput" class="form-select" style="font-size: 14px;">
+								<option value="1">개발팀</option>
+								<option value="2">운영팀</option>
+								<option value="3">인사팀</option>
+							</select>
+						</div>
+
+						<div class="col-md-3">
+							<label class="form-label" style="font-weight: 600;">직위</label> <select
+								id="jobInput" class="form-select" style="font-size: 14px;">
+								<option value="1">사원</option>
+								<option value="2">주임</option>
+								<option value="3">대리</option>
+								<option value="4">과장</option>
+								<option value="5">차장</option>
+								<option value="6">부장</option>
+							</select>
+						</div>
+
+						<div class="col-md-3">
+							<label class="form-label" style="font-weight: 600;">상태</label> <select
+								id="estateInput" class="form-select" style="font-size: 14px;">
+								<option value="재직중">재직중</option>
+								<option value="휴직">출산휴가</option>
+								<option value="퇴직">육아휴직</option>
+								<option value="퇴직">질병휴직</option>
+								<option value="퇴직">퇴직</option>
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<!-- 하단 버튼 -->
+			<div class="modal-footer"
+				style="border: none; padding: 16px 24px 24px;">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal"
+					style="border: 1px solid #ddd; color: #555; border-radius: 8px; font-size: 14px; padding: 8px 20px;">
+					취소</button>
+				<button type="button" id="addUserBtn" class="btn"
+					style="background-color: #4f46e5; color: #fff; border-radius: 8px; font-weight: 500; font-size: 14px; padding: 8px 20px;">
+					추가</button>
+			</div>
+
 		</div>
 	</div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function () {
+$(document).ready(function() {
 
-    // Enter 키 입력 시 blur 강제 발생
-    $('#empnoInput').on('keydown', function (event) {
+    // 🔹 Enter 키 입력 시 blur 강제 발생
+    $('#empnoInput').on('keydown', function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
             $(this).blur();
         }
     });
 
-    // 사원번호 입력 시 자동 조회
-    $('#empnoInput').on('blur', function () {
-        const empno = $(this).val().trim();
-        if (empno === '') return;
-
-        $.ajax({
-            url: '${pageContext.request.contextPath}/emp/find',
-            type: 'GET',
-            data: { empno: empno },
-            success: function (emp) {
-                if (emp) {
-                    $('#emailInput').val(emp.email);
-                    $('#passwordInput').val(emp.birthdate);
-                    $('#nameInput').val(emp.ename);
-                    $('#ephoneInput').val(emp.ephone);
-                    $('#phoneInput').val(emp.phone);
-                    $('#deptInput').val(emp.dept.deptno);
-                    $('#jobInput').val(emp.job.jobno);
-                    $('#estateInput').val(emp.estate);
-                    console.log("사원정보 자동입력 완료", emp);
-                } else {
-                    alert('해당 사원번호에 대한 정보가 없습니다.');
-                }
-            },
-            error: function () {
-                alert('사원 정보를 불러오지 못했습니다.');
-            }
-        });
-    });
-
-    // 추가 버튼 클릭 시
-    $('#addUserBtn').on('click', function () {
+    // 🔹 추가 버튼 클릭 시
+    $('#addUserBtn').on('click', function() {
         if (!confirm('사원을 추가하시겠습니까?')) return;
 
         const userData = {
@@ -170,22 +145,22 @@ $(document).ready(function () {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(userData),
-            success: function (response) {
+            success: function(response) {
                 alert('사원이 성공적으로 추가되었습니다.');
 
+                // 모달 닫기 및 배경 제거
                 $('#employeeAddModal').modal('hide');
-
-                // 검은 배경 제거 (Bootstrap backdrop)
                 $('.modal-backdrop').remove();
-                $('body').removeClass('modal-open');
-                $('body').css('overflow', 'auto');
+                $('body').removeClass('modal-open').css('overflow', 'auto');
 
+                // 목록으로 이동
                 window.location.href = '${pageContext.request.contextPath}/emp/list';
             },
-            error: function () {
+            error: function() {
                 alert('사원 추가 중 오류가 발생했습니다.');
             }
         });
     });
+
 });
 </script>

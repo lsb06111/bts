@@ -14,7 +14,7 @@ public interface UserDAO {
 	public EmpDTO findEmpByEmail(@Param("email") String email);
 
 	// empno로 유저 조회
-	public UserDTO findUserByEmpno(@Param("empno") int empno);
+	public UserDTO findUserByEmpno(@Param("empno") Long empno);
 
 	// 신규 유저 등록
 	public void insertUser(UserDTO user);
@@ -23,5 +23,13 @@ public interface UserDAO {
 	public List<UserDTO> findAllUsers();
 	
 	public List<UserDTO> findUsersByDept(@Param("deptno") int deptno);
-
+	
+	// 사원조회 페이지네이션 10개씩 조회
+	public List<UserDTO> findPageUsers(Integer page);
+	
+	// 사원조회 페이지네이션 카운팅
+	public int countAllUsers();
+	
+	// ename으로 사원 조회
+	public List<UserDTO> findUserByEname(@Param("ename") String ename);
 }

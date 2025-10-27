@@ -1,14 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
-</head>
 <style>
 .dropdown-menu {
 	min-width: 110px !important;
@@ -19,8 +13,9 @@
 	left: 0 !important;
 }
 </style>
-<body
-	style="background-color: #f7f7fb; font-family: 'Noto Sans KR', sans-serif;">
+</head>
+<body data-ctx="<%=request.getContextPath()%>"
+	style="background-color: #f7f7fb;">
 	<%@ include file="/WEB-INF/views/jspf/header.jspf"%>
 	<!-- 헤더 네비부분 고정 -->
 	<div style="display: flex; min-height: 100vh;">
@@ -35,54 +30,54 @@
 				<div class="d-flex align-items-center gap-2">
 
 					<!-- ✅ 이용자 필터 -->
-					<div class="dropdown" style="position: relative;" data-bs-display="static">
+					<div class="dropdown" style="position: relative;"
+						data-bs-display="static">
 						<button class="btn btn-light dropdown-toggle" type="button"
 							id="userFilterDropdown" data-bs-toggle="dropdown"
 							aria-expanded="false"
 							style="font-size: 13px; border: 1px solid #ddd; border-radius: 8px; color: #555;">
 							이용자: 전체</button>
-						<ul class="dropdown-menu dropdown-menu-start shadow-sm"
+						<ul
+							class="dropdown-menu dropdown-menu-custom dropdown-menu-start shadow-sm"
 							aria-labelledby="userFilterDropdown" style="font-size: 13px;">
 							<li><a class="dropdown-item user-filter-item" href="#"
-								data-value="">전체</a></li>
+								data-value="ALL">전체</a></li>
 							<li><a class="dropdown-item user-filter-item" href="#"
 								data-value="BTS">BTS</a></li>
 						</ul>
 					</div>
 
 					<!-- ✅ 부서(직위) 필터 -->
-					<div class="dropdown" style="position: relative;" data-bs-display="static">
+					<div class="dropdown" style="position: relative;"
+						data-bs-display="static">
 						<button class="btn btn-light dropdown-toggle" type="button"
 							id="deptFilterDropdown" data-bs-toggle="dropdown"
 							aria-expanded="false"
 							style="font-size: 13px; border: 1px solid #ddd; border-radius: 8px; color: #555;">
 							부서: 전체</button>
-						<ul class="dropdown-menu dropdown-menu-start shadow-sm"
+						<ul
+							class="dropdown-menu dropdown-menu-custom dropdown-menu-start shadow-sm"
 							aria-labelledby="deptFilterDropdown" style="font-size: 13px;">
 							<li><a class="dropdown-item dept-filter-item" href="#"
 								data-value="">전체</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="사원">사원</a></li>
+								data-value="개발팀">개발팀</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="대리">대리</a></li>
+								data-value="운영팀">운영팀</a></li>
 							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="팀장">팀장</a></li>
-							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="과장">과장</a></li>
-							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="차장">차장</a></li>
-							<li><a class="dropdown-item dept-filter-item" href="#"
-								data-value="부장">부장</a></li>
+								data-value="인사팀">인사팀</a></li>
 						</ul>
 					</div>
 
 					<div class="input-group" style="width: 240px;">
-						<input type="text" class="form-control" placeholder="검색..."
+					<form action="${pageContext.request.contextPath}/emp/list2" method="get" class="input-group" style="width: 240px;">
+						<input type="text" name="ename" value="${ename}" class="form-control" placeholder="사원명 검색..."
 							style="font-size: 13px; border-right: 0; background-color: #fafafa;">
 						<button class="btn btn-outline-light" type="button"
 							style="border-left: 0; border-color: #ddd; background-color: #fff;">
 							<i class="bi bi-search" style="color: #777;"></i>
 						</button>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -105,84 +100,68 @@
 						</tr>
 					</thead>
 					<tbody style="text-align: center; color: #333;">
-						<tr>
-							<td>20230101</td>
-							<td>1001</td>
-							<td>010-1234-5678</td>
-							<td>이동명</td>
-							<td>공공사업1 Div</td>
-							<td>과장</td>
-							<td><span class="badge rounded-pill bg-success"
-								style="padding: 6px 10px; font-weight: 500;">재직중</span></td>
-						</tr>
-						<tr>
-							<td>20230102</td>
-							<td>1002</td>
-							<td>010-2345-6789</td>
-							<td>이하빈</td>
-							<td>공공사업1 Div</td>
-							<td>사원</td>
-							<td><span class="badge rounded-pill bg-success"
-								style="padding: 6px 10px; font-weight: 500;">재직중</span></td>
-						</tr>
-						<tr>
-							<td>20230109</td>
-							<td>1010</td>
-							<td>010-9072-3456</td>
-							<td>오시현</td>
-							<td>전력사업2 Div</td>
-							<td>차장</td>
-							<td><span class="badge rounded-pill bg-danger"
-								style="padding: 6px 10px; font-weight: 500;">퇴사</span></td>
-						</tr>
-						<tr>
-							<td>20230114</td>
-							<td>1014</td>
-							<td>010-4455-6677</td>
-							<td>송현준</td>
-							<td>운영팀2</td>
-							<td>대리</td>
-							<td><span class="badge rounded-pill bg-success"
-								style="padding: 6px 10px; font-weight: 500;">재직중</span></td>
-						</tr>
-						<tr>
-							<td>20230115</td>
-							<td>1015</td>
-							<td>010-5566-7788</td>
-							<td>문태준</td>
-							<td>운영팀2</td>
-							<td>부장</td>
-							<td><span class="badge rounded-pill bg-success"
-								style="padding: 6px 10px; font-weight: 500;">재직중</span></td>
-						</tr>
+						<c:forEach var="emp" items="${users}">
+							<tr>
+								<td>${emp.empno}</td>
+								<td>${emp.ephone}</td>
+								<td>${emp.phone}</td>
+								<td>${emp.ename}</td>
+								<td>${emp.dept.dname}</td>
+								<td>${emp.job.jname}</td>
+								<td><span
+									class="badge rounded-pill ${emp.estate=='재직중'?'bg-success':'bg-danger'}"
+									style="padding: 6px 10px; font-weight: 500;">${emp.estate}</span></td>
+							</tr>
+						</c:forEach>
 					</tbody>
 				</table>
-
-				<!-- 페이지네이션 -->
-				<nav
-					style="display: flex; justify-content: center; margin-top: 25px;">
-					<ul class="pagination pagination-sm" style="margin: 0;">
-						<li class="page-item disabled"><a class="page-link" href="#"
-							style="border: none; color: #aaa;">&lt;</a></li>
-						<li class="page-item active"><a class="page-link" href="#"
-							style="background-color: #4f46e5; border: none;">1</a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							style="color: #555; border: none;">2</a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							style="color: #555; border: none;">3</a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							style="color: #555; border: none;">&gt;</a></li>
-					</ul>
-				</nav>
 			</div>
 
+			<!-- 페이지네이션 -->
+			<nav aria-label="Page navigation" class="mt-3">
+				<ul class="pagination pagination-sm justify-content-center mb-0">
+					<!-- 이전버튼 -->
+					<c:choose>
+						<c:when test="${page > 1}">
+							<li class="page-item"><a class="page-link"
+								href="?page=${page-1}">&lt;</a></li>
+						</c:when>
+						<c:otherwise>
+							<li class="page-item disabled"><a class="page-link" href="#"
+								tabindex="-1" aria-disabled="true">&lt;</a></li>
+						</c:otherwise>
+					</c:choose>
+
+					<!-- 페이지 번호 -->
+					<c:forEach var="i" begin="1" end="${totalPage}">
+						<li class="page-item ${i == page ? 'active' : ''}"><a
+							class="page-link" href="?page=${i}">${i}</a></li>
+					</c:forEach>
+
+					<!-- 다음버튼 -->
+					<c:choose>
+						<c:when test="${page < totalPage}">
+							<li class="page-item"><a class="page-link"
+								href="?page=${page+1}">&gt;</a></li>
+						</c:when>
+						<c:otherwise>
+							<li class="page-item disabled"><a class="page-link" href="#"
+								tabindex="-1" aria-disabled="true">&gt;</a></li>
+						</c:otherwise>
+					</c:choose>
+				</ul>
+			</nav>
+
+			<p>총 데이터 수: ${offset}</p>
 			<!-- 하단 버튼 -->
 			<div
 				style="display: flex; justify-content: flex-end; margin-top: 25px;">
-				<button type="button" class="btn"
-					style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
-					data-bs-toggle="modal" data-bs-target="#employeeAddModal">
-					사원 추가</button>
+				<c:if test="${loginUser.dept.deptno == 3}">
+					<button type="button" class="btn"
+						style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
+						data-bs-toggle="modal" data-bs-target="#employeeAddModal">
+						사원 추가</button>
+				</c:if>
 			</div>
 		</div>
 	</div>

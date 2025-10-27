@@ -51,10 +51,20 @@ public class JwtInterceptor implements HandlerInterceptor{
         // if token is valid
         if (token != null && jwtService.validateToken(token)) {
             String email = jwtService.getEmailFromToken(token);
-
             UserDTO userDTO = userService.getUserByEmail(email);
-            System.out.println(userDTO);
-            req.setAttribute("loginUser", userDTO);
+            
+         // SecurityContext에 저장
+         /*   UserDetails userDetails = User.withUsername(email)
+                    .password("") // password는 필요 없음
+                    .authorities(Collections.emptyList())
+                    .build();
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            
+            System.out.println("Security 컨텍스트에 저장 체크: " + email);*/
+           req.setAttribute("loginUser", userDTO);
             return true;
         }
         

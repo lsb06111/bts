@@ -28,12 +28,43 @@ public class EmpController {
 	@Autowired
 	private UserService userService;
 	//////////////////////////////////////
-	
+
 	@GetMapping("/list2")
-	public String employee() {
+	public String employee(@RequestParam(value = "page", defaultValue = "1") Integer page,
+			@RequestParam(value = "ename", required = false) String ename, Model model) {
+		if (page < 1) { // page 1보다 작아도 1고정
+			page = 1;
+		}
+		int pageSize = 10;
+		int offset = (page - 1) * pageSize;
+		List<UserDTO> users;
+		int totalCount;
+		int totalPage;
+
+		if (ename != null && !ename.isEmpty()) {
+			users = userService.findUserByEname(ename);
+			totalCount = users.size();
+		} else {
+			users = userService.findPageUsers(offset);
+			totalCount = userService.countAllUsers(); // 전체 데이터 조회
+		}
+		totalPage = (int) Math.ceil((double) totalCount / pageSize); // 전체 페이지 계산
+		if (totalPage == 0)
+			totalPage = 1; // 데이터 없을 때 페이지 1로 고정
+
+		model.addAttribute("users", users);
+		model.addAttribute("page", page);
+		model.addAttribute("offset", offset);
+		model.addAttribute("totalCount", totalCount);
+		model.addAttribute("totalPage", totalPage);
+		model.addAttribute("ename", ename);
+
+		System.out.println("usersList 값 확인: " + users);
+		System.out.println("totalCount: " + totalCount + " totalPage: " + totalPage);
+		System.out.println("ename: " + ename);
 		return "employee/employeeList2";
 	}
-	
+
 	//////////////////////////////////////
 	// 사원 전체 목록 페이지
 	@GetMapping

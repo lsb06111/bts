@@ -23,7 +23,7 @@ public class UserService {
 		return userDAO.findEmpByEmail(email);
 	}
 
-	public UserDTO findUserByEmpno(int empno) {
+	public UserDTO findUserByEmpno(Long empno) {
 		return userDAO.findUserByEmpno(empno);
 	}
 
@@ -49,4 +49,17 @@ public class UserService {
 	public List<UserDTO> findUsersByDept(int deptno) {
 	    return userDAO.findUsersByDept(deptno);
 	}
+	
+	public List<UserDTO> findPageUsers(int offset){
+		return userDAO.findPageUsers(offset);
+	}
+	
+	public int countAllUsers(){
+		return userDAO.countAllUsers();
+	}
+	
+	public List<UserDTO> findUserByEname(String ename){
+		return userDAO.findUserByEname(ename);
+	}
+
 }

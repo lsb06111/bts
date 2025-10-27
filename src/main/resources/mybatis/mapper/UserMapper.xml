@@ -38,7 +38,7 @@
 	</select>
 
 	<!-- 로그인 처리 2.empno로 유저 조회 -->
-	<select id="findUserByEmpno" parameterType="int"
+	<select id="findUserByEmpno" parameterType="Long"
 		resultType="UserDTO">
 		SELECT * FROM users
 		WHERE empno = #{empno}
@@ -51,6 +51,66 @@
 		VALUES (#{password},
 		#{githubUsername}, #{empno})
 	</insert>
+
+	<!-- 사원관리 페이지네이션 전체 데이터 수 -->
+	<select id="countAllUsers" resultType="int">
+		SELECT COUNT(*)
+		FROM users
+		u
+		JOIN emp e ON u.empno = e.empno
+		JOIN dept d ON e.deptno = d.deptno
+		JOIN job j ON e.jobno = j.jobno
+	</select>
+
+	<!-- 사원관리 페이지네이션 10개씩 조회 -->
+	<select id="findPageUsers" resultMap="userMap">
+		SELECT
+		u.id,
+		u.github_username,
+		u.password,
+		e.empno,
+		e.ename,
+		e.ephone,
+		e.email,
+		e.phone,
+		e.estate,
+		d.deptno,
+		d.dname,
+		j.jobno,
+		j.jname
+		FROM users u
+		JOIN emp
+		e ON u.empno = e.empno
+		JOIN dept d ON e.deptno = d.deptno
+		JOIN job j ON
+		e.jobno = j.jobno
+		ORDER BY e.empno
+		OFFSET #{offset} ROWS FETCH NEXT 10
+		ROWS ONLY
+	</select>
+
+	<select id="findUserByEname" resultMap="userMap">
+		select u.id,
+		u.github_username,
+		u.password,
+		e.empno,
+		e.ename,
+		e.ephone,
+		e.email,
+		e.phone,
+		e.estate,
+		d.deptno,
+		d.dname,
+		j.jobno,
+		j.jname
+		FROM users u
+		JOIN emp
+		e ON u.empno = e.empno
+		JOIN dept d ON e.deptno = d.deptno
+		JOIN job j ON
+		e.jobno = j.jobno
+		where e.ename = #{ename}
+	</select>
 
 	<select id="findAllUsers" resultMap="userMap">
 		SELECT
@@ -74,6 +134,7 @@
 		JOIN job j ON
 		e.jobno = j.jobno
 		ORDER BY e.empno
+		offset 0 rows fetch next 10 rows only
 	</select>
 
 	<select id="findUsersByDept" parameterType="int"
@@ -94,7 +155,8 @@
 		j.jname
 		FROM users u
 		JOIN emp e ON u.empno = e.empno
-		JOIN dept d ON e.deptno = d.deptno
+		JOIN dept d ON e.deptno =
+		d.deptno
 		JOIN job j ON e.jobno = j.jobno
 		WHERE e.deptno = #{deptno}
 		ORDER BY e.empno
