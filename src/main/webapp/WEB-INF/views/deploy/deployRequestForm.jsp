@@ -235,6 +235,9 @@
 	/* 전역 : 파일의 patch값을 저장해서 모달까지 넘기기 위해서  */
 	const patchMap = new Map(); 
 	
+	// 파일 중복 추가 확인을 위한 set
+	const addFileSet = new Set();
+	
 	$(document).ready(function(){				
 	/* 커밋목록 선택후, 해당 커밋으로 조회 */
 		$(".list-group").on("click", ".commit-item", function(e){  // 무한스크롤-이벤트위임
@@ -242,6 +245,7 @@
 			$(".file-item").empty();
 			
 			const sha = $(this).data("sha");
+			
 			
 			$.ajax({
 				url: "/bts/deployRequest/commits/sha",
@@ -258,13 +262,25 @@
 						//console.log(fileName);
 						//console.log(fileSha);
 						
-						$(".file-item").append(
-							`<div class="d-flex justify-content-between align-items-center list-group-item">
-					          <span class="text-truncate" style="max-width: 80%;">\${fileName}</span>
-					          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" 
-					          	data-filename="\${fileName}" data-commitsha="\${commitSha}">추가</button>
-					        </div>`
-						);
+						
+						if(!addFileSet.has(fileSha)){
+							$(".file-item").append(
+								`<div class="d-flex justify-content-between align-items-center list-group-item">
+						          <span class="text-truncate" style="max-width: 80%;">\${fileName}</span>
+						          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" 
+						          	data-filename="\${fileName}" data-commitsha="\${commitSha}">추가</button>
+						        </div>`
+							);
+						} else {
+							$(".file-item").append(
+								`<div class="d-flex justify-content-between align-items-center list-group-item">
+						          <span class="text-truncate" style="max-width: 80%;">\${fileName}</span>
+						          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" 
+						          	data-filename="\${fileName}" data-commitsha="\${commitSha}" disabled>추가</button>
+						        </div>`
+							);							
+						}
+						
 					};
 					
 				},
@@ -274,7 +290,6 @@
 			});
 			
 		});
-	
 	
 	
 	
@@ -288,6 +303,10 @@
 			const commitSha = $(this).data("commitsha");
 			const commitShaShort = commitSha.slice(0,7);
 			
+			// 파일 중복 추가 X
+			$(this).prop("disabled", "true");
+			addFileSet.add(fileSha);
+			console.log(addFileSet);
 			
 			$("tbody").append(`
 					<tr>
@@ -317,9 +336,13 @@
  
 /* 제거버튼 눌렀을 때 비교 항목 목록에서 제거  */	
 	$("tbody").on("click", "#removeFileItemBtn", function(e){
-		 e.preventDefault();
+		e.preventDefault();
 		$(this).closest("tr").remove();
 		
+		const fileSha = $(this).data("sha");
+		addFileSet.delete(fileSha);
+//		$(`.file-item-btn#\${fileSha}`).prop("disabled", false);
+		$(`button#\${fileSha}`).prop("disabled", false);
 		reindexSelectedFiles();
 	});
 	
