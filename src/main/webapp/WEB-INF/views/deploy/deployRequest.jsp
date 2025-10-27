@@ -41,7 +41,8 @@
 						<div>
 							<button type="button" class="btn btn-outline-secondary me-2">임시
 								저장</button>
-							<button type="button" class="btn btn-primary">다음</button>
+							<button type="button" class="btn btn-primary">이전</button>
+							<button type="button" class="btn btn-primary">제출</button>
 						</div>
 					</div>
 					<hr>

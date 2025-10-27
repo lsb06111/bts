@@ -26,13 +26,24 @@ public class DeployRequestController {
 	String repoName = "vote-and-voice";
 	String token = "";	// 깃토큰
 
-	@GetMapping("/deployRequest")
+	/*@GetMapping("/deployRequest")
 	public String deployRequest(Model model) {
 		//Github repo의 commitList 가져오기
 		List<CommitDTO> commitList = deployGithubService.getCommitList(ownerName, repoName, token);
 		
 		model.addAttribute("commitList", commitList);
 		return "/deploy/deployRequest";
+	}*/
+	@GetMapping("/deployRequest")
+	@ResponseBody
+	public List<CommitDTO> deployRequest(Model model, @RequestParam String ownerName, @RequestParam String repoName, @RequestParam String token) {
+		//Github repo의 commitList 가져오기
+		System.out.println("여기까지 옸나???");
+		List<CommitDTO> commitList = deployGithubService.getCommitList(ownerName, repoName, token);
+
+		System.out.println(commitList);
+		//model.addAttribute("commitList", commitList);
+		return commitList;
 	}
 	
 	
@@ -63,6 +74,11 @@ public class DeployRequestController {
 		return diffPatch;
 	}
 	
+	
+	
+	
+//
+
 	
 	
 	
