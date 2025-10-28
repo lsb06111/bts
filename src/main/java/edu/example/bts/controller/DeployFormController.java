@@ -2,6 +2,8 @@ package edu.example.bts.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,9 +25,9 @@ public class DeployFormController {
 	
 	
 	@GetMapping("/deployForm")
-	public String deployForm(@RequestAttribute("loginUser") UserDTO user, Model model) {
+	public String deployForm(@RequestAttribute("loginUser") UserDTO user, Model model, HttpSession session) {
 		Long userId = user.getId();
-		// 사용자가 속한 진행중인 프로젝트명 찾기
+		// 사용자가 속한 진행중인 프로젝트 찾기
 		List<DeployFormDevRepoDTO> devRepoByUserIdList = deployFormService.findProjectsByUserId(userId);
 		
 		model.addAttribute("devRepoByUserIdList", devRepoByUserIdList);

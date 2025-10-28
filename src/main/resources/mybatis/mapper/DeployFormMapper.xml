@@ -3,12 +3,11 @@
 <mapper namespace="edu.example.bts.dao.DeployFormDAO">
 
 <select id="findProjectsByUserId" resultType="DeployFormDevRepoDTO" parameterType="Long">
-	select * from dev_repo where prod_repo_id in(
-	select dev_repo_id from project_member where user_id=#{userId}) and dev_repo.current_stage = '진행중'
+	select * from dev_repo where id in(select dev_repo_id from project_member where user_id=5) and current_stage='진행중'
 </select>
 
 
-
+<!-- form 입력 -->
 <insert id="createRequests" parameterType="DeployRequestsDTO" useGeneratedKeys="true" keyProperty="id" keyColumn="ID">
 	insert into requests (title, content, dev_repo_id, user_id) values(#{title}, #{content}, #{devRepoId}, #{userId})
 </insert>
@@ -19,6 +18,11 @@
 	insert into commit_file(sha, file_name, req_id, file_sha) values(#{file.sha}, #{file.fileName}, #{reqId}, #{file.fileSha})
 </insert>
 
+
+<!--  -->
+<select id="findDevRepoById" parameterType="Long" resultType="DeployFormDevRepoDTO">
+	select * from dev_repo where id=#{repoId}
+</select>
 
 
 

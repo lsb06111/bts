@@ -189,14 +189,16 @@
 			$("#nextBtn").attr("onclick", "submmitDeployForm()");
 			
 			$("#commit-list-group").empty();
-			// 레포지토리커밋목록 가져오기 
+			
+			
+			// 레포지토리커밋목록 가져오기
+			const repoId = $("#rquestTBdevRepoId").val();
+			console.log(repoId);
 			$.ajax({
 				url:"/bts/deployRequest",
 				method: "GET",
 				data: {
-					ownerName: "rwanda95do",
-					repoName: "vote-and-voice",
-					token: "",
+					repoId: repoId
 				},
 				dataType: "json", 
 				success: function(commitList){

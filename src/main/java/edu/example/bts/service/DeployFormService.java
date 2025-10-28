@@ -20,7 +20,7 @@ public class DeployFormService {
 	DeployFormDAO deployFormDAO;
 	
 	
-	// 사용자가 속한 진행중인 프로젝트명 찾기
+	// 사용자가 속한 진행중인 프로젝트 찾기 (진행중)
 	public List<DeployFormDevRepoDTO> findProjectsByUserId(Long userId) {
 		List<DeployFormDevRepoDTO> devRepoByUserIdList = deployFormDAO.findProjectsByUserId(userId);
 		
@@ -62,6 +62,13 @@ public class DeployFormService {
 		
 		
 		//boolean createCommitFile = deployFormDAO.createCommitFile(); 
+	}
+
+	
+	
+	// devRepo 정보 가져오기 
+	public DeployFormDevRepoDTO findDevRepoById(Long repoId) {
+		return deployFormDAO.findDevRepoById(repoId);
 	}
 
 }

@@ -21,6 +21,11 @@ public interface DeployFormDAO {
 	public boolean createRequests(DeployRequestsDTO deployRequestsDTO);
 	boolean createApprovalHistory(@Param("reqId") Long id, @Param("statusId") int statusId);
 	boolean createCommitFile(@Param("file")FileDTO file,@Param("reqId") Long id);
+
+
+
+
+	DeployFormDevRepoDTO findDevRepoById(Long repoId);
 	
 
 
