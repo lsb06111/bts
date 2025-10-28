@@ -20,6 +20,54 @@
 .modal-almost-fullscreen .modal-body {
 	overflow-y: auto;
 }
+.custom-tooltip .tooltip-inner {
+	background-color: #e4d4fc !important;
+	color: #333333; 
+}
+
+/**/
+.field {
+  position: relative;
+  padding: 20px;
+}
+.has-tooltip:hover + .tooltip.purple,
+.has-tooltip:focus + .tooltip.purple {
+  opacity: 1 !important;
+  transform: translate(-50%, -100%) scale(1) rotate(0deg) !important;
+  pointer-events: inherit !important;
+}
+.tooltip {
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.75) rotate(5deg);
+  transform-origin: bottom center;
+  padding: 10px 30px;
+  border-radius: 5px;
+  background: rgba(165, 147, 224, 0.75); /* purple */
+  text-align: center;
+  color: white;
+  transition: 0.15s ease-in-out;
+  opacity: 0;
+  width: 100%;
+  max-width: 100vw;
+  pointer-events: none;
+  z-index: 5;
+}
+.tooltip:after {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-top: 5px solid rgba(165, 147, 224, 0.75); /* purple */
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 100%);
+}
 </style>
 
 
@@ -265,8 +313,9 @@
 						
 						if(!addFileSet.has(fileSha)){
 							$(".file-item").append(
-								`<div class="d-flex justify-content-between align-items-center list-group-item">
-						          <span class="text-truncate" style="max-width: 80%;">\${fileName}</span>
+								`<div class="d-flex justify-content-between align-items-center list-group-item field">
+						          <span class="text-truncate has-tooltip" style="max-width: 80%;">\${fileName}</span>
+						          <span class="tooltip purple" style="max-width: 80%;">\${fileName}</span>
 						          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" 
 						          	data-filename="\${fileName}" data-commitsha="\${commitSha}">추가</button>
 						        </div>`
@@ -280,7 +329,6 @@
 						        </div>`
 							);							
 						}
-						
 					};
 					
 				},
