@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<div class="modal fade" id="employeeAddModal" tabindex="-1"
+<div class="modal fade" id="employeeAddModal2" tabindex="-1"
 	aria-labelledby="employeeAddModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered modal-lg">
 		<div class="modal-content"
@@ -21,50 +21,63 @@
 
 			<!-- 본문 -->
 			<div class="modal-body" style="padding: 0 24px 24px;">
-				<form>
+				<form id="empForm">
 					<div class="row g-3">
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">ID(email)</label>
-							<input type="email" id="emailInput" class="form-control"
-								placeholder="예: hong@company.com" style="font-size: 14px;">
+							<input name="email" type="email" id="emailInput"
+								class="form-control" placeholder="예: hong@company.com"
+								style="font-size: 14px;">
 						</div>
-						
+
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">이름</label> <input
+								name="ename" type="text" id="nameInput" class="form-control"
+								placeholder="예: 홍길동" style="font-size: 14px;">
+						</div>
+
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">password</label>
+							<input name="password" type="text" id="passwordInput"
+								class="form-control" placeholder="초기 비밀번호: 생년월일"
+								style="font-size: 14px;">
+						</div>
+
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">소속</label><select
-								id="companyInput" class="form-select" style="font-size: 14px;">
+								name="company" id="companyInput" class="form-select"
+								style="font-size: 14px;">
 								<option value="1">OTI</option>
 								<option value="2">EXA</option>
 								<option value="3">ETC</option>
 							</select>
 						</div>
-						
-						<div class="col-md-6">
-							<label class="form-label" style="font-weight: 600;">password</label>
-							<input type="text" id="passwordInput" class="form-control"
-								placeholder="초기 비밀번호: 생년월일" style="font-size: 14px;">
-						</div>
 
 						<div class="col-md-6">
-							<label class="form-label" style="font-weight: 600;">이름</label> <input
-								type="text" id="nameInput" class="form-control"
-								placeholder="예: 홍길동" style="font-size: 14px;">
+							<label class="form-label" style="font-weight: 600;">GitHub
+								ID</label> <input name="githubUsername" type="text" id="githubInput"
+								class="form-control" placeholder="예: xxx123"
+								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">내선번호</label>
-							<input type="text" id="ephoneInput" class="form-control"
-								placeholder="예: 1001" style="font-size: 14px;">
+							<input name="ephone" type="text" id="ephoneInput"
+								class="form-control" placeholder="예: 1001"
+								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">휴대전화</label>
-							<input type="text" id="phoneInput" class="form-control"
-								placeholder="예: 010-1234-5678" style="font-size: 14px;">
+							<input name="phone" type="text" id="phoneInput"
+								class="form-control" placeholder="예: 010-1234-5678"
+								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">부서</label> <select
-								id="deptInput" class="form-select" style="font-size: 14px;">
+								name="deptno" id="deptInput" class="form-select"
+								style="font-size: 14px;">
 								<option value="1">개발팀</option>
 								<option value="2">운영팀</option>
 								<option value="3">인사팀</option>
@@ -73,7 +86,8 @@
 
 						<div class="col-md-3">
 							<label class="form-label" style="font-weight: 600;">직위</label> <select
-								id="jobInput" class="form-select" style="font-size: 14px;">
+								name="jobno" id="jobInput" class="form-select"
+								style="font-size: 14px;">
 								<option value="1">사원</option>
 								<option value="2">주임</option>
 								<option value="3">대리</option>
@@ -85,7 +99,8 @@
 
 						<div class="col-md-3">
 							<label class="form-label" style="font-weight: 600;">상태</label> <select
-								id="estateInput" class="form-select" style="font-size: 14px;">
+								name="estate" id="estateInput" class="form-select"
+								style="font-size: 14px;">
 								<option value="재직중">재직중</option>
 								<option value="휴직">출산휴가</option>
 								<option value="퇴직">육아휴직</option>
@@ -114,53 +129,47 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
+	$(document).ready(
+			function() {
+				// 🔹 추가 버튼 클릭 시
+				$('#addUserBtn').on(
+						'click',
+						function() {
+							if (!confirm('사원을 추가하시겠습니까?'))
+								return;
 
-    // 🔹 Enter 키 입력 시 blur 강제 발생
-    $('#empnoInput').on('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            $(this).blur();
-        }
-    });
+							const userData = {
+								email : $('#emailInput').val().trim(),
+								password : $('#passwordInput').val().trim()
+							};
 
-    // 🔹 추가 버튼 클릭 시
-    $('#addUserBtn').on('click', function() {
-        if (!confirm('사원을 추가하시겠습니까?')) return;
+							// 필수값 검증
+							if (!userData.email || !userData.password) {
+								alert('이메일, 패스워드는 필수 입력입니다.');
+								return;
+							}
 
-        const userData = {
-            empno: $('#empnoInput').val().trim(),
-            email: $('#emailInput').val().trim(),
-            password: $('#passwordInput').val().trim()
-        };
+							$.ajax({
+								url : '${pageContext.request.contextPath}/user/register',
+								type : 'POST',
+								data : $("#empForm").serialize(), // form 내용 모두 input 전송
+								success : function(response) {
+									alert('사원이 성공적으로 추가되었습니다.');
 
-        // 필수값 검증
-        if (!userData.empno || !userData.email || !userData.password) {
-            alert('사원번호, 이메일, 패스워드는 필수 입력입니다.');
-            return;
-        }
+									// 모달 닫기 및 배경 제거
+									$('#employeeAddModal').modal('hide');
+									$('.modal-backdrop').remove();
+									$('body').removeClass('modal-open').css(
+											'overflow', 'auto');
 
-        $.ajax({
-            url: '${pageContext.request.contextPath}/user/add',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(userData),
-            success: function(response) {
-                alert('사원이 성공적으로 추가되었습니다.');
+									// 목록으로 이동
+									window.location.href = '${pageContext.request.contextPath}/emp/list2';
+								},
+								error : function() {
+									alert('사원 추가 중 오류가 발생했습니다.');
+								}
+							});
+						});
 
-                // 모달 닫기 및 배경 제거
-                $('#employeeAddModal').modal('hide');
-                $('.modal-backdrop').remove();
-                $('body').removeClass('modal-open').css('overflow', 'auto');
-
-                // 목록으로 이동
-                window.location.href = '${pageContext.request.contextPath}/emp/list';
-            },
-            error: function() {
-                alert('사원 추가 중 오류가 발생했습니다.');
-            }
-        });
-    });
-
-});
+			});
 </script>

@@ -159,7 +159,7 @@
 				<c:if test="${loginUser.dept.deptno == 3}">
 					<button type="button" class="btn"
 						style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
-						data-bs-toggle="modal" data-bs-target="#employeeAddModal">
+						data-bs-toggle="modal" data-bs-target="#employeeAddModal2">
 						사원 추가</button>
 				</c:if>
 			</div>

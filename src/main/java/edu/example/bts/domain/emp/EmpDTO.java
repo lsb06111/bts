@@ -1,7 +1,5 @@
 package edu.example.bts.domain.emp;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-
 import edu.example.bts.domain.main.DeptDTO;
 import edu.example.bts.domain.main.JobDTO;
 import lombok.AllArgsConstructor;
@@ -10,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Getter
 @Setter
 @NoArgsConstructor

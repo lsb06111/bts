@@ -92,16 +92,39 @@
 		WHERE e.empno = #{empno}
 	</select>
 
+	<!-- <insert id="insertEmp" parameterType="EmpDTO">
+		Insert into emp(ename,
+		ephone, email, phone, estate, deptno, jobno, birthdate, company)
+		values(#{ename},#{ephone},#{email},#{phone},#{estate},#{deptno},#{jobno},#{birthdate},#{company})
+	</insert> -->
+
+	<insert id="insertEmp" parameterType="EmpDTO"
+		useGeneratedKeys="true" keyProperty="empno">
+		INSERT INTO emp (
+		ename, ephone, email, phone, estate, deptno, jobno
+		) VALUES (
+		#{ename}, #{ephone}, #{email}, #{phone}, #{estate}, #{deptno}, #{jobno}
+		)
+	</insert>
+
+	<select id="selectLastEmpno" resultType="Long">
+		SELECT empno FROM emp
+		WHERE ROWID = (
+		SELECT MAX(ROWID) FROM emp
+		)
+	</select>
+
 	<!-- ✅ 사원 정보 수정 -->
-	<update id="updateEmp"
-		parameterType="EmpDTO">
+	<update id="updateEmp" parameterType="EmpDTO">
 		UPDATE emp
 		SET
-		email = #{email},
+		email =
+		#{email},
 		ename = #{ename},
 		ephone = #{ephone},
 		phone = #{phone},
-		estate = #{estate},
+		estate =
+		#{estate},
 		deptno = #{deptno},
 		jobno = #{jobno}
 		WHERE empno = #{empno}

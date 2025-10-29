@@ -21,47 +21,63 @@
 
 			<!-- 본문 -->
 			<div class="modal-body" style="padding: 0 24px 24px;">
-				<form>
+				<form id="empForm">
 					<div class="row g-3">
 						<div class="col-md-6">
-							<label class="form-label" style="font-weight: 600;">사원번호</label>
-							<input type="text" id="editEmpno" class="form-control"
-								placeholder="예: 2023001" style="font-size: 14px;">
-						</div>
-
-						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">ID(email)</label>
-							<input type="email" id="editEmail" class="form-control"
-								placeholder="예: hong@company.com" style="font-size: 14px;">
-						</div>
-
-						<div class="col-md-6">
-							<label class="form-label" style="font-weight: 600;">password</label>
-							<input type="text" id="editPassword" class="form-control"
-								placeholder="초기 비밀번호: 생년월일" style="font-size: 14px;">
+							<input name="email" type="email" id="emailInput"
+								class="form-control" placeholder="예: hong@company.com"
+								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">이름</label> <input
-								type="text" id="editEname" class="form-control"
+								name="ename" type="text" id="nameInput" class="form-control"
 								placeholder="예: 홍길동" style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">password</label>
+							<input name="password" type="text" id="passwordInput"
+								class="form-control" placeholder="초기 비밀번호: 생년월일"
+								style="font-size: 14px;">
+						</div>
+
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">소속</label><select
+								name="company" id="companyInput" class="form-select"
+								style="font-size: 14px;">
+								<option value="1">OTI</option>
+								<option value="2">EXA</option>
+								<option value="3">ETC</option>
+							</select>
+						</div>
+
+						<div class="col-md-6">
+							<label class="form-label" style="font-weight: 600;">GitHub
+								ID</label> <input name="githubUsername" type="text" id="githubInput"
+								class="form-control" placeholder="예: xxx123"
+								style="font-size: 14px;">
+						</div>
+
+						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">내선번호</label>
-							<input type="text" id="editEphone" class="form-control"
-								placeholder="예: 1001" style="font-size: 14px;">
+							<input name="ephone" type="text" id="ephoneInput"
+								class="form-control" placeholder="예: 1001"
+								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">휴대전화</label>
-							<input type="text" id="editPhone" class="form-control"
-								placeholder="예: 010-1234-5678" style="font-size: 14px;">
+							<input name="phone" type="text" id="phoneInput"
+								class="form-control" placeholder="예: 010-1234-5678"
+								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">부서</label> <select
-								id="editDept" class="form-select" style="font-size: 14px;">
+								name="deptno" id="deptInput" class="form-select"
+								style="font-size: 14px;">
 								<option value="1">개발팀</option>
 								<option value="2">운영팀</option>
 								<option value="3">인사팀</option>
@@ -70,7 +86,8 @@
 
 						<div class="col-md-3">
 							<label class="form-label" style="font-weight: 600;">직위</label> <select
-								id="editJob" class="form-select" style="font-size: 14px;">
+								name="jobno" id="jobInput" class="form-select"
+								style="font-size: 14px;">
 								<option value="1">사원</option>
 								<option value="2">주임</option>
 								<option value="3">대리</option>
@@ -82,9 +99,12 @@
 
 						<div class="col-md-3">
 							<label class="form-label" style="font-weight: 600;">상태</label> <select
-								id="editEstate" class="form-select" style="font-size: 14px;">
+								name="estate" id="estateInput" class="form-select"
+								style="font-size: 14px;">
 								<option value="재직중">재직중</option>
-								<option value="휴직">휴직</option>
+								<option value="휴직">출산휴가</option>
+								<option value="퇴직">육아휴직</option>
+								<option value="퇴직">질병휴직</option>
 								<option value="퇴직">퇴직</option>
 							</select>
 						</div>

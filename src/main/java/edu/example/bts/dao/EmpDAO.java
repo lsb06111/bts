@@ -17,4 +17,10 @@ public interface EmpDAO {
 	public List<EmpDTO> findEmpsByDept(@Param("deptno") int deptno);
 	
 	public void updateEmp(EmpDTO emp);
+	
+	// emp 사원 등록
+	public void insertEmp(EmpDTO emp);
+	
+	// 사원 insert시 empno 세팅
+	public Long selectLastEmpno();
 }
