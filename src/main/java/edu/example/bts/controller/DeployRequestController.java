@@ -2,6 +2,7 @@ package edu.example.bts.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -65,7 +66,7 @@ public class DeployRequestController {
 		session.setAttribute("ownerName", ownerName);
 		session.setAttribute("repoName", repoName);
 		session.setAttribute("token", token);
-		session.setAttribute("devRepoDTO", devRepoDTO);
+	
 		
 		//Github repo의 commitList 가져오기
 		List<CommitDTO> commitList = deployGithubService.getCommitList(ownerName, repoName, token);
@@ -96,7 +97,7 @@ public class DeployRequestController {
 		return fileShaList;
 	}
 	
-// 같은 파일 커밋으로 비교하기 : 모달.select.과거SHA
+// 같은 파일 커밋으로 비교하기 (GitHubApi): 모달2.select.과거SHA
 	@GetMapping(value="/deployRequest/commit/compare/basehead", produces="application/json; charset=UTF-8")
 	@ResponseBody
 	public String compareFileWithCommitSha(@RequestParam String fileName, @RequestParam String sha, @RequestParam String compareSha, HttpSession session) {
@@ -108,7 +109,14 @@ public class DeployRequestController {
 	
 	
 	
-//
+// 같은 파일 커밋으로 비교 (java-diff-utils) : 모달3
+	@GetMapping(value="/deployRequest/commit/compare/basehead3", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> compareFileWithCommitSha3(@RequestParam String fileName, @RequestParam String sha, @RequestParam String compareSha, HttpSession session) {
+		Map<String, Object> diffPatch = deployGithubService.compareFileWithCommitSha3((String)session.getAttribute("ownerName"), (String)session.getAttribute("repoName"), (String)session.getAttribute("token"), fileName, sha, compareSha);
+		//System.out.println(diffPatch);
+		return diffPatch;
+	}
 
 	
 	

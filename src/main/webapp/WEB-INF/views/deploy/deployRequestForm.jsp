@@ -5,6 +5,7 @@
 
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/assets/css/compareModal3.css">
 <style>
 .modal-almost-fullscreen {
 	width: calc(100% - 60px); /* 좌우 30px 여백 */
@@ -102,19 +103,7 @@
 											<h5 class="mb-3">커밋목록</h5>
 											<div id="commit-list-group" class="list-group"
 												style="max-height: 300px; overflow-y: auto;">
-												<c:forEach var="commitList" items="${commitList}">
-													<a href="#"
-														class="list-group-item list-group-item-action commit-item"
-														data-sha="${commitList.sha}">
-														<div class="fw-bold">${commitList.commitMessage}</div>
-														<small class="text-muted">${fn:substring(commitList.sha, 0, 7)} ·
-															<c:choose>
-																<c:when test="${!empty commitList.userName}">${commitList.userName}</c:when>
-																<c:otherwise>알 수 없음</c:otherwise>
-															</c:choose> (${commitList.authorName}) · ${commitList.authorDate}
-														</small>
-													</a>
-												</c:forEach>
+												
 											</div>
 										</div>
 
@@ -168,7 +157,7 @@
 
 
 	<%@ include
-		file="/WEB-INF/views/deploy/deployRequestCompareModal2.jspf"%>
+		file="/WEB-INF/views/deploy/deployRequestCompareModal3.jspf"%>  <!-- 수정 2 또는 3 -->
 	
 	<script>
 		function prevDeployForm(){

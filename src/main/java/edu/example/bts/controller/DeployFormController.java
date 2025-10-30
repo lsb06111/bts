@@ -49,7 +49,7 @@ public class DeployFormController {
 	}*/
 	
 	@PostMapping("/deployForm/sumbmitDeployRequestForm")
-	public String sumbmitDeployRequestForm(@RequestAttribute("loginUser") UserDTO user, DeployRequestFormDTO deployRequestFormDTO) {
+	public String sumbmitDeployRequestForm(@RequestAttribute("loginUser") UserDTO user, DeployRequestFormDTO deployRequestFormDTO, HttpSession session) {
 		System.out.println("제출함" + user.getId());
 		System.out.println("제출함 : " + deployRequestFormDTO.toString());
 
@@ -57,6 +57,11 @@ public class DeployFormController {
 		deployRequestFormDTO.setUserId(user.getId());
 		
 		deployFormService.createRequests(deployRequestFormDTO);
+		
+		// git저장한 세션 제거?
+		session.removeAttribute("ownerName");
+		session.removeAttribute("repoName");
+		session.removeAttribute("token");
 		
 		return "redirect:/"; //"redirect:/history?project=&status=&page=1";
 	}
