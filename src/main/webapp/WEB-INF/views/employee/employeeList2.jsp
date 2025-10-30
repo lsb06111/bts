@@ -70,13 +70,15 @@
 					</div>
 
 					<div class="input-group" style="width: 240px;">
-					<form action="${pageContext.request.contextPath}/emp/list2" method="get" class="input-group" style="width: 240px;">
-						<input type="text" name="ename" value="${ename}" class="form-control" placeholder="사원명 검색..."
-							style="font-size: 13px; border-right: 0; background-color: #fafafa;">
-						<button class="btn btn-outline-light" type="button"
-							style="border-left: 0; border-color: #ddd; background-color: #fff;">
-							<i class="bi bi-search" style="color: #777;"></i>
-						</button>
+						<form action="${pageContext.request.contextPath}/emp/list2"
+							method="get" class="input-group" style="width: 240px;">
+							<input type="text" name="ename" value="${ename}"
+								class="form-control" placeholder="사원명 검색..."
+								style="font-size: 13px; border-right: 0; background-color: #fafafa;">
+							<button class="btn btn-outline-light" type="button"
+								style="border-left: 0; border-color: #ddd; background-color: #fff;">
+								<i class="bi bi-search" style="color: #777;"></i>
+							</button>
 						</form>
 					</div>
 				</div>
@@ -101,16 +103,25 @@
 					</thead>
 					<tbody style="text-align: center; color: #333;">
 						<c:forEach var="emp" items="${users}">
-							<tr>
-								<td>${emp.empno}</td>
-								<td>${emp.ephone}</td>
-								<td>${emp.phone}</td>
-								<td>${emp.ename}</td>
-								<td>${emp.dept.dname}</td>
-								<td>${emp.job.jname}</td>
+							<tr class="emp-row" 
+								data-empno="${emp.emp.empno}"
+								data-ename="${emp.emp.ename}" 
+								data-email="${emp.emp.email}"
+								data-phone="${emp.emp.phone}" 
+								data-ephone="${emp.emp.ephone}"
+								data-deptno="${emp.emp.dept.deptno}" 
+								data-jobno="${emp.emp.job.jobno}"
+								data-estate="${emp.emp.estate}" 
+								data-company="${emp.emp.company}">
+								<td>${emp.emp.empno}</td>
+								<td>${emp.emp.ephone}</td>
+								<td>${emp.emp.phone}</td>
+								<td>${emp.emp.ename}</td>
+								<td>${emp.emp.dept.dname}</td>
+								<td>${emp.emp.job.jname}</td>							
 								<td><span
-									class="badge rounded-pill ${emp.estate=='재직중'?'bg-success':'bg-danger'}"
-									style="padding: 6px 10px; font-weight: 500;">${emp.estate}</span></td>
+									class="badge rounded-pill ${emp.emp.estate=='재직중'?'bg-success':'bg-danger'}"
+									style="padding: 6px 10px; font-weight: 500;">${emp.emp.estate}</span></td>
 							</tr>
 						</c:forEach>
 					</tbody>
@@ -167,66 +178,94 @@
 	</div>
 
 	<!-- head.jspf 아래쪽이나 body 끝부분에 추가 -->
-	<script
+	<!-- <script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
 	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script> -->
+	<!-- <script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
 
 
 
 
 	<%@ include file="/WEB-INF/views/jspf/employee/employeeAddModal2.jspf"%>
+	<%@ include file="/WEB-INF/views/jspf/employee/employeeUpdateModal2.jspf"%>
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
 	<script>
-		document
-				.addEventListener(
-						"DOMContentLoaded",
-						function() {
-							// 이용자 필터 클릭 이벤트
-							var userFilterItems = document
-									.querySelectorAll('.user-filter-item');
-							for (var i = 0; i < userFilterItems.length; i++) {
-								userFilterItems[i]
-										.addEventListener(
-												'click',
-												function(e) {
-													e.preventDefault();
-													var value = this
-															.getAttribute('data-value')
-															|| '전체';
-													document
-															.getElementById('userFilterDropdown').innerText = '이용자: '
-															+ (value || '전체');
-													console.log('이용자 필터 선택:',
-															value);
-													// TODO: Ajax 호출 or 테이블 필터링
-												});
-							}
+	$(document).ready(function() {
+		const loginDeptno = "${loginUser.dept.deptno}";
+		console.log("현재 로그인한 부서번호:", loginDeptno);
+		
+		
+		console.log("emp-row clicked:", $(this).data("deptno"));
+		console.log("모달 존재 여부:", $("#employeeUpdateModal2").length);
+		
+		// 사원 목록 클릭 
+		  $(document).on("click", ".emp-row", function() {
+		    const empDeptno = String($(this).data("deptno")); // 문자열로 고정
+		    const loginDeptnoStr = String(loginDeptno)	// 로그인한 사람 부서
+			console.log("로그인 부서: ", loginDeptnoStr, " / 클릭한 사원 부서:", empDeptno)
 
-							// 부서(직위) 필터 클릭 이벤트
-							var deptFilterItems = document
-									.querySelectorAll('.dept-filter-item');
-							for (var i = 0; i < deptFilterItems.length; i++) {
-								deptFilterItems[i]
-										.addEventListener(
-												'click',
-												function(e) {
-													e.preventDefault();
-													var value = this
-															.getAttribute('data-value')
-															|| '전체';
-													document
-															.getElementById('deptFilterDropdown').innerText = '부서: '
-															+ (value || '전체');
-													console.log('부서 필터 선택:',
-															value);
-													// TODO: Ajax 호출 or 테이블 필터링
-												});
-							}
-						});
+		    // 인사팀만 수정 가능
+		    if (loginDeptnoStr !== "3"){
+		    	console.log("인사팀 아님 — 수정 불가");
+		    	return; // 인사팀이 아닌 경우 무시
+		    }
+			console.log("인사팀 접속. 수정 가능")
+		    // 데이터 세팅 
+		    $("#employeeUpdateModal2 #updateEmailInput").val($(this).data("email"));
+		    $("#employeeUpdateModal2 #updateNameInput").val($(this).data("ename"));
+		    $("#employeeUpdateModal2 #updatePhoneInput").val($(this).data("phone"));
+		    $("#employeeUpdateModal2 #updateEphoneInput").val($(this).data("ephone"));
+		    $("#employeeUpdateModal2 #updateDeptInput").val($(this).data("deptno"));
+		    $("#employeeUpdateModal2 #updateJobInput").val($(this).data("jobno"));
+		    $("#employeeUpdateModal2 #updateEstateInput").val($(this).data("estate"));
+		    $("#employeeUpdateModal2 #updateCompanyInput").val($(this).data("company"));
+
+		    if (!$("#employeeUpdateModal2 #updateEmpnoHidden").length) {
+		      $("#employeeUpdateModal2 #empUpdateForm").append(`<input type="hidden" id="updateEmpnoHidden" name="empno">`);
+		    }
+		    $("#employeeUpdateModal2 #updateEmpnoHidden").val($(this).data("empno"));
+
+		    $("#employeeUpdateModal2").modal("show");
+		  });
+
+		  // 수정 버튼 클릭 시
+		  $("#updateEmpBtn").on("click", function() {
+		    const formData = $("#empUpdateForm").serialize();
+		    $.ajax({
+		      url: "${pageContext.request.contextPath}/emp/update",
+		      type: "POST",
+		      data: formData,
+		      /* contentType: "application/json; charset=UTF-8" */
+		      success: function() {
+		        alert("수정이 완료되었습니다.");
+		        location.reload();
+		      },
+		      error: function() {
+		        alert("수정 중 오류가 발생했습니다.");
+		      }
+		    });
+		  });
+
+		  // 이용자 필터 클릭 이벤트
+		  $(".user-filter-item").on("click", function(e) {
+		    e.preventDefault();
+		    const value = $(this).data("value") || "전체";
+		    $("#userFilterDropdown").text("이용자: " + value);
+		    console.log("이용자 필터 선택:", value);
+		  });
+
+		  // 부서(직위) 필터 클릭 이벤트
+		  $(".dept-filter-item").on("click", function(e) {
+		    e.preventDefault();
+		    const value = $(this).data("value") || "전체";
+		    $("#deptFilterDropdown").text("부서: " + value);
+		    console.log("부서 필터 선택:", value);
+		  });
+
+		});
 	</script>
 
 </body>

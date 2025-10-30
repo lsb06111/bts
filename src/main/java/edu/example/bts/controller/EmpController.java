@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,10 +47,30 @@ public class EmpController {
 		} else {
 			users = userService.findPageUsers(offset);
 			totalCount = userService.countAllUsers(); // 전체 데이터 조회
+			
 		}
 		totalPage = (int) Math.ceil((double) totalCount / pageSize); // 전체 페이지 계산
 		if (totalPage == 0)
 			totalPage = 1; // 데이터 없을 때 페이지 1로 고정
+		
+		// ✅ [중요] 디버깅 출력
+	    System.out.println("=== [DEBUG] findPageUsers() 결과 확인 ===");
+	    for (UserDTO u : users) {
+	        System.out.print("User ID: " + u.getId());
+	        if (u.getEmp() != null) {
+	            System.out.print(" | Empno: " + u.getEmp().getEmpno());
+	            System.out.print(" | Ename: " + u.getEmp().getEname());
+	            System.out.print(" | Deptno: ");
+	            if (u.getEmp().getDept() != null)
+	                System.out.print(u.getEmp().getDept().getDeptno());
+	            else
+	                System.out.print("null");
+	        } else {
+	            System.out.print(" | Emp: null");
+	        }
+	        System.out.println();
+	    }
+	    System.out.println("=======================================");
 
 		model.addAttribute("users", users);
 		model.addAttribute("page", page);
@@ -132,7 +152,7 @@ public class EmpController {
 
 	@PostMapping("/update")
 	@ResponseBody
-	public String updateEmployee(@RequestBody EmpDTO emp) {
+	public String updateEmployee(@ModelAttribute EmpDTO emp) {
 		System.out.println("[UPDATE 요청] " + emp);
 		try {
 			empService.updateEmployee(emp);

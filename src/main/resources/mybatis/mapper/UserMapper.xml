@@ -7,6 +7,9 @@
 		<id property="id" column="id" />
 		<result property="githubUsername" column="github_username" />
 		<result property="password" column="password" />
+		
+		<association property="emp" javaType="EmpDTO">
+		<id property="empno" column="empno"/>
 		<result property="ename" column="ename" />
 		<result property="ephone" column="ephone" />
 		<result property="email" column="email" />
@@ -16,16 +19,17 @@
 
 		<!-- ✅ 부서 매핑 -->
 		<association property="dept"
-			javaType="edu.example.bts.domain.main.DeptDTO">
+			javaType="DeptDTO">
 			<id property="deptno" column="deptno" />
 			<result property="dname" column="dname" />
 		</association>
 
 		<!-- ✅ 직위 매핑 -->
 		<association property="job"
-			javaType="edu.example.bts.domain.main.JobDTO">
+			javaType="JobDTO">
 			<id property="jobno" column="jobno" />
 			<result property="jname" column="jname" />
+		</association>
 		</association>
 	</resultMap>
 
@@ -47,9 +51,8 @@
 	<!-- 신규 유저 등록 -->
 	<insert id="insertUser" parameterType="UserDTO">
 		INSERT INTO users
-		(password, github_username, empno)
-		VALUES (#{password},
-		#{githubUsername}, #{empno})
+		(password, empno)
+		VALUES (#{password}, #{empno})
 	</insert>
 
 	<!-- 사원관리 페이지네이션 전체 데이터 수 -->

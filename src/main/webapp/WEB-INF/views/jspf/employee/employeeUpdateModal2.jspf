@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<div class="modal fade" id="employeeUpdateModal" tabindex="-1"
+<div class="modal fade" id="employeeUpdateModal2" tabindex="-1"
 	aria-labelledby="employeeAddModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered modal-lg">
 		<div class="modal-content"
@@ -21,31 +21,31 @@
 
 			<!-- 본문 -->
 			<div class="modal-body" style="padding: 0 24px 24px;">
-				<form id="empForm">
+				<form id="empUpdateForm">
 					<div class="row g-3">
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">ID(email)</label>
-							<input name="email" type="email" id="emailInput"
+							<input name="email" type="email" id="updateEmailInput"
 								class="form-control" placeholder="예: hong@company.com"
 								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">이름</label> <input
-								name="ename" type="text" id="nameInput" class="form-control"
+								name="ename" type="text" id="updateNameInput" class="form-control"
 								placeholder="예: 홍길동" style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">password</label>
-							<input name="password" type="text" id="passwordInput"
+							<input name="password" type="text" id="updatePasswordInput"
 								class="form-control" placeholder="초기 비밀번호: 생년월일"
 								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">소속</label><select
-								name="company" id="companyInput" class="form-select"
+								name="company" id="updateCompanyInput" class="form-select"
 								style="font-size: 14px;">
 								<option value="1">OTI</option>
 								<option value="2">EXA</option>
@@ -54,29 +54,22 @@
 						</div>
 
 						<div class="col-md-6">
-							<label class="form-label" style="font-weight: 600;">GitHub
-								ID</label> <input name="githubUsername" type="text" id="githubInput"
-								class="form-control" placeholder="예: xxx123"
-								style="font-size: 14px;">
-						</div>
-
-						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">내선번호</label>
-							<input name="ephone" type="text" id="ephoneInput"
+							<input name="ephone" type="text" id="updateEphoneInput"
 								class="form-control" placeholder="예: 1001"
 								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">휴대전화</label>
-							<input name="phone" type="text" id="phoneInput"
+							<input name="phone" type="text" id="updatePhoneInput"
 								class="form-control" placeholder="예: 010-1234-5678"
 								style="font-size: 14px;">
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">부서</label> <select
-								name="deptno" id="deptInput" class="form-select"
+								name="deptno" id="updateDeptInput" class="form-select"
 								style="font-size: 14px;">
 								<option value="1">개발팀</option>
 								<option value="2">운영팀</option>
@@ -86,7 +79,7 @@
 
 						<div class="col-md-3">
 							<label class="form-label" style="font-weight: 600;">직위</label> <select
-								name="jobno" id="jobInput" class="form-select"
+								name="jobno" id="updateJobInput" class="form-select"
 								style="font-size: 14px;">
 								<option value="1">사원</option>
 								<option value="2">주임</option>
@@ -99,7 +92,7 @@
 
 						<div class="col-md-3">
 							<label class="form-label" style="font-weight: 600;">상태</label> <select
-								name="estate" id="estateInput" class="form-select"
+								name="estate" id="updateEstateInput" class="form-select"
 								style="font-size: 14px;">
 								<option value="재직중">재직중</option>
 								<option value="휴직">출산휴가</option>
@@ -126,7 +119,3 @@
 		</div>
 	</div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-</script>

@@ -4,7 +4,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,17 +45,17 @@ public class AuthController {
 		UserDTO user = userService.findUserByEmpno(emp.getEmpno());
 		// 사용자 정보 조회
 		if (user == null) {
-            redirectAttributes.addFlashAttribute("errorNotUser", "접근 권한이 없습니다.");
-            return "redirect:/auth/loginForm";
-        }
+			redirectAttributes.addFlashAttribute("errorNotUser", "접근 권한이 없습니다.");
+			return "redirect:/auth/loginForm";
+		}
 		// 비밀번호 검증
 		if (!user.getPassword().equals(password)) {
-            redirectAttributes.addFlashAttribute("errorPassword", "비밀번호가 일치하지 않습니다.");
-            return "redirect:/auth/loginForm";
-        }
-		
+			redirectAttributes.addFlashAttribute("errorPassword", "비밀번호가 일치하지 않습니다.");
+			return "redirect:/auth/loginForm";
+		}
+
 		String role = (emp.getDeptno() == 3) ? "ADMIN" : "USER";
-		
+
 		// JWT 토큰 생성 및 헤더에 추가
 		String token = jwtService.createToken(email, emp.getEmpno(), role);
 
@@ -71,6 +70,7 @@ public class AuthController {
 		response.setHeader("Authorization", "Bearer " + token);
 
 		System.out.println("[JWT] 발급된 토큰: " + token);
+		System.out.println("DEPTNO 체크: " + emp.getDeptno());
 		return "redirect:/";
 	}
 

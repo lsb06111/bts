@@ -1,5 +1,6 @@
 package edu.example.bts.domain.user;
 
+import edu.example.bts.domain.emp.EmpDTO;
 import edu.example.bts.domain.main.DeptDTO;
 import edu.example.bts.domain.main.JobDTO;
 import lombok.AllArgsConstructor;
@@ -26,4 +27,5 @@ public class UserDTO {
 	private JobDTO job;
 	private Long empno;
 	private String company;
+	private EmpDTO emp;
 }
