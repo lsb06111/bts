@@ -248,13 +248,9 @@ public class DeployRequestGithubAPIService {
 				result.put("changeRev", changeLinesRev);
 				result.put("insertIndex", insertLines);
 				result.put("deleteIndex", deleteLines);
-				result.put("changeOri", changeLinesRevOri);
-				
+				result.put("changeOri", changeLinesRevOri);			
 			}
 			
-			
-			
-			//revised.forEach(System.out::println);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -263,6 +259,75 @@ public class DeployRequestGithubAPIService {
 		return result;
 	}
 
+	
+	public Map<String, Object> compareFileWithCommitSha4(String ownerName, String repoName, String token, String fileName,
+			String sha, String compareSha) {
+		
+		Map<String, Object> result = new HashMap<>();
+		System.out.println("4번인가요?");
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = github.getRepository(ownerName+"/"+repoName);
+
+			
+			// 최근커밋(변경후)
+			GHContent headFile = repository.getFileContent(fileName, sha);
+			List<String> revised = Arrays.asList(headFile.getContent().split("\n"));
+
+			
+			// 비교할 커밋(변경전:선택한거)
+			GHContent baseFile = repository.getFileContent(fileName, compareSha);
+			List<String> original = Arrays.asList(baseFile.getContent().split("\n"));
+			
+			
+			// 비교 (문자단위):String  => 보류 
+			Patch<String> patch = DiffUtils.diff(original, revised);   
+			List<AbstractDelta<String>> dt = patch.getDeltas();    // 변경전  파일(original)기준으로 알려줌 
+			
+
+			System.out.println("****확인중입니다 ******");
+			
+			List<Map<String, Object>> delta = new ArrayList<>();
+			for(AbstractDelta<String> d : dt) {
+				Map<String, Object> block = new HashMap<>();
+
+				DeltaType type = d.getType();
+				// 변경전(ori:base)
+				System.out.println("base : " + d.getSource());  
+				int baseStartNum = d.getSource().getPosition();
+				int baseEndNum = d.getSource().last();
+				List<String> baseLines =  d.getSource().getLines();
+				
+				// 변경후(rev:head)
+				System.out.println("head : " + d.getTarget());
+				int headStartNum = d.getTarget().getPosition();
+				int headEndNum = d.getTarget().last();
+				List<String> headLines = d.getTarget().getLines();
+				
+				block.put("type", type);
+				block.put("baseStartNum", baseStartNum);
+				block.put("baseEndNum", baseEndNum);
+				block.put("baseLines", baseLines);
+				block.put("headStartNum", headStartNum);
+				block.put("headEndNum", headEndNum);
+				block.put("headLines", headLines);
+				
+				delta.add(block);
+				System.out.println("delta : " + block);
+			}
+			
+			result.put("delta", delta);
+			result.put("originalCode", original);
+			result.put("revisedCode", revised);
+			
+			System.out.println(delta);
+			System.out.println(result);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
 	
 	
 	

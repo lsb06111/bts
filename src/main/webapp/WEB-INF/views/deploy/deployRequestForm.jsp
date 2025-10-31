@@ -157,7 +157,7 @@
 
 
 	<%@ include
-		file="/WEB-INF/views/deploy/deployRequestCompareModal3.jspf"%>  <!-- 수정 2 또는 3 -->
+		file="/WEB-INF/views/deploy/deployRequestCompareModal4.jspf"%>  <!-- 수정 2 또는 3 -->
 	
 	<script>
 		function prevDeployForm(){

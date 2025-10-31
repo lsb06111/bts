@@ -106,14 +106,20 @@ public class DeployRequestController {
 		return diffPatch;
 	}
 	
-	
-	
-	
-// 같은 파일 커밋으로 비교 (java-diff-utils) : 모달3
+// 같은 파일 커밋으로 비교 (java-diff-utils) : 모달3(줄맞춤 안됨)
 	@GetMapping(value="/deployRequest/commit/compare/basehead3", produces="application/json; charset=UTF-8")
 	@ResponseBody
 	public Map<String, Object> compareFileWithCommitSha3(@RequestParam String fileName, @RequestParam String sha, @RequestParam String compareSha, HttpSession session) {
 		Map<String, Object> diffPatch = deployGithubService.compareFileWithCommitSha3((String)session.getAttribute("ownerName"), (String)session.getAttribute("repoName"), (String)session.getAttribute("token"), fileName, sha, compareSha);
+		//System.out.println(diffPatch);
+		return diffPatch;
+	}
+	
+// 같은 파일 커밋으로 비교 (java-diff-utils) : 모달4
+	@GetMapping(value="/deployRequest/commit/compare/basehead4", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> compareFileWithCommitSha4(@RequestParam String fileName, @RequestParam String sha, @RequestParam String compareSha, HttpSession session) {
+		Map<String, Object> diffPatch = deployGithubService.compareFileWithCommitSha4((String)session.getAttribute("ownerName"), (String)session.getAttribute("repoName"), (String)session.getAttribute("token"), fileName, sha, compareSha);
 		//System.out.println(diffPatch);
 		return diffPatch;
 	}

@@ -1,0 +1,235 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
+	<div class="modal fade" id="deployRequestCompareModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-almost-fullscreen" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalFullTitle">
+						<span class="fw-semibold text-secondary mb-0">Compare</span> 
+					    <span class="text-dark fw-normal fileName"></span>
+				    </h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+
+
+				<div class="modal-body">
+					<div class="container-fluid py-2">
+						<div class="row g-3">
+
+							<!-- Base Column -->
+							<div class="col-md-6">
+								<div class="card border-light shadow-sm">
+									<div class="card-body">
+										<div class="mb-2 d-flex justify-content-between align-items-center">
+											<label for="compareDropdown" class="form-label me-2 mb-0 fw-semibold text-secondary" style="min-width: 50px;">
+												BASE
+											</label>
+											<select id="compareDropdown"
+												class="form-select form-select-sm" onchange="chageCompareSHA()">
+											</select>
+										</div>
+										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
+											<div class="line-numbers" id="right-line-numbers"></div>
+											<div class="code-content mb-0" id="base-code"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Head Column -->
+							<div class="col-md-6">
+								<div class="card border-light shadow-sm">
+									<div class="card-body">
+										<div class="mb-2 d-flex justify-content-between align-items-center">
+											<label for="selectedCommit" class="form-label me-2 mb-0 fw-semibold text-secondary" style="min-width: 50px;">
+												HEAD
+											</label>
+											<input type="text" id="selectedCommit" class="form-control form-control-sm bg-light border text-primary"
+											  value="" readonly>
+										</div>
+
+										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
+											<div class="line-numbers" id="left-line-numbers"></div>
+											<div class="code-content mb-0" id="head-code"></div>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+						<!-- row -->
+					</div>
+					<!-- container-fluid -->
+				</div>
+				<!-- modal-body -->
+			</div>
+		</div>
+	</div>
+	
+	
+
+<script>
+	const compareModal = $("#deployRequestCompareModal");
+	
+	compareModal.on("show.bs.modal", function(event){
+	/* deployRequest 비교 버튼 - 모달 데이터 받아오기 */
+		const button = event.relatedTarget;
+		const fileSha = button.getAttribute('data-sha');
+		const fileName = button.getAttribute('data-filename');
+		const commitSha = button.getAttribute('data-commitsha');
+		
+		//const patch = patchMap.get(fileSha);
+		//console.log("모달의 path입니다" + patch);
+
+		//displayCodeWithLineNumbers(patch, "head-code", "left-line-numbers", "base-code", "right-line-number");
+
+		
+		$(".fileName").text(fileName);
+		$("#selectedCommit").val(commitSha);
+
+		$("#head-code").text("");    // JS : document.getElementById("head-code").textContent = "";
+		$("#left-line-numbers").text("");
+		$("#base-code").text("");
+		$("#right-line-number").text("");
+		
+	/* 같은 파일의 커밋 목록(sha)가져오기 */
+		$.ajax({
+			url: "/bts/deployRequest/commit/queryCommit/fileName",
+			method: "GET",
+			data: {"fileName" : fileName},
+			dataType: "json",
+			success: function(res){
+				console.log(res);
+				 /* for(let queryPathCommitSha of res) {
+					$("#compareDropdown").append("<option>" + queryPathCommitSha + "</option>");
+				}  */
+				$('#compareDropdown option').remove();
+				
+				for(let i=0; i<res.length; i++){
+					if(res[i] == $('#selectedCommit').val()) {continue;}
+					else if(i==1) {$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+					else{$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+				}
+			},
+			error: function(e){
+				alert("같은 파일 목록 못가져옴");
+			}
+		});	
+	});
+	
+/* 스크롤 동시 움직이기  */	
+	$('#head-code').parent().on('scroll', function(){
+		const leftScrollVal = $(this).scrollTop();	
+		$('#base-code').parent().scrollTop(leftScrollVal);
+	});
+	
+	$("#base-code").parent().on('scroll', function(){
+		const rightScrollVal = $(this).scrollTop();
+		$('#head-code').parent().scrollTop(rightScrollVal);
+	});
+
+/* select 변경 : 같은 파일의 다른 SHA */
+ 	function chageCompareSHA(){
+		const compareSha = $("#compareDropdown").val();
+		const fileName = document.querySelector('.fileName').textContent;
+		const sha = document.querySelector('#selectedCommit').value;
+		
+		
+		$.ajax({
+			url:"/bts/deployRequest/commit/compare/basehead4",   // java-diff-utils 사용
+			method: "GET",
+			data: {fileName: fileName,
+				   sha : sha,
+				   compareSha: compareSha},
+		   dataType: "json",
+			success: function(res){
+				console.log(res);
+				$("#head-code").text("");    // JS : document.getElementById("head-code").textContent = "";
+				$("#left-line-numbers").text("");
+				$("#base-code").text("");
+				$("#right-line-number").text("");
+				
+				$('#head-code').parent().scrollTop(0)   // 스크롤 상단으로 고정 
+					
+				let baseCount = 0;
+				let headCount = 0;
+				const baseIndex = res.originalCode.length;
+				const headIndex = res.revisedCode.length;
+				
+				console.log(headIndex);
+				console.log(baseIndex);
+				
+				let baseHtml = "";
+				let headHtml = "";
+				
+					
+				while(baseCount<baseIndex || headCount < headIndex){
+					const baseLine = String(res.originalCode[baseCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
+					const headLine = String(res.revisedCode[headCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
+					
+					//console.log(baseLine);
+					//console.log(headLine);
+					
+					if(baseLine==null || headLine==null){ // 코드라인수 안맞을때 빈줄 추가
+						baseHtml += `<p class="mb-0">\${baseLine}</p>`;	
+						headHtml += `<p class="mb-0">\${headLine}</p>`;						
+					}
+					
+					// 변경된 부분이 있는지 확인
+					let findDelta = res.delta.find(function(d){
+						return Number(d.baseStartNum) === baseCount;
+					});
+					
+					if(findDelta){ // 변경된 부분이 있다면
+						baseHtml += `<p class="mb-0">\${baseCount+1}<span class="changeOriCode">\${baseLine}</span></p>`;	
+						headHtml += `<p class="mb-0">\${headCount+1}<span class="changeRevCode">\${headLine}</span></p>`;		
+						
+						let baseLinesLength = findDelta.baseLines.length;
+						let headLinesLength = findDelta.headLines.length;
+						
+						let i=0;
+						while(i<= Math.abs(baseLinesLength-headLinesLength)){
+							if(baseLinesLength<headLinesLength){
+								console.log("왼쪽");
+								baseHtml += `<p class="mb-0">&nbsp</p>`;	
+							}else if(baseLinesLength>headLinesLength){
+								console.log("오른쪽");
+								headHtml += `<p class="mb-0">&nbsp</p>`;	
+							}
+							i++;	
+						}
+						
+						
+					}else {
+						baseHtml += `<p class="mb-0">\${baseCount+1}<span class="">\${baseLine}</span></p>`;	
+						headHtml += `<p class="mb-0">\${headCount+1}<span class="">\${headLine}</span></p>`;		
+					}
+					
+				
+					
+					
+					
+					baseCount++; headCount++;
+				}
+				
+			
+				$("#head-code").html(headHtml);
+				$("#base-code").html(baseHtml);
+				
+				
+				
+			
+					
+				
+			},
+			error: function(e){
+				alert("파일비교 안됨;;;;")
+			}
+		}); 
+	} 
+
+
+</script>
