@@ -3,7 +3,7 @@
 
 <mapper namespace="edu.example.bts.dao.EmpDAO">
 
-	<!-- ✅ 전체 사원 조회 (부서명, 직위명 포함) -->
+	<!-- 전체 사원 조회 (부서명, 직위명 포함) -->
 	<select id="findAllEmps" resultMap="empMap">
 		SELECT
 		e.empno,
@@ -23,7 +23,7 @@
 		ORDER BY e.empno
 	</select>
 
-	<!-- ✅ 부서 + 직위 매핑 -->
+	<!-- 부서 + 직위 매핑 -->
 	<resultMap id="empMap"
 		type="edu.example.bts.domain.emp.EmpDTO">
 		<id property="empno" column="empno" />
@@ -47,29 +47,13 @@
 		</association>
 	</resultMap>
 
-	<!-- ✅ 부서별 사원 조회 -->
-	<select id="findEmpsByDept" parameterType="int"
-		resultMap="empMap">
-		SELECT
-		e.empno,
-		e.ename,
-		e.ephone,
-		e.email,
-		e.phone,
-		e.estate,
-		d.deptno,
-		d.dname,
-		j.jobno,
-		j.jname
-		FROM emp e
-		JOIN dept d ON e.deptno =
-		d.deptno
-		JOIN job j ON e.jobno = j.jobno
-		WHERE e.deptno = #{deptno}
-		ORDER BY e.empno
-	</select>
+	<!-- 부서별 사원 조회 -->
+	<!-- <select id="findEmpsByDept" parameterType="int" resultMap="empMap"> 
+		SELECT e.empno, e.ename, e.ephone, e.email, e.phone, e.estate, d.deptno, 
+		d.dname, j.jobno, j.jname FROM emp e JOIN dept d ON e.deptno = d.deptno JOIN 
+		job j ON e.jobno = j.jobno WHERE e.deptno = #{deptno} ORDER BY e.empno </select> -->
 
-	<!-- ✅ 사원번호로 사원 조회 -->
+	<!-- 사원번호로 사원 조회 -->
 	<select id="findEmpByEmpno" parameterType="int"
 		resultMap="empMap">
 		SELECT
@@ -92,29 +76,16 @@
 		WHERE e.empno = #{empno}
 	</select>
 
-	<insert id="insertEmp" parameterType="EmpDTO"> Insert into emp(ename, 
-		ephone, email, phone, estate, deptno, jobno, birthdate, company) values(#{ename},#{ephone},#{email},#{phone},#{estate},#{deptno},#{jobno},#{birthdate},#{company}) 
-		</insert>
-
-	<!-- <insert id="insertEmp" parameterType="EmpDTO"
-		useGeneratedKeys="true" keyProperty="empno">
+	<insert id="insertEmp" parameterType="EmpDTO"
+		useGeneratedKeys="true" keyProperty="empno" keyColumn="EMPNO">
 		INSERT INTO emp (
-		ename, ephone,
-		email, phone, estate, deptno, jobno
+		ename, ephone, email, phone, estate, deptno, jobno
 		) VALUES (
-		#{ename}, #{ephone},
-		#{email}, #{phone}, #{estate}, #{deptno}, #{jobno}
+		#{ename}, #{ephone}, #{email}, #{phone}, #{estate}, #{deptno}, #{jobno}
 		)
-	</insert> -->
+	</insert>
 
-	<select id="selectLastEmpno" resultType="Long">
-		SELECT empno FROM emp
-		WHERE ROWID = (
-		SELECT MAX(ROWID) FROM emp
-		)
-	</select>
-
-	<!-- ✅ 사원 정보 수정 -->
+	<!-- 사원 정보 수정 -->
 	<update id="updateEmp" parameterType="EmpDTO">
 		UPDATE emp
 		SET

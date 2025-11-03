@@ -29,8 +29,8 @@ public class UserController {
 	@PostMapping("/register")
 	@ResponseBody
 	public ResponseEntity<String> register(@ModelAttribute EmpDTO empDTO, @ModelAttribute UserDTO userDTO) {
-		System.out.println("empDTO = " + empDTO);
-		System.out.println("userDTO = " + userDTO);
+		System.out.println("UPDATE 값 확인 empDTO = " + empDTO);
+		System.out.println("UPDATE 값 확인 userDTO = " + userDTO);
 		try{
 			userService.registerNewEmployee(userDTO, empDTO);
 			return ResponseEntity.ok("등록 성공");

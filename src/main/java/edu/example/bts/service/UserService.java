@@ -20,7 +20,6 @@ public class UserService {
 	@Autowired
 	private EmpDAO empDAO;
 
-	// 추가
 	@Autowired
 	MainDAO mainDAO;
 
@@ -45,15 +44,6 @@ public class UserService {
 	public UserDTO getUserByEmail(String email) {
 		return mainDAO.getUserByEmail(email);
 	}
-
-	// 전체 유저 목록 조회
-	public List<UserDTO> findAllUsers() {
-		return userDAO.findAllUsers();
-	}
-	
-	public List<UserDTO> findUsersByDept(int deptno) {
-	    return userDAO.findUsersByDept(deptno);
-	}
 	
 	public List<UserDTO> findPageUsers(int offset){
 		return userDAO.findPageUsers(offset);
@@ -67,19 +57,19 @@ public class UserService {
 		return userDAO.findUserByEname(ename);
 	}
 	
-	@Transactional
+	@Transactional // 사원등록 Register
 	public void registerNewEmployee(UserDTO userDTO, EmpDTO empDTO) {
-		// emp에 사원 등록
-		empDAO.insertEmp(empDTO);
-		System.out.println(empDTO.getEmpno());
-		Long empno = empDAO.selectLastEmpno();
-		
-		// users.empno = emp.empno 연결
-		userDTO.setEmpno(empno);
-		
-		/*userDTO.setEmpno(empDTO.getEmpno());*/
-		
-		// users에 사원 등록
-		userDAO.insertUser(userDTO);
+		// 1) EMP insert (IDENTITY 자동 생성)
+	    empDAO.insertEmp(empDTO);
+
+	    // 2) MyBatis가 채워준 사번을 그대로 사용
+	    Long empno = empDTO.getEmpno();
+	    if (empno == null) {
+	        throw new IllegalStateException("생성된 empno가 null입니다.");
+	    }
+
+	    // 3) USERS.empno 연결 후 insert
+	    userDTO.setEmpno(empno);
+	    userDAO.insertUser(userDTO);
 	}
 }
