@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+div#head-code span {
+	margin-left: 20px;	
+}
+div#head-code span.changeRevCode{
+	background-color: rgba(178, 251, 165, 0.2);
+}
+div#head-code span.insertCode{
+	color:red;
+	background-color: rgba(178, 251, 165, 0.2);
+}
+
+
+div#base-code span {
+		margin-left: 20px;	
+}
+div#base-code span.changeOriCode{
+	background-color: rgba(251, 165, 187, 0.2);
+}
+div#base-code span.deleteCode{
+	color:red;
+	background-color: rgba(251, 165, 187, 0.2);
+}

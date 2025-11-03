@@ -82,6 +82,12 @@
 <script>
 // 좌우 구분하기 +(좌) -(우)
 	function displayCodeWithLineNumbers(code, leftCode, leftLineNum, rightCode, rightCodeNum) {		
+		$("#left-code").text("");    // JS : document.getElementById("left-code").textContent = "";
+		$("#left-line-numbers").text("");
+		$("#right-code").text("");
+		$("#right-line-number").text("");
+	
+	
 	  const lines = code.split("\n");
 	  
 	  let lineNum=0;
@@ -96,40 +102,17 @@
 			
 			
 			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(207, 242, 250, 0.4);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
-			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(0, 123, 255, 0.1);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
+			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(207, 242, 250, 0.4);  white-space: pre-wrap; word-break: break-word; '>&emsp;" + item +"</pre>";
 			//document.getElementById(leftCode).textContent +=  "\t" + item +"\n";
 			//document.getElementById(rightCode).textContent += "\t" + item +"\n";
 		  }else if(item.slice(0,1)== '+') {			  
 			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(178, 251, 165, 0.2);  white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;" + item +"</pre>";
 			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;</pre>";
-			/* const pre = document.createElement("pre");
-			pre.className = "mb-0";
-			pre.style.backgroundColor = "rgba(178, 251, 165, 0.2)";
-			pre.style.whiteSpace = "pre-wrap";
-			pre.style.wordBreak = "break-word";
-			
-			// line number + item 합쳐서 안전하게 텍스트로 추가
-			pre.textContent = lineNum + " " + item; // &emsp; 대신 실제 공백(또는 \u2003)
-			
-			document.getElementById(leftCode).appendChild(pre); */
-			
 			//document.getElementById(leftCode).textContent += (lineNum) + "\t" + item +"\n";			  
 			//document.getElementById(rightCode).textContent +=(lineNum) + "\n";
 		  }else if(item.slice(0,1)== '-') {
 			document.getElementById(leftCode).innerHTML +=  "<pre class='mb-0' style='white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;</pre>";
 			document.getElementById(rightCode).innerHTML +=  "<pre class='mb-0' style='background-color: rgba(251, 165, 187, 0.2); white-space: pre-wrap; word-break: break-word;'>"+lineNum+"&emsp;"+item +"</pre>";
-			
-			
-			/* const pre = document.createElement("pre");
-			pre.className = "mb-0";
-			pre.style.backgroundColor = "rgba(251, 165, 187, 0.2)";
-			pre.style.whiteSpace = "pre-wrap";
-			pre.style.wordBreak = "break-word";
-			
-			// line number + item 합쳐서 안전하게 텍스트로 추가
-			pre.textContent = lineNum + " " + item; // &emsp; 대신 실제 공백(또는 \u2003)
-			
-			document.getElementById(rightCode).appendChild(pre); */
 			//document.getElementById(leftCode).textContent += (lineNum) + "\n";			  
 			//document.getElementById(rightCode).textContent += (lineNum) + "\t" + item + "\n";
 		  }else if(item.slice(0,1)==" ") { 
@@ -183,12 +166,6 @@
 					else if(i==1) {$("#compareDropdown").append("<option>" + res[i] + "</option>");}
 					else{$("#compareDropdown").append("<option>" + res[i] + "</option>");}
 				}
-				
-				/*
-				res.forEach((SHA, index)=>{
-					console.log(SHA);
-					console.log(index);
-				}) */
 			},
 			error: function(e){
 				alert("같은 파일 목록 못가져옴");
@@ -200,6 +177,11 @@
 	$('#left-code').parent().on('scroll', function(){
 		const leftScrollVal = $(this).scrollTop();	
 		$('#right-code').parent().scrollTop(leftScrollVal);
+	});
+	
+	$("#right-code").parent().on('scroll', function(){
+		const rightScrollVal = $(this).scrollTop();
+		$('#left-code').parent().scrollTop(rightScrollVal);
 	});
 
 /* select 변경 : 같은 파일의 다른 SHA */

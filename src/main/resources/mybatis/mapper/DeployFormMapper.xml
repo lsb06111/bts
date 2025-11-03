@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.example.bts.dao.DeployFormDAO">
+
+<select id="findProjectsByUserId" resultType="DeployFormDevRepoDTO" parameterType="Long">
+	select * from dev_repo where id in(select dev_repo_id from project_member where user_id=5) and current_stage='진행중'
+</select>
+
+
+<!-- form 입력 -->
+<insert id="createRequests" parameterType="DeployRequestsDTO" useGeneratedKeys="true" keyProperty="id" keyColumn="ID">
+	insert into requests (title, content, dev_repo_id, user_id) values(#{title}, #{content}, #{devRepoId}, #{userId})
+</insert>
+<insert id="createApprovalHistory" parameterType="map">
+	insert into approval_history (req_id, status_id) values(#{reqId}, #{statusId})
+</insert>
+<insert id="createCommitFile" parameterType="map">
+	insert into commit_file(sha, file_name, req_id, file_sha) values(#{file.sha}, #{file.fileName}, #{reqId}, #{file.fileSha})
+</insert>
+
+
+<!--  -->
+<select id="findDevRepoById" parameterType="Long" resultType="DeployFormDevRepoDTO">
+	select * from dev_repo where id=#{repoId}
+</select>
+
+
+
+
+
+
+</mapper>
