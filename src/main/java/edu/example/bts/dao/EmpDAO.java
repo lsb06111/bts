@@ -14,8 +14,6 @@ public interface EmpDAO {
 	
 	public List<EmpDTO> findAllEmps();
 	
-	public List<EmpDTO> findEmpsByDept(@Param("deptno") int deptno);
-	
 	// 사원 정보 수정
 	public void updateEmp(EmpDTO emp);
 	

@@ -19,29 +19,36 @@ public class ProjectController {
 	private ProjectService projectService;
 
 	@GetMapping("/list")
-	public String projectList(@RequestParam(value = "page", defaultValue = "1")Integer page, Model model){
+	public String projectList(@RequestParam(value = "page", defaultValue = "1") Integer page, Model model) {
 		if (page < 1) {
 			page = 1;
 		}
 		int pageSize = 10;
-		int offset = (page-1) * pageSize;
-		List<DevRepoDTO> projectList;
+		int offset = (page - 1) * pageSize;
+
+		System.out.println("=== ProjectController 실행 ===");
+		System.out.println("=== offset: " + offset + " ===");
+
+		List<DevRepoDTO> projectList = projectService.findPageProject(offset);;
+
+		System.out.println("=== Service 결과 === " + projectList); // 여기서 콘솔에 출력되는지 확인
+
 		int totalCount;
 		int totalPage;
-		
+
 		projectList = projectService.findPageProject(offset);
 		totalCount = projectService.countAllProject();
-		totalPage = (int)Math.ceil((double) totalCount / pageSize);
+		totalPage = (int) Math.ceil((double) totalCount / pageSize);
 		if (totalPage == 0) {
 			totalPage = 1;
 		}
-		
+
 		model.addAttribute("projects", projectList);
 		model.addAttribute("page", page);
 		model.addAttribute("offset", offset);
 		model.addAttribute("totalCount", totalCount);
 		model.addAttribute("totalPage", totalPage);
-		
+
 		System.out.println("projects" + projectList);
 		System.out.println("page" + page);
 		System.out.println("offset" + offset);
@@ -49,6 +56,5 @@ public class ProjectController {
 		System.out.println("totalPage" + totalPage);
 		return "/project/projectList";
 	}
-			
-	
+
 }
