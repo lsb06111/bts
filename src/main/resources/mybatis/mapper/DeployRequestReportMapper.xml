@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.example.bts.dao.DeployRequestReportDAO">
+
+
+<select id="selectRequestByReportId" parameterType="Long" resultType="DeployRequestsDTO">
+	SELECT * FROM requests WHERE id=#{id}
+</select>
+
+<select id="selectCommitFilesByReportId" parameterType="Long" resultType="RequestCommitFileDTO">
+	SELECT * FROM commit_file WHERE req_id=#{req_id}
+</select>
+
+<select id="selectDevRepoById" parameterType="Long" resultType="DeployFormDevRepoDTO">
+	SELECT * FROM dev_repo WHERE id=#{id}
+</select>
+
+
+</mapper>

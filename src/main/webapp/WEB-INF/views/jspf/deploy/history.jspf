@@ -100,7 +100,8 @@
               <td style="color:#777;">${request.createdAt}</td>
               <td>
                 <button class="btn btn-sm btn-outline-secondary"
-                        style="border-radius:6px; font-size:0.85rem;">
+                        style="border-radius:6px; font-size:0.85rem;"
+                        onclick="location.href='${pageContext.request.contextPath}/deployRequestView?requestId=${request.id}'">
                   자세히 보기
                 </button>
               </td>
