@@ -35,11 +35,15 @@
     
     <script>
     function updateInfo(userId) {
-  	  const gitHubId = document.querySelector('#github_username').value;
+    	const gitHubDom = document.querySelector('#github_username');
+  	    let gitHubId = '';
+  	    if(gitHubDom != undefined)
+  	    	gitHubId = gitHubDom.value;
   		const password = document.querySelector('#password').value;
   		const passwordCheck = document.querySelector('#password_check').value;
+  		const phoneNumber = document.querySelector('#phone_number').value;
   		
-  		if(gitHubId.length == 0 && password == 0){
+  		if(gitHubId.length == 0 && password.length == 0 && phoneNumber.length == 0){
   			alert('수정할 정보가 없습니다.')
   			return;
   		}
@@ -57,7 +61,8 @@
   		    data: {
   		    	id : userId,
   		    	githubUsername : gitHubId,
-  		    	password : password
+  		    	password : password,
+  		    	phone : phoneNumber
   		    }, 
   		    xhrFields: { withCredentials: true },
   		    success: function() {

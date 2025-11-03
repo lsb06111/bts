@@ -23,6 +23,8 @@ public interface HistoryDAO {
 	
 	public List<DevRepoDTO> getAllProjectsForS(Long userId);
 	
+	public List<QnaDTO> getLatestQnaList();
+	
 	public List<RequestsDTO> getLatestRequestsForS(Long userId);
 	
 	public List<RequestsDTO> getLatestRequestsForT(Long userId);

@@ -47,9 +47,10 @@
       <!-- 내용 입력 -->
       <div class="mb-4">
         <label for="content" class="form-label" style="font-weight:600; color:#333;">내용</label>
-        <textarea id="content" name="content" rows="10" class="form-control"
+        <textarea id="editor" name="content"></textarea>
+        <!--  <textarea id="content" name="content" rows="10" class="form-control"
                   placeholder="공지 내용을 입력하세요"
-                  style="border-radius:8px; padding:12px 14px; border:1px solid #dee2e6; resize:none;"></textarea>
+                  style="border-radius:8px; padding:12px 14px; border:1px solid #dee2e6; resize:none;"></textarea>-->
       </div>
 
       
@@ -70,12 +71,39 @@
   </div><!-- // main box -->
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/ko.js"></script>
 
 <script>
+let editor;
+$(function(){
+	editor = SUNEDITOR.create('editor', {
+		  lang: SUNEDITOR_LANG.ko,    // 한국어 UI
+		  height: '300px',
+		  width:'100%',
+		  minHeight: '200px',
+		  buttonList: [
+		    ['undo', 'redo'],
+		    ['formatBlock'],
+		    ['bold', 'underline', 'italic', 'strike'],
+		    ['fontColor', 'hiliteColor'],
+		    ['align', 'list', 'lineHeight'],
+		    ['link', 'image', 'video'],
+		    ['removeFormat', 'showBlocks', 'codeView', 'fullScreen']
+		  ],
+		  // 이미지 업로드를 직접 처리하려면 다음 옵션 활용 (예시 비활성화) - 컨트롤러 구현 예정 - 11/04
+		  // callBackSave: (contents, isChanged) => { ... }
+		  // imageUploadUrl: '/your/upload/url', // 서버 업로드 엔드포인트
+		});
+
+		
+})
+
+
 function submitNotice(){
 	const form = $('form')[0];
 	const formData = new FormData(form);
-	
+	formData.set('content', editor.getContents());
 	$.ajax({
 	    url: '/bts/notice/write',
 	    type: 'POST',

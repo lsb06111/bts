@@ -210,7 +210,9 @@ public class DeployRequestHistoryService {
 	}
 	
 	public List<QnaDTO> getLatestQnaList(){
-		List<QnaDTO> results = new ArrayList<>();
+		List<QnaDTO> results = historyDAO.getLatestQnaList();
+				
+				/*new ArrayList<>();
 		List<QnaDTO> qnas = historyDAO.getAllQnaList();
 		for(QnaDTO qna : qnas) {
 			if(results.size() == 3)
@@ -218,7 +220,7 @@ public class DeployRequestHistoryService {
 			if(boardDAO.getReplyByQnaId(qna.getId()) == null)
 				results.add(qna);
 				
-		}
+		}*/
 		
 		return results;
 	}

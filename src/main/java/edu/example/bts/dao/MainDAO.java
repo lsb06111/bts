@@ -14,5 +14,7 @@ public interface MainDAO {
 	public boolean updateGithubUsername(UserDTO userDTO);
 	
 	public boolean updatePassword(UserDTO userDTO);
+	
+	public boolean updatePhone(UserDTO userDTO);
 
 }

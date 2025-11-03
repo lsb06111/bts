@@ -3,7 +3,7 @@
 
 <div class="card shadow-sm my-3" style="border:none; border-radius:15px;">
       <div class="card-body">
-        <h5 style="font-weight:600; margin-bottom:15px; color:black;">${loginUser.dept.deptno != 3?'조치가 필요한 배포 신청 목록' : '답변 대기중인 Q&A 목록'}</h5>
+        <h5 style="font-weight:600; margin-bottom:15px; color:black;">${loginUser.dept.deptno != 3?'조치가 필요한 배포 신청 목록' : '최신 질문게시판 목록'}</h5>
         <table class="table align-middle" style="font-size:1rem;">
           <thead>
             <tr style="background-color:#f2f2f7;text-align:center">
@@ -12,7 +12,7 @@
             			<th>신청번호</th><th>프로젝트명</th><th>배포 신청명</th><th>상태</th><th>신청인</th><th>신청날짜</th><th>동작</th>
             		</c:when>
             		<c:otherwise>
-            			<th>번호</th><th>제목</th><th>작성자</th><th>날짜</th><th>상태</th>
+            			<th>번호</th><th>제목</th><th>작성자</th><th>날짜</th>
             		</c:otherwise>
             	</c:choose>
             </tr>
@@ -43,7 +43,6 @@
 		              </td>
 		              <td style="color:#4a5eff; font-weight:600;">${qna.ename}</td>
 		              <td style="color:#777;">${qna.createdAt}</td>
-		              <td style="color:#adb5bd;">답변 대기중</td>
 		            </tr>
 	          </c:forEach>
           	</c:otherwise>

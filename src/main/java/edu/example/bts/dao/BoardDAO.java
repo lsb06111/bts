@@ -25,7 +25,7 @@ public interface BoardDAO {
 	
 	public QnaDTO getQnaById(Long id);
 	
-	public ReplyDTO getReplyByQnaId(Long qnaId);
+	public List<ReplyDTO> getReplyByQnaId(Long qnaId);
 	
 	public boolean writeQna(QnaDTO qnaDTO); 
 	
@@ -35,5 +35,5 @@ public interface BoardDAO {
 	
 	public boolean deleteQna(Long id);
 	
-	public boolean deleteQnaReply(Long qnaId);
+	public boolean deleteQnaReply(Long id);
 }

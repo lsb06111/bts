@@ -1,0 +1,212 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<section class="chat-container" style="
+  display:none;
+  position:fixed;
+  bottom:80px;
+  right:30px;
+  z-index:1050;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  border-radius:15px;
+  overflow:hidden;
+  width:360px;
+  background:white;
+  font-family:'Public Sans',sans-serif;
+">
+  <!--메인: 탭 목록 화면 -->
+  <div id="chat-list-screen" class="card border-0" style="height:480px; display:flex; flex-direction:column;">
+
+    <!-- 헤더 -->
+    <div class="card-header d-flex justify-content-between align-items-center px-3 py-2" 
+         style="background-color:#696cff;color:#fff;border:none;">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bx bx-message-dots" style="font-size:1.4rem;"></i>
+        <h6 class="mb-0 fw-semibold" style="color:white;font-weight:bold;">메시지</h6>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-light border-0" onclick="closeChat()" style="font-size:1.2rem;line-height:1;">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+
+    <!-- 본문 -->
+    <div class="card-body p-0 d-flex flex-column flex-grow-1">
+      <!-- 탭 버튼 -->
+<div class="d-flex border-bottom" style="height:45px;">
+  <button class="flex-fill btn border-0 fw-semibold tab-btn active"
+          onclick="showTab('user', this)"
+          style="background:white;color:#696cff;">사용자 목록</button>
+  <button class="flex-fill btn border-0 fw-semibold tab-btn"
+          onclick="showTab('chat', this)"
+          style="background:white;color:#666;">채팅 목록</button>
+</div>
+
+      <!-- 사용자 목록 -->
+      <div id="user-tab" class="p-3 overflow-auto flex-grow-1">
+        <div class="list-group list-group-flush small">
+          <div class="list-group-item list-group-item-action py-2">
+            <strong>이수빈</strong> <span class="text-muted">/ 개발팀 팀장</span>
+          </div>
+          <div class="list-group-item list-group-item-action py-2">
+            <strong>박지현</strong> <span class="text-muted">/ 기획팀</span>
+          </div>
+          <div class="list-group-item list-group-item-action py-2">
+            <strong>장종현</strong> <span class="text-muted">/ 서버팀 주임</span>
+          </div>
+          <div class="list-group-item list-group-item-action py-2">
+            <strong>정민우</strong> <span class="text-muted">/ QA팀</span>
+          </div>
+        </div>
+      </div>
+
+      <!--채팅목록 -->
+      <div id="chat-tab" class="p-3 overflow-auto flex-grow-1" style="display:none;">
+        <div class="list-group list-group-flush small">
+          <div class="list-group-item list-group-item-action py-2" onclick="openChatRoom('이수빈')">
+            <div class="d-flex justify-content-between">
+              <strong>이수빈</strong>
+              <small class="text-muted">10:25</small>
+            </div>
+            <div class="text-muted text-truncate">마지막 메시지 미리보기...</div>
+          </div>
+          <div class="list-group-item list-group-item-action py-2" onclick="openChatRoom('장종현')">
+            <div class="d-flex justify-content-between">
+              <strong>장종현</strong>
+              <small class="text-muted">09:42</small>
+            </div>
+            <div class="text-muted text-truncate">오늘 배포 일정 확인했습니다!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 개별 채팅방 화면 -->
+  <div id="chat-room-screen" style="display:none;">
+    <div class="card border-0" style="height:480px;">
+      <div class="card-header d-flex justify-content-between align-items-center px-3 py-2"
+           style="background-color:#696cff;color:#fff;border:none;">
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-sm btn-outline-light border-0 me-1" onclick="backToList()">
+            <i class="bx bx-chevron-left" style="font-size:1.3rem;"></i>
+          </button>
+          <h6 id="chatRoomTitle" class="mb-0 fw-semibold" style="color:white;">채팅</h6>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-light border-0" onclick="closeChat()">
+          <i class="bx bx-x"></i>
+        </button>
+      </div>
+
+      <div class="card-body bg-light" id="chatBody" style="
+        overflow-y:auto;
+        height:370px;
+        padding:1rem;
+        background: #F5F5F5 !important;
+      ">
+        <!-- 예시 메시지 -->
+        <div class="d-flex mb-3">
+          <div class="ms-2">
+            <div class="p-2 rounded-3" style="background:#fff;max-width:260px;">
+              <p class="mb-0 small text-muted">장종현</p>
+              <p class="mb-0" style="color:#333;">안녕하세요! 오늘 배포 일정 맞죠?</p>
+            </div>
+            <small class="text-muted ms-1">25/10/24 14:00</small>
+          </div>
+        </div>
+
+        <div class="d-flex mb-3 justify-content-end text-end">
+          <div>
+            <div class="p-2 rounded-3 text-white" style="background:#696cff;max-width:260px;text-align:justify">
+              <p class="mb-0">네, Jenkins 자동 배포로 설정했습니다!</p>
+            </div>
+            <small class="text-muted me-1">25/10/24 14:00</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer d-flex align-items-center px-3 py-2 bg-white">
+        <input type="text" class="form-control border-0 shadow-none" id="chatInput"
+               placeholder="메시지를 입력하세요..."
+               style="font-size:0.9rem;" onkeydown="enterkey()">
+        <button class="btn btn-sm ms-2" type="button"
+                style="background:#696cff;color:white;"
+                onclick="sendMessage()">
+          <i class="bx bx-send"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 토글 버튼 -->
+<button onclick="openChat()" 
+        style="position:fixed;bottom:20px;right:25px;z-index:1100;
+               background:#696cff;color:white;border:none;
+               border-radius:50%;width:55px;height:55px;
+               display:flex;align-items:center;justify-content:center;
+               box-shadow:0 3px 8px rgba(0,0,0,0.25);">
+  <i class="bx bx-message-dots" style="font-size:1.6rem;"></i>
+</button>
+
+<script>
+function openChat(){
+  const chat = document.querySelector('.chat-container');
+  chat.style.display = chat.style.display === 'block' ? 'none' : 'block';
+  document.getElementById('chat-list-screen').style.display = 'flex';
+  document.getElementById('chat-room-screen').style.display = 'none';
+}
+
+function closeChat(){
+  document.querySelector('.chat-container').style.display = 'none';
+}
+
+function showTab(tab, btn) {
+	  document.getElementById('user-tab').style.display = (tab === 'user') ? 'block' : 'none';
+	  document.getElementById('chat-tab').style.display = (tab === 'chat') ? 'block' : 'none';
+	  
+	  
+	  document.querySelectorAll('.tab-btn').forEach(button => {
+	    button.classList.remove('active');
+	    button.style.color = '#666';
+	    button.style.borderBottom = '3px solid transparent';
+	  });
+	  
+	  btn.classList.add('active');
+	  btn.style.color = '#696cff';
+	  btn.style.borderBottom = '3px solid #696cff';
+	}
+
+function openChatRoom(name){
+  document.getElementById('chat-list-screen').style.display = 'none';
+  document.getElementById('chat-room-screen').style.display = 'block';
+  document.getElementById('chatRoomTitle').innerText = name;
+}
+
+function backToList(){
+  document.getElementById('chat-room-screen').style.display = 'none';
+  document.getElementById('chat-list-screen').style.display = 'flex';
+}
+
+function enterkey() {
+  if (window.event.keyCode == 13) sendMessage();
+}
+
+function sendMessage(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const chatBody = document.getElementById('chatBody');
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'd-flex mb-3 justify-content-end text-end';
+  msgDiv.innerHTML = `
+    <div>
+      <div class="p-2 rounded-3 text-white" style="background:#696cff;max-width:260px;">
+        <p class="mb-0">\${text}</p>
+      </div>
+      <small class="text-muted me-1">지금</small>
+    </div>`;
+  chatBody.appendChild(msgDiv);
+  chatBody.scrollTop = chatBody.scrollHeight;
+  input.value = '';
+}
+</script>

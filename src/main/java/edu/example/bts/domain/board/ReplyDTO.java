@@ -14,4 +14,8 @@ public class ReplyDTO {
 	private String createdAt;
 	private boolean delYn;
 	private Long qnaId;
+	private Long userId;
+	private String ename;
+	private String dname;
+	private String jname;
 }
