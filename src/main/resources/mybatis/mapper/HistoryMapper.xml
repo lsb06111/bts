@@ -121,7 +121,7 @@ order by n.id desc
 fetch first 6 rows only
 </select>
 
-<select id="getAllQnaList" resultType="QnaDTO" parameterType="int">
+<select id="getAllQnaList" resultType="QnaDTO">
 select n.id,
        n.title,
        n.content,
@@ -133,6 +133,20 @@ join users u on n.user_id = u.id
 join emp e using(empno)
 where n.del_yn = 0
 order by n.id desc
+</select>
+
+<select id="getLatestQnaList" resultType="QnaDTO">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       e.ename,
+       to_char(n.created_at, 'yy/mm/dd') as created_at
+from qna n
+join users u on n.user_id = u.id
+join emp e using(empno)
+where n.del_yn = 0
+order by n.id desc fetch first 3 rows only
 </select>
 
 <select id="getRequestsCountByProjects" resultType="int" parameterType="long">

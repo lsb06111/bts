@@ -57,7 +57,7 @@ offset #{page} * 10 rows fetch next 10 rows only
 </select>
 
 <select id="getReplyByQnaId" resultType="ReplyDTO">
-	select id, content, to_char(created_at, 'yy/mm/dd') created_at, del_yn, qna_id from reply where qna_id = #{qnaId} and del_yn = 0
+	select r.id, r.content, to_char(r.created_at, 'yy/mm/dd') created_at, r.del_yn, r.qna_id, r.user_id, e.ename, d.dname, j.jname from reply r join users u on u.id = r.user_id join emp e using(empno) join dept d using(deptno) join job j using(jobno) where qna_id = #{qnaId} and del_yn = 0
 </select>
 
 <insert id="writeQna" parameterType="QnaDTO">
@@ -65,7 +65,7 @@ offset #{page} * 10 rows fetch next 10 rows only
 </insert>
 
 <insert id="writeReply" parameterType="ReplyDTO">
-	insert into reply (content, qna_id) values(#{content}, #{qnaId})
+	insert into reply (content, qna_id, user_id) values(#{content}, #{qnaId}, #{userId})
 </insert>
 
 <update id="deleteNotice" parameterType="long">
@@ -77,7 +77,7 @@ offset #{page} * 10 rows fetch next 10 rows only
 </update>
 
 <update id="deleteQnaReply" parameterType="long">
-	update reply set del_yn = 1 where qna_id = #{qnaId}
+	update reply set del_yn = 1 where id = #{id}
 </update>
 
 

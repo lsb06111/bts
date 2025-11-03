@@ -43,11 +43,14 @@ public class MainService {
 	public boolean updateInfo(UserDTO userDTO) {
 		String githubUsername = userDTO.getGithubUsername();
 		String password = userDTO.getPassword();
+		String phone = userDTO.getPhone();
 		Long userId = userDTO.getId();
 		
 		if(!githubUsername.isEmpty() && !mainDAO.updateGithubUsername(userDTO))
 			return false;
 		if(!password.isEmpty() && !mainDAO.updatePassword(userDTO))
+			return false;
+		if(!phone.isEmpty() && !mainDAO.updatePhone(userDTO))
 			return false;
 		
 		return true;

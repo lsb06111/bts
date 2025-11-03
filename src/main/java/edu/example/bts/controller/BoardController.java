@@ -77,7 +77,7 @@ public class BoardController {
 	public String goQnaView(@RequestParam("id") long id, Model model) {
 		
 		model.addAttribute("qna", boardService.getQnaById(id));
-		model.addAttribute("reply", boardService.getReplyByQnaId(id));
+		model.addAttribute("replyList", boardService.getReplyByQnaId(id));
 		return "board/qnaView";
 	}
 	
