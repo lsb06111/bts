@@ -50,10 +50,10 @@ public class EmpController {
 			
 		}
 		totalPage = (int) Math.ceil((double) totalCount / pageSize); // 전체 페이지 계산
-		if (totalPage == 0)
+		if (totalPage == 0) {
 			totalPage = 1; // 데이터 없을 때 페이지 1로 고정
-		
-		// ✅ [중요] 디버깅 출력
+		}
+		// 디버깅
 	    System.out.println("=== [DEBUG] findPageUsers() 결과 확인 ===");
 	    for (UserDTO u : users) {
 	        System.out.print("User ID: " + u.getId());
@@ -104,7 +104,7 @@ public class EmpController {
 		return emp;
 	}
 
-	// ✅ AJAX: 드롭다운 선택에 따라 데이터 조회
+	// AJAX: 드롭다운 선택에 따라 데이터 조회
 	@GetMapping("/filter")
 	@ResponseBody
 	public Object filterEmployees(@RequestParam(required = false, defaultValue = "ALL") String type) {

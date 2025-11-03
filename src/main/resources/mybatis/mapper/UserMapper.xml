@@ -58,8 +58,7 @@
 	<!-- 사원관리 페이지네이션 전체 데이터 수 -->
 	<select id="countAllUsers" resultType="int">
 		SELECT COUNT(*)
-		FROM users
-		u
+		FROM users u
 		JOIN emp e ON u.empno = e.empno
 		JOIN dept d ON e.deptno = d.deptno
 		JOIN job j ON e.jobno = j.jobno
