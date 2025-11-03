@@ -16,16 +16,15 @@
     <!-- 헤더 -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
-        <h3 style="font-weight:700; color:#222;">배포 신청 내역</h3>
-        <p style="color:#777; font-size:0.9rem; margin:0;">최근 배포 요청과 처리 상태를 확인하세요.</p>
+        <h3 style="font-weight:700; color:#222;">지금 빌드</h3>
+        <p style="color:#777; font-size:0.9rem; margin:0;">최종 승인한 신청의 배포를 진행하세요.</p>
       </div>
-      <c:if test="${loginUser.dept.deptno == 1 && loginUser.job.jobno == 2 }">
+      
       <button class="btn"
-              onclick="location.href='/bts/deployForm'"
+              onclick="buildSelected()"
               style="background-color:#4a5eff; border:none; border-radius:8px; font-weight:500; color:#fff; padding:8px 20px;">
-        <i class="bi bi-plus-lg me-1"></i>신청 만들기
+        <i class="bx bx-play me-1"></i>빌드 하기
       </button>
-      </c:if>
     </div>
 
     <!-- 구분선 -->
@@ -45,17 +44,7 @@
           </c:forEach>
         </select>
 
-        <select class="form-select form-select-sm selection-status"
-                style="width:auto; border-radius:8px; height:38px;"
-                onchange="filterSelection()">
-          <option value="">상태</option>
-          <c:forEach var="status" items="${statusList}">
-            <option value="${status.id==1? '대기중' : status.description}"
-            <c:if test="${param.status == (status.id == 1 ? '대기중' : status.description)}">selected</c:if>>
-              ${status.id==1? '대기중' : status.description}
-            </option>
-          </c:forEach>
-        </select>
+
       </div>
 
       <div style="position:relative; width:220px;">
@@ -71,10 +60,10 @@
       <table class="table align-middle text-center mb-0" style="font-size:0.95rem;">
         <thead style="background-color:#f8f9fc;">
           <tr style="color:#555; font-weight:600;">
+            <th><input type="checkbox" id="selectAll" /></th>
             <th>신청번호</th>
             <th>프로젝트명</th>
             <th>배포 신청명</th>
-            <th>상태</th>
             <th>신청인</th>
             <th>신청날짜</th>
             <th>동작</th>
@@ -83,19 +72,11 @@
         <tbody>
           <c:forEach var="request" items="${requests}" varStatus="status">
             <tr style="border-bottom:1px solid #f1f1f1;">
+              <td><input type="checkbox" class="row-check" value="${request.id}" /></td>
               <td style="color:#666;">${request.id}</td>
               <td style="color:#222;">${request.devRepo.projectName}</td>
               <td style="font-weight:500;">${request.title}</td>
-              <td>
-                <span class="badge rounded-pill 
-                    bg-${latests[status.index] == '반려' ? 'danger' :
-                    (latests[status.index] == '승인요망' ? 'warning' :
-                    (latests[status.index] == '대기중' ? 'primary' :
-                    (latests[status.index] == '완료' ? 'success' : 'secondary')))}"
-                    style="font-size:0.8rem; padding:6px 10px;">
-                  ${latests[status.index]}
-                </span>
-              </td>
+              
               <td style="color:#4a5eff; font-weight:600;">${userDetails[status.index].ename}</td>
               <td style="color:#777;">${request.createdAt}</td>
               <td>
@@ -157,13 +138,44 @@
 <script>
 function filterSelection(){
   const pValue = document.querySelector('.selection-project').value;
-  const sValue = document.querySelector('.selection-status').value;
   const kValue = document.querySelector('.search-keyword').value;
-  location.href = '/bts/history?project=' + pValue + '&status=' + sValue+'&page=1&keyword=' + kValue;
+  location.href = '/bts/build?project=' + pValue+'&page=1&keyword=' + kValue;
 }
 document.querySelector(".search-keyword").onkeydown = function(event) {
 	  if (event.key === "Enter") {
 		  filterSelection();
 	  }
 	};
+	
+document.addEventListener("DOMContentLoaded", function() {
+	const selectAll = document.getElementById("selectAll");
+	const checks = document.querySelectorAll(".row-check");
+	  
+	selectAll.addEventListener("change", function() {
+	  checks.forEach(ch => ch.checked = selectAll.checked);
+	});
+	
+	checks.forEach(ch => {
+		ch.addEventListener("change", function() {
+			const allChecked = Array.from(checks).every(c => c.checked);
+			selectAll.checked = allChecked;
+	    });
+	});
+});
+
+function buildSelected(){
+	const selected = Array.from(document.querySelectorAll(".row-check:checked")).map(ch => ch.value);
+	if(selected.length == 0){
+		alert('선택된 항목이 없습니다.')
+		return;
+	}
+	console.log(selected);
+	$.ajax({
+		  url: '/bts/build/doBuild',
+		  type: 'POST',
+		  data: { reqIds: selected }, 
+		  traditional: true,          
+		  success: function(data){ /* modal show */ }
+		});
+}
 </script>
