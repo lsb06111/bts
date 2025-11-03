@@ -88,9 +88,13 @@
             </li>
 
           </ul>
+          
+        
         </aside>
         <!-- / Menu -->
-
+        
+		
+		
         <!-- Layout container -->
         <div class="layout-page">
         <nav
@@ -239,8 +243,13 @@
     </div>
   </div>
 </div>
-
+<!-- chat -->
+		
+		<%@ include file="/WEB-INF/views/jspf/chat/chat.jspf" %>
+		<!-- / chat -->
 <script>
+
+
 document.addEventListener('DOMContentLoaded', function() {
   const currentPath = window.location.pathname; // 쿼리 제외한 경로만 비교
 	console.log(currentPath);

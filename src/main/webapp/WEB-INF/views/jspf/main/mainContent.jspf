@@ -62,14 +62,19 @@
         <div class="card shadow-sm h-100" style="border:none; border-radius:15px;">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
-              <h5 style="font-weight:600; color:#333;">프로젝트1 배포 성공률</h5>
+              <h5 style="font-weight:600; color:#333;">프로젝트1 배포 상태</h5>
               <select class="form-select form-select-sm" style="width:auto; border-radius:8px;">
                 <option>프로젝트1</option>
               </select>
             </div>
-            <p class="text-muted" style="font-size:0.9rem;">지난 달 배포 성공률</p>
-            <canvas id="deployChart" style="max-width:200px; margin:auto;"></canvas>
-            <h3 class="text-center mt-3 success-rate" style="font-weight:700; color:#696cff;"></h3>
+            <p class="text-muted" style="font-size:0.9rem;">마지막 배포 빌드 상태</p>
+            <!--<canvas id="deployChart" style="max-width:200px; margin:auto;"></canvas>
+            <h3 class="text-center mt-3 success-rate" style="font-weight:700; color:#696cff;"></h3>-->
+            <div style="text-align:center">
+            	<img id="latest_build_img" src="" style="width:50%;text-align:center">
+            </div>
+            <p id="latest_build_desc" style="text-align:center"></p>
+            
           </div>
         </div>
       </div>
@@ -118,6 +123,22 @@
 <!-- Chart.js -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+	//latest build reesult 
+	
+	$.get('/bts/jenkins/getLatestBuild?projectName=test1',
+		function(data, status){
+		console.log('asdfasdf');
+		let result = '실패_더미';
+		let img_src = '';
+		if(status == 'success'){
+			result = data.result == 'FAILURE' ? '빌드 실패' : (data.result == 'SUCCESS' ? '빌드 성공' : '알수없음');
+			img_src = data.result == 'FAILURE' ? '/bts/resources/assets/img/rain.gif' : '/bts/resources/assets/img/sun.gif';
+		}
+		document.querySelector('#latest_build_img').src = img_src;
+		document.querySelector('#latest_build_desc').textContent = result;
+		
+		});
+	/*
   const ctx = document.getElementById('deployChart');
   
   $.get('/bts/jenkins/getSuccessRate?projectName=test1',
@@ -155,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	  		
   		});
   
-
+*/
  
   const services = [
     { name: '프로젝트1', url: '/api/status/project1' },
@@ -197,8 +218,8 @@ document.addEventListener('DOMContentLoaded', function() {
               \${isUp ? '정상' : '에러'}
             </div>
           </div>
-          <img src="\${iconUrl}" alt="\${isUp ? '정상' : '에러'}" style="width: 40px; height: 40px;">
-        </div>
+          <div style="width: 15px;height: 15px;background: \${isUp? '#00D44B' : '#D40000'};border-radius: 50%;"></div>
+           </div>
       </div>
     `;
     
@@ -218,5 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
     expandBtn.style.transform = 'rotate(0deg)';
   });
 });
+
+
 </script>
 

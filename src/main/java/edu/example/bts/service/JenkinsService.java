@@ -29,6 +29,34 @@ public class JenkinsService {
 		return jenkinsDAO.getCommitList();
 	}
 	
+	public String getLatestBuild(String projectName) {
+		String jenkinsUrl = "http://localhost:9000/job/test1/lastBuild/api/json?pretty=true";
+		try {
+			URL url = new URL(jenkinsUrl);
+	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	        conn.setRequestMethod("GET");
+	        String auth = user + ":" + token;
+	        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+	        conn.setRequestProperty("Authorization", "Basic " + encodedAuth);
+
+	        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+	        StringBuilder response = new StringBuilder();
+	        String line;
+	        while ((line = br.readLine()) != null) {
+	            response.append(line);
+	        }
+	        br.close();
+	        JSONObject json = new JSONObject(response.toString());
+	        return json.optString("result", "UNKNOWN");
+	        
+		}catch(Exception e) {
+			System.out.println("error");
+		}
+		
+		return "ERROR";
+		
+	}
+	
 	public List<Integer> getSuccessRate(String projectName){
 		String jenkinsUrl = "http://localhost:9000/job/test1/api/json?tree=builds[number,result]";
 		List<Integer> data = new ArrayList<>();

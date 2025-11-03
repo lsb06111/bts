@@ -1,6 +1,8 @@
 package edu.example.bts.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,5 +31,14 @@ public class JenkinsController {
 	@GetMapping(value="getSuccessRate", produces="application/json; charset=UTF-8")
 	public List<Integer> getSuccessRate(@RequestParam String projectName){
 		return jenkinsService.getSuccessRate(projectName);
+	}
+	
+	@ResponseBody
+	@GetMapping(value="getLatestBuild", produces="application/json; charset=UTF-8")
+	public Map<String, String> getLatestBuild(@RequestParam String projectName) {
+		
+		Map<String, String> map = new HashMap<>();
+		map.put("result", jenkinsService.getLatestBuild(projectName));
+		return map;
 	}
 }
