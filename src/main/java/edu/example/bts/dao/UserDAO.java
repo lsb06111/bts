@@ -18,11 +18,6 @@ public interface UserDAO {
 
 	// 신규 유저 등록
 	public void insertUser(UserDTO user);
-
-	// 전체 유저 목록 조회
-	public List<UserDTO> findAllUsers();
-	
-	public List<UserDTO> findUsersByDept(@Param("deptno") int deptno);
 	
 	// 사원조회 페이지네이션 10개씩 조회
 	public List<UserDTO> findPageUsers(Integer page);

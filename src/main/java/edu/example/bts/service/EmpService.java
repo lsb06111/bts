@@ -23,10 +23,6 @@ public class EmpService {
 		return empDAO.findAllEmps();
 	}
 	
-	public List<EmpDTO> findEmpsByDept(int deptno) {
-	    return empDAO.findEmpsByDept(deptno);
-	}
-	
 	public void updateEmployee(EmpDTO emp) {
 	    empDAO.updateEmp(emp);
 	}

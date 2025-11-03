@@ -17,14 +17,14 @@
 		<result property="estate" column="estate" />
 		<result property="empno" column="empno" />
 
-		<!-- ✅ 부서 매핑 -->
+		<!-- 부서 매핑 -->
 		<association property="dept"
 			javaType="DeptDTO">
 			<id property="deptno" column="deptno" />
 			<result property="dname" column="dname" />
 		</association>
 
-		<!-- ✅ 직위 매핑 -->
+		<!-- 직위 매핑 -->
 		<association property="job"
 			javaType="JobDTO">
 			<id property="jobno" column="jobno" />
@@ -112,55 +112,5 @@
 		JOIN job j ON
 		e.jobno = j.jobno
 		where e.ename = #{ename}
-	</select>
-
-	<select id="findAllUsers" resultMap="userMap">
-		SELECT
-		u.id,
-		u.github_username,
-		u.password,
-		e.empno,
-		e.ename,
-		e.ephone,
-		e.email,
-		e.phone,
-		e.estate,
-		d.deptno,
-		d.dname,
-		j.jobno,
-		j.jname
-		FROM users u
-		JOIN emp
-		e ON u.empno = e.empno
-		JOIN dept d ON e.deptno = d.deptno
-		JOIN job j ON
-		e.jobno = j.jobno
-		ORDER BY e.empno
-		offset 0 rows fetch next 10 rows only
-	</select>
-
-	<select id="findUsersByDept" parameterType="int"
-		resultMap="userMap">
-		SELECT
-		u.id,
-		u.github_username,
-		u.password,
-		e.empno,
-		e.ename,
-		e.ephone,
-		e.email,
-		e.phone,
-		e.estate,
-		d.deptno,
-		d.dname,
-		j.jobno,
-		j.jname
-		FROM users u
-		JOIN emp e ON u.empno = e.empno
-		JOIN dept d ON e.deptno =
-		d.deptno
-		JOIN job j ON e.jobno = j.jobno
-		WHERE e.deptno = #{deptno}
-		ORDER BY e.empno
 	</select>
 </mapper>

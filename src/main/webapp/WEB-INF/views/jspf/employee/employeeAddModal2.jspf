@@ -124,7 +124,7 @@
 <script>
 	$(document).ready(
 			function() {
-				// 🔹 추가 버튼 클릭 시
+				// 추가 버튼 클릭 시
 				$('#addUserBtn').on(
 						'click',
 						function() {
@@ -132,8 +132,8 @@
 								return;
 
 							const userData = {
-								email : $('#emailInput').val().trim(),
-								password : $('#passwordInput').val().trim()
+								email : $('#addEmailInput').val().trim(),
+								password : $('#addPasswordInput').val().trim()
 							};
 
 							// 필수값 검증
@@ -145,12 +145,12 @@
 							$.ajax({
 								url : '${pageContext.request.contextPath}/user/register',
 								type : 'POST',
-								data : $("#empForm").serialize(), // form 내용 모두 input 전송
+								data : $("#empAddForm").serialize(), // form 내용 모두 input 전송
 								success : function(response) {
 									alert('사원이 성공적으로 추가되었습니다.');
 
 									// 모달 닫기 및 배경 제거
-									$('#employeeAddModal').modal('hide');
+									$('#employeeAddModal2').modal('hide');
 									$('.modal-backdrop').remove();
 									$('body').removeClass('modal-open').css(
 											'overflow', 'auto');
