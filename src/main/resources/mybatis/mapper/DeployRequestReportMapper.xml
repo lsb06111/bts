@@ -11,4 +11,9 @@
 	SELECT * FROM commit_file WHERE req_id=#{req_id}
 </select>
 
+<select id="selectDevRepoById" parameterType="Long" resultType="DeployFormDevRepoDTO">
+	SELECT * FROM dev_repo WHERE id=#{id}
+</select>
+
+
 </mapper>

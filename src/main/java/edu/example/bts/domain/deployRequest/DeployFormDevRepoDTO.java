@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DeployFormDevRepoDTO {
+	// DB: dev_repo
+	
 	private Long id;
 	private String projectName;
     private String ownerUsername;

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestCommitFileDTO {
-	
+	//DB CommitFileDTO 같음
 	private Long id;
 	private String sha;
 	private String fileSha;

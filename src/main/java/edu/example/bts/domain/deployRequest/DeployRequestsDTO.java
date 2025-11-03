@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeployRequestsDTO {
-    
+    // DB: requests 
 	private Long id;               // 요청 ID
     private String title;          // 제목
     private String content;        // 내용
