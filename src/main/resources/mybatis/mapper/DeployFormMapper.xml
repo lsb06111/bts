@@ -3,7 +3,7 @@
 <mapper namespace="edu.example.bts.dao.DeployFormDAO">
 
 <select id="findProjectsByUserId" resultType="DeployFormDevRepoDTO" parameterType="Long">
-	select * from dev_repo where id in(select dev_repo_id from project_member where user_id=5) and current_stage='진행중'
+	select * from dev_repo where id in(select dev_repo_id from project_member where user_id=#{userId}) and current_stage='진행중'
 </select>
 
 
