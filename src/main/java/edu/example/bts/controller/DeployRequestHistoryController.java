@@ -25,6 +25,7 @@ public class DeployRequestHistoryController {
 							@RequestParam("page") Integer page,
 							@RequestParam(value = "project", required=false) String projectName,
 							@RequestParam(value = "status", required=false) String status,
+							@RequestParam(value = "keyword", required=false) String keyword,
 							Model model) {
 		
 		Long userId = user.getId();
@@ -34,16 +35,17 @@ public class DeployRequestHistoryController {
 		
 		if(user.getDept().getDeptno().intValue() == 1 && user.getJob().getJobno().intValue() == 2) {
 			int totalCount = (status.isEmpty() && projectName.isEmpty())? 
-					historyService.getRequestsCount(userId) : historyService.getReqSizeForS(user,status, projectName);
+					historyService.getRequestsCount(userId, keyword) : historyService.getReqSizeForS(user,status, projectName, keyword);
 		    totalPage = (int) Math.ceil((double) totalCount / 10);
-		    
-		    requests = historyService.getRequestsByPageForS2(user, page-1, projectName, status);
+		    System.out.println(totalPage +": totalCount: "+totalCount);
+		    requests = historyService.getRequestsByPageForS2(user, page-1, projectName, status, keyword);
 		    
 		}else {
 			int totalCount = (status.isEmpty() && projectName.isEmpty())?
-					historyService.getRequestsCountByProjects(userId) : historyService.getReqSizeForSU(user,status, projectName);
+					historyService.getRequestsCountByProjects(userId, keyword) : historyService.getReqSizeForSU(user,status, projectName, keyword);
 		    totalPage = (int) Math.ceil((double) totalCount / 10);
-		    requests = historyService.getRequestsByPageForSU2(user, page-1, projectName, status);
+		    System.out.println(totalPage +": totalCount: "+totalCount);
+		    requests = historyService.getRequestsByPageForSU2(user, page-1, projectName, status, keyword);
 		}
 		
 		

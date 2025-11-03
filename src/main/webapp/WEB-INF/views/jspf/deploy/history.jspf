@@ -21,7 +21,7 @@
       </div>
       <c:if test="${loginUser.dept.deptno == 1 && loginUser.job.jobno == 2 }">
       <button class="btn"
-              onclick="location.href='/bts/deployRequest'"
+              onclick="location.href='/bts/deployForm'"
               style="background-color:#4a5eff; border:none; border-radius:8px; font-weight:500; color:#fff; padding:8px 20px;">
         <i class="bi bi-plus-lg me-1"></i>신청 만들기
       </button>
@@ -59,7 +59,7 @@
       </div>
 
       <div style="position:relative; width:220px;">
-        <input type="text" class="form-control form-control-sm" placeholder="검색..."
+        <input type="text" class="form-control form-control-sm search-keyword" placeholder="검색..." value="${param.keyword }"
                style="border-radius:8px; font-size:0.9rem; padding-left:35px; height:38px;">
         <i class="bi bi-search"
            style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#999;"></i>
@@ -127,14 +127,14 @@
         %>
 
         <li class="page-item <%= (pageN == 1) ? "disabled" : "" %>">
-          <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= pageN - 1 %>" style="color:#4a5eff;">&lt;</a>
+          <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= pageN - 1 %>&keyword=${param.keyword}" style="color:#4a5eff;">&lt;</a>
         </li>
 
         <%
           for (int i = startPage; i <= endPage; i++) {
         %>
           <li class="page-item <%= (i == pageN) ? "active" : "" %>">
-            <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= i %>"
+            <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= i %>&keyword=${param.keyword}"
                style="<%= (i == pageN) ? "background-color:#4a5eff; border:none;" : "color:#4a5eff;" %>">
               <%= i %>
             </a>
@@ -144,7 +144,7 @@
         %>
 
         <li class="page-item <%= (pageN == totalPage) ? "disabled" : "" %>">
-          <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= pageN + 1 %>" style="color:#4a5eff;">&gt;</a>
+          <a class="page-link" href="/bts/history?project=${param.project}&status=${param.status}&page=<%= pageN + 1 %>&keyword=${param.keyword}" style="color:#4a5eff;">&gt;</a>
         </li>
       </ul>
     </nav>
@@ -158,6 +158,12 @@
 function filterSelection(){
   const pValue = document.querySelector('.selection-project').value;
   const sValue = document.querySelector('.selection-status').value;
-  location.href = '/bts/history?project=' + pValue + '&status=' + sValue+'&page=1';
+  const kValue = document.querySelector('.search-keyword').value;
+  location.href = '/bts/history?project=' + pValue + '&status=' + sValue+'&page=1&keyword=' + kValue;
 }
+document.querySelector(".search-keyword").onkeydown = function(event) {
+	  if (event.key === "Enter") {
+		  filterSelection();
+	  }
+	};
 </script>

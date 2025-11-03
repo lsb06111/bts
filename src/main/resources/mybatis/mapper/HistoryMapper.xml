@@ -61,7 +61,10 @@
 </select>
 
 <select id="getRequestsCount" parameterType="long" resultType="int">
-	select count(*) from requests where user_id = #{userId}
+	select count(*) from requests where user_id = #{userId} 
+	<if test="keyword != null and keyword != ''">
+    	and title like '%'||#{keyword}||'%'
+  	</if>
 </select>
 
 <select id="getAllStatus" resultType="StatusDTO">
@@ -101,6 +104,9 @@ where a.req_id=#{reqId} order by a.id desc
     where user_id = #{userId} 
     <if test="projectName != null and projectName != ''">
     	and d.project_name = #{projectName}
+  	</if>
+  	<if test="keyword != null and keyword != ''">
+    	and r.title like '%'||#{keyword}||'%'
   	</if>
     order by r.id desc
 </select>
@@ -152,6 +158,9 @@ order by n.id desc fetch first 3 rows only
 <select id="getRequestsCountByProjects" resultType="int" parameterType="long">
 	select count(*) from requests r where r.dev_repo_id in 
 	(select d.id from project_member pm join dev_repo d on pm.dev_repo_id = d.id where pm.user_id = #{userId})
+	<if test="keyword != null and keyword != ''">
+    	and r.title like '%'||#{keyword}||'%'
+  	</if>
 </select>
 
 <select id="getRequestsByPageForSU"  resultMap="RequestsMap">
@@ -206,6 +215,9 @@ where
     )
     <if test="projectName != null and projectName != ''">
     	and d.project_name = #{projectName}
+  	</if>
+  	<if test="keyword != null and keyword != ''">
+    	and r.title like '%'||#{keyword}||'%'
   	</if>
 order by 
     r.id desc
