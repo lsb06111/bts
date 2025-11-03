@@ -1,5 +1,6 @@
 package edu.example.bts.domain.history;
 
+import edu.example.bts.domain.project.DevRepoDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

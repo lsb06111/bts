@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import edu.example.bts.domain.history.DevRepoDTO;
 import edu.example.bts.domain.history.RequestsDTO;
+import edu.example.bts.domain.project.DevRepoDTO;
 import edu.example.bts.domain.user.UserDTO;
 import edu.example.bts.service.DeployRequestHistoryService;
 
