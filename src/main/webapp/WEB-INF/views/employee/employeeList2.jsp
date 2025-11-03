@@ -29,26 +29,8 @@
 				<h4 style="font-weight: 700; color: #222;">사원 목록</h4>
 				<div class="d-flex align-items-center gap-2">
 
-					<!-- ✅ 이용자 필터 -->
-					<div class="dropdown" style="position: relative;"
-						data-bs-display="static">
-						<button class="btn btn-light dropdown-toggle" type="button"
-							id="userFilterDropdown" data-bs-toggle="dropdown"
-							aria-expanded="false"
-							style="font-size: 13px; border: 1px solid #ddd; border-radius: 8px; color: #555;">
-							이용자: 전체</button>
-						<ul
-							class="dropdown-menu dropdown-menu-custom dropdown-menu-start shadow-sm"
-							aria-labelledby="userFilterDropdown" style="font-size: 13px;">
-							<li><a class="dropdown-item user-filter-item" href="#"
-								data-value="ALL">전체</a></li>
-							<li><a class="dropdown-item user-filter-item" href="#"
-								data-value="BTS">BTS</a></li>
-						</ul>
-					</div>
-
-					<!-- ✅ 부서(직위) 필터 -->
-					<div class="dropdown" style="position: relative;"
+					<!-- 부서(직위) 필터 -->
+					<!-- <div class="dropdown" style="position: relative;"
 						data-bs-display="static">
 						<button class="btn btn-light dropdown-toggle" type="button"
 							id="deptFilterDropdown" data-bs-toggle="dropdown"
@@ -67,7 +49,7 @@
 							<li><a class="dropdown-item dept-filter-item" href="#"
 								data-value="인사팀">인사팀</a></li>
 						</ul>
-					</div>
+					</div> -->
 
 					<div class="input-group" style="width: 240px;">
 						<form action="${pageContext.request.contextPath}/emp/list2"
@@ -176,18 +158,6 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- head.jspf 아래쪽이나 body 끝부분에 추가 -->
-	<!-- <script
-		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script> -->
-	<!-- <script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
-
-
-
-
 	<%@ include file="/WEB-INF/views/jspf/employee/employeeAddModal2.jspf"%>
 	<%@ include file="/WEB-INF/views/jspf/employee/employeeUpdateModal2.jspf"%>
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
