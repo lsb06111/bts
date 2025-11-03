@@ -12,9 +12,9 @@ import edu.example.bts.dao.HistoryDAO;
 import edu.example.bts.dao.MainDAO;
 import edu.example.bts.domain.board.QnaDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
-import edu.example.bts.domain.history.DevRepoDTO;
 import edu.example.bts.domain.history.RequestsDTO;
 import edu.example.bts.domain.history.StatusDTO;
+import edu.example.bts.domain.project.DevRepoDTO;
 import edu.example.bts.domain.user.UserDTO;
 
 @Service
