@@ -6,4 +6,20 @@
 	select sha, file_name from commit_file order by id desc fetch first 2 rows only
 </select>
 
+<select id="getCommitListByReqId" parameterType="long" resultType="JCommitDTO">
+	select sha, file_name from commit_file where req_id = #{reqId}
+</select>
+
+<select id="getAwaitedReqIds" resultType="long">
+	select req_id from deploy_result where result = 'await'
+</select>
+
+<insert id="addDeployResult" parameterType="DeployResultDTO">
+	insert into deploy_result (req_id, result, response) values(#{reqId}, #{result}, #{response})
+</insert>
+
+<update id="updateResult" parameterType="long">
+	update deploy_result set result='process' where req_id = #{reqId}
+</update>
+
 </mapper>

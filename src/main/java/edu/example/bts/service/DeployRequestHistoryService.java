@@ -57,17 +57,18 @@ public class DeployRequestHistoryService {
 		return historyDAO.getAllProjectsForS(userId);
 	}
 	
-	public Integer getRequestsCount(Long userId) {
-		return historyDAO.getRequestsCount(userId);
+	public Integer getRequestsCount(Long userId, String keyword) {
+		return historyDAO.getRequestsCount(userId, keyword);
 	}
 	
 	public List<RequestsDTO> getRequestsByPageForS(Long userId, int page){
 		return historyDAO.getRequestsByPageForS(userId, page);
 	}
 	
-	public int getReqSizeForS(UserDTO user, String status, String projectName) {
+	public int getReqSizeForS(UserDTO user, String status, String projectName, String keyword) {
 		int count=0;
-		List<RequestsDTO> allReq = historyDAO.getAllRequestsForS(user.getId(), projectName);
+		List<RequestsDTO> allReq = historyDAO.getAllRequestsForS(user.getId(), projectName, keyword);
+		System.out.println(allReq);
 		List<String> statusList = getStatus(allReq, user);
 		for(int i=0; i < allReq.size(); i++) {
 			if(statusList.get(i).equals(status))
@@ -75,9 +76,9 @@ public class DeployRequestHistoryService {
 		}
 		return count;
 	}
-	public int getReqSizeForSU(UserDTO user, String status, String projectName) {
+	public int getReqSizeForSU(UserDTO user, String status, String projectName, String keyword) {
 		int count=0;
-		List<RequestsDTO> allReq = historyDAO.getAllRequestsForSU(user.getId(), projectName);
+		List<RequestsDTO> allReq = historyDAO.getAllRequestsForSU(user.getId(), projectName, keyword);
 		List<String> statusList = getStatus(allReq, user);
 		for(int i=0; i < allReq.size(); i++) {
 			if(statusList.get(i).equals(status))
@@ -86,9 +87,9 @@ public class DeployRequestHistoryService {
 		return count;
 	}
 	
-	public List<RequestsDTO> getRequestsByPageForS2(UserDTO user, int page, String projectName, String status){
+	public List<RequestsDTO> getRequestsByPageForS2(UserDTO user, int page, String projectName, String status, String keyword){
 		List<RequestsDTO> result = new ArrayList<>();
-		List<RequestsDTO> allReq = historyDAO.getAllRequestsForS(user.getId(), projectName);
+		List<RequestsDTO> allReq = historyDAO.getAllRequestsForS(user.getId(), projectName, keyword);
 		List<String> statusList = null;
 		if(!status.isEmpty())
 			statusList = getStatus(allReq, user);
@@ -102,17 +103,17 @@ public class DeployRequestHistoryService {
 		return result;
 	}
 	
-	public Integer getRequestsCountByProjects(Long userId) {
-		return historyDAO.getRequestsCountByProjects(userId);
+	public Integer getRequestsCountByProjects(Long userId, String keyword) {
+		return historyDAO.getRequestsCountByProjects(userId, keyword);
 	}
 	
 	public List<RequestsDTO> getRequestsByPageForSU(Long userId, int page){
 		return historyDAO.getRequestsByPageForSU(userId, page);
 	}
 	
-	public List<RequestsDTO> getRequestsByPageForSU2(UserDTO user, int page, String projectName, String status){
+	public List<RequestsDTO> getRequestsByPageForSU2(UserDTO user, int page, String projectName, String status, String keyword){
 		List<RequestsDTO> result = new ArrayList<>();
-		List<RequestsDTO> allReq = historyDAO.getAllRequestsForSU(user.getId(), projectName);
+		List<RequestsDTO> allReq = historyDAO.getAllRequestsForSU(user.getId(), projectName, keyword);
 		List<String> statusList = null;
 		if(!status.isEmpty())
 			statusList = getStatus(allReq, user);
