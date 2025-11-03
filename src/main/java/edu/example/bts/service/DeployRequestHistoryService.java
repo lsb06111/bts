@@ -189,7 +189,7 @@ public class DeployRequestHistoryService {
 	public String getTotalStep(List<ApprovalHistoryDTO> approvals) {
 		int result = 1;
 		String reject = "";
-		System.out.println("---"+approvals.get(0).getReqId()+"---");
+		//System.out.println("---"+approvals.get(0).getReqId()+"---");  // java.lang.IndexOutOfBoundsException 떠서 잠시 주석처림함 
 		Collections.reverse(approvals);
 		for(ApprovalHistoryDTO approval : approvals) {
 			switch(approval.getStatus().getId().intValue()) {

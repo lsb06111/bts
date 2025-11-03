@@ -231,6 +231,14 @@
 		  <!-- <version>2.0-rc.5</version> java11 이상 -->
 		</dependency>
 		
+		<!-- 텍스트 비교  -->
+		<!-- https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils -->
+		<dependency>
+		    <groupId>io.github.java-diff-utils</groupId>
+		    <artifactId>java-diff-utils</artifactId>
+		    <version>4.12</version>
+		</dependency>
+		
 		
 	</dependencies>
 

@@ -1,14 +1,20 @@
 package edu.example.bts.service;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
 
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHCommit.File;
 import org.kohsuke.github.GHCompare;
+import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
@@ -23,6 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.DeltaType;
+import com.github.difflib.patch.Patch;
 
 import edu.example.bts.dao.DeployRequestDAO;
 import edu.example.bts.domain.deployRequest.CommitDTO;
@@ -59,7 +69,7 @@ public class DeployRequestGithubAPIService {
 			int count= 0;
 			for(GHCommit commit : ghcommitList) {
 				Date date = commit.getCommitShortInfo().getAuthor().getDate();     //Date authorDate = commit.getCommitShortInfo().getAuthoredDate();
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm");
 				
 				String sha = commit.getSHA1();
 				String commitMessage = commit.getCommitShortInfo().getMessage();
@@ -160,4 +170,166 @@ public class DeployRequestGithubAPIService {
 		return diffPatch;
 	}
 
+	public Map<String, Object> compareFileWithCommitSha3(String ownerName, String repoName, String token, String fileName,
+			String sha, String compareSha) {
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = github.getRepository(ownerName+"/"+repoName);
+
+			
+			// 최근커밋(변경후)
+			GHContent headFile = repository.getFileContent(fileName, sha);
+			//String revised = headFile.getContent();   // headFile.read().readAllBytes() : java9
+			List<String> revised = Arrays.asList(headFile.getContent().split("\n"));
+
+			
+			// 비교할 커밋(변경전:선택한거)
+			GHContent baseFile = repository.getFileContent(fileName, compareSha);
+			//String original = baseFile.getContent();
+			List<String> original = Arrays.asList(baseFile.getContent().split("\n"));
+			
+			
+			// 비교 (문자단위):String  => 보류 
+			//Patch<String> patch = DiffUtils.diffInline(original, revised);
+			//System.out.println(patch.getDeltas());
+			Patch<String> patch = DiffUtils.diff(original, revised);
+			//System.out.println(patch.getDeltas());
+			
+			
+			
+			
+			//줄이 달라서 보기 힘듬... ----
+			List<Integer> insertLines = new ArrayList<>();
+			List<Integer> deleteLines = new ArrayList<>();
+			List<Integer> changeLinesRev = new ArrayList<>();
+			List<Integer> changeLinesRevOri = new ArrayList<>();
+			
+			for(AbstractDelta<String> delta : patch.getDeltas()){
+				System.out.println(delta.getType());
+				System.out.println(delta.getSource());		// 이전(Base)
+				System.out.println(delta.getTarget()); 		// 최근(Head)
+			
+				DeltaType type = delta.getType();
+				System.out.println();
+				int revPosition = delta.getTarget().getPosition();
+				int revLastPosition = delta.getTarget().last();	// // getPosition()+size()-1
+				System.out.println(revPosition + ", " + revLastPosition);
+				
+				int oriPosition = delta.getSource().getPosition();
+				int oriLastPosition = delta.getSource().last();
+				System.out.println(oriPosition +", " + oriLastPosition);
+				
+				if(type == DeltaType.INSERT) {
+					for(int i = revPosition; i<revLastPosition+1; i++) {
+						insertLines.add(i);
+					}					
+				}else if(type == DeltaType.DELETE) {
+					for(int i= oriPosition; i<oriLastPosition+1; i++) {
+						deleteLines.add(i);
+					}
+					
+				}else if(type == DeltaType.CHANGE) {
+					//head
+					for(int i = revPosition; i<revLastPosition+1; i++) {
+						changeLinesRev.add(i);
+					}
+					//base
+					for(int i=oriLastPosition; i<oriLastPosition+1; i++) {
+						changeLinesRevOri.add(i);
+					}
+				}
+
+				result.put("originalCode", String.join("\n", original));
+				result.put("revisedCode", String.join("\n", revised));
+
+				result.put("changeRev", changeLinesRev);
+				result.put("insertIndex", insertLines);
+				result.put("deleteIndex", deleteLines);
+				result.put("changeOri", changeLinesRevOri);			
+			}
+			
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+
+	
+	public Map<String, Object> compareFileWithCommitSha4(String ownerName, String repoName, String token, String fileName,
+			String sha, String compareSha) {
+		
+		Map<String, Object> result = new HashMap<>();
+		System.out.println("4번인가요?");
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = github.getRepository(ownerName+"/"+repoName);
+
+			
+			// 최근커밋(변경후)
+			GHContent headFile = repository.getFileContent(fileName, sha);
+			List<String> revised = Arrays.asList(headFile.getContent().split("\n"));
+
+			
+			// 비교할 커밋(변경전:선택한거)
+			GHContent baseFile = repository.getFileContent(fileName, compareSha);
+			List<String> original = Arrays.asList(baseFile.getContent().split("\n"));
+			
+			
+			// 비교 (문자단위):String  => 보류 
+			Patch<String> patch = DiffUtils.diff(original, revised);   
+			List<AbstractDelta<String>> dt = patch.getDeltas();    // 변경전  파일(original)기준으로 알려줌 
+			
+
+			System.out.println("****확인중입니다 ******");
+			
+			List<Map<String, Object>> delta = new ArrayList<>();
+			for(AbstractDelta<String> d : dt) {
+				Map<String, Object> block = new HashMap<>();
+
+				DeltaType type = d.getType();
+				// 변경전(ori:base)
+				System.out.println("base : " + d.getSource());  
+				int baseStartNum = d.getSource().getPosition();
+				int baseEndNum = d.getSource().last();
+				List<String> baseLines =  d.getSource().getLines();
+				
+				// 변경후(rev:head)
+				System.out.println("head : " + d.getTarget());
+				int headStartNum = d.getTarget().getPosition();
+				int headEndNum = d.getTarget().last();
+				List<String> headLines = d.getTarget().getLines();
+				
+				block.put("type", type);
+				block.put("baseStartNum", baseStartNum);
+				block.put("baseEndNum", baseEndNum);
+				block.put("baseLines", baseLines);
+				block.put("headStartNum", headStartNum);
+				block.put("headEndNum", headEndNum);
+				block.put("headLines", headLines);
+				
+				delta.add(block);
+				System.out.println("delta : " + block);
+			}
+			
+			result.put("delta", delta);
+			result.put("originalCode", original);
+			result.put("revisedCode", revised);
+			
+			System.out.println(delta);
+			System.out.println(result);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
 }
