@@ -29,6 +29,90 @@ public class JenkinsService {
 		return jenkinsDAO.getCommitList();
 	}
 	
+	
+	public List<JCommitDTO> getCommitFiles(){
+		List<Long> reqIds = jenkinsDAO.getAwaitedReqIds();
+		List<JCommitDTO> commits = new ArrayList<>();
+		for(Long reqId : reqIds) {
+			commits.addAll(jenkinsDAO.getCommitListByReqId(reqId));
+			jenkinsDAO.updateResult(reqId);
+		}
+		
+		
+		return commits;
+	}
+	
+	public String triggerBuildNow(String projectName) {
+	    String base = "http://localhost:9000";
+	    String crumbApi = base + "/crumbIssuer/api/json";
+	    String buildApi = base + "/job/" + projectName + "/build";
+
+	    try {
+	        String auth = user + ":" + token;
+	        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+	        URL cUrl = new URL(crumbApi);
+	        HttpURLConnection cConn = (HttpURLConnection) cUrl.openConnection();
+	        cConn.setRequestMethod("GET");
+	        cConn.setRequestProperty("Authorization", "Basic " + encodedAuth);
+	        cConn.setUseCaches(false);
+	        cConn.setInstanceFollowRedirects(false);
+
+	        
+	        String setCookie = cConn.getHeaderField("Set-Cookie"); 
+	        String cookieHeader = null;
+	        if (setCookie != null) {
+	            
+	            cookieHeader = setCookie.split(";", 2)[0];
+	        }
+
+	        StringBuilder csb = new StringBuilder();
+	        try (BufferedReader br = new BufferedReader(new InputStreamReader(cConn.getInputStream(), "UTF-8"))) {
+	            String line;
+	            while ((line = br.readLine()) != null) csb.append(line);
+	        } catch (Exception e) {
+
+	        } finally {
+	            cConn.disconnect();
+	        }
+
+	        String crumbField = null;
+	        String crumbValue = null;
+	        if (csb.length() > 0) {
+	            JSONObject cj = new JSONObject(csb.toString());
+	            crumbField = cj.optString("crumbRequestField", null);
+	            crumbValue = cj.optString("crumb", null);
+	        }
+
+	        
+	        URL bUrl = new URL(buildApi);
+	        HttpURLConnection bConn = (HttpURLConnection) bUrl.openConnection();
+	        bConn.setRequestMethod("POST");
+	        bConn.setDoOutput(true);
+	        bConn.setRequestProperty("Authorization", "Basic " + encodedAuth);
+
+	        
+	        if (cookieHeader != null) {
+	            bConn.setRequestProperty("Cookie", cookieHeader);
+	        }
+	        
+	        if (crumbField != null && crumbValue != null) {
+	            bConn.setRequestProperty(crumbField, crumbValue);
+	        }
+
+	        int code = bConn.getResponseCode();
+	        String location = bConn.getHeaderField("Location");
+	        bConn.disconnect();
+
+	        if (code == 201 && location != null) return "QUEUED: " + location;
+	        return "ERROR: HTTP " + code;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "ERROR";
+	    }
+	}
+	
 	public String getLatestBuild(String projectName) {
 		String jenkinsUrl = "http://localhost:9000/job/test1/lastBuild/api/json?pretty=true";
 		try {

@@ -51,6 +51,10 @@ public interface HistoryDAO {
 	
 	public List<RequestsDTO> getRequestsByPageForSU(@Param("userId") Long userId, @Param("page") int page);
 	
+	public List<RequestsDTO> getAllRequestsForBuild(@Param("userId") Long userId,
+													@Param("projectName") String projectName,
+													@Param("keyword") String keyword);
+	
 	public List<RequestsDTO> getAllRequestsForSUByProject(@Param("userId") Long userId,
 														  @Param("projectName") String projectName);
 	

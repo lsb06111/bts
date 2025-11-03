@@ -21,6 +21,14 @@ public class JenkinsController {
 	@Autowired
 	JenkinsService jenkinsService;
 	
+	
+	@ResponseBody
+	@GetMapping(value = "getCommitFiles", produces = "application/json; charset=UTF-8")
+	public List<JCommitDTO> getCommitFiles(){
+		return jenkinsService.getCommitFiles();
+	}
+	
+	
 	@ResponseBody
 	@GetMapping(value = "getCommits", produces = "application/json; charset=UTF-8")
 	public List<JCommitDTO> getCommits(){

@@ -223,6 +223,39 @@ order by
     r.id desc
 </select>
 
+<select id="getAllRequestsForBuild"  resultMap="RequestsMap">
+select 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, 
+    d.*
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    ) and r.id not in (select req_id from deploy_result)
+    <if test="projectName != null and projectName != ''">
+    	and d.project_name = #{projectName}
+  	</if>
+  	<if test="keyword != null and keyword != ''">
+    	and r.title like '%'||#{keyword}||'%'
+  	</if>
+order by 
+    r.id desc
+</select>
+
 
 <select id="getAllRequestsForSUByProject"  resultMap="RequestsMap">
 select 
