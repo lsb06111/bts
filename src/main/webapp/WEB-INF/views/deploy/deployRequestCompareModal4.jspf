@@ -202,6 +202,7 @@
 							i++;	
 						}
 						
+						console.log("i", i);
 						
 					}else {
 						baseHtml += `<p class="mb-0">\${baseCount+1}<span class="">\${baseLine}</span></p>`;	
@@ -209,7 +210,6 @@
 					}
 					
 				
-					
 					
 					
 					baseCount++; headCount++;
