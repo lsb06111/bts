@@ -4,7 +4,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,20 +45,31 @@ public class AuthController {
 		UserDTO user = userService.findUserByEmpno(emp.getEmpno());
 		// 사용자 정보 조회
 		if (user == null) {
-            redirectAttributes.addFlashAttribute("errorNotUser", "접근 권한이 없습니다.");
-            return "redirect:/auth/loginForm";
-        }
+			redirectAttributes.addFlashAttribute("errorNotUser", "접근 권한이 없습니다.");
+			return "redirect:/auth/loginForm";
+		}
 		// 비밀번호 검증
 		if (!user.getPassword().equals(password)) {
-            redirectAttributes.addFlashAttribute("errorPassword", "비밀번호가 일치하지 않습니다.");
-            return "redirect:/auth/loginForm";
-        }
-		
+			redirectAttributes.addFlashAttribute("errorPassword", "비밀번호가 일치하지 않습니다.");
+			return "redirect:/auth/loginForm";
+		}
+
 		String role = (emp.getDeptno() == 3) ? "ADMIN" : "USER";
-		
+
 		// JWT 토큰 생성 및 헤더에 추가
 		String token = jwtService.createToken(email, emp.getEmpno(), role);
+		
+		/*// ✅ Access & Refresh Token 생성
+				String accessToken = jwtService.createAccessToken(email, emp.getEmpno(), role);
+				String refreshToken = jwtService.createRefreshToken(email);*/
+		/*// ✅ 쿠키에 저장
+				addCookie(response, "accessToken", accessToken, 60 * 30); // 30분
+				addCookie(response, "refreshToken", refreshToken, 60 * 60 * 24 * 7); // 7일
 
+				System.out.println("[JWT] Access Token 발급 완료");
+				System.out.println("[JWT] Refresh Token 발급 완료");*/
+		
+		
 		// 추가
 		Cookie cookie = new Cookie("jwt", token);
 		cookie.setHttpOnly(true); // JS 접근 불가 (보안)
@@ -71,6 +81,7 @@ public class AuthController {
 		response.setHeader("Authorization", "Bearer " + token);
 
 		System.out.println("[JWT] 발급된 토큰: " + token);
+		System.out.println("DEPTNO 체크: " + emp.getDeptno());
 		return "redirect:/";
 	}
 
@@ -87,4 +98,32 @@ public class AuthController {
 		System.out.println("[JWT] 로그아웃: 쿠키 삭제 완료");
 		return "redirect:/auth/loginForm"; // 로그인 화면으로 이동
 	}
+	
+	/** 로그아웃 처리 *//*
+	@GetMapping("/logout")
+	public String logout(HttpServletResponse response) {
+		deleteCookie(response, "accessToken");
+		deleteCookie(response, "refreshToken");
+		System.out.println("[JWT] 로그아웃: 모든 토큰 삭제 완료");
+		return "redirect:/auth/loginForm";
+	}
+
+	*//** 쿠키 추가 메서드 *//*
+	private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+		Cookie cookie = new Cookie(name, value);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(false);
+		cookie.setPath("/");
+		cookie.setMaxAge(maxAge);
+		response.addCookie(cookie);
+	}
+
+	*//** 쿠키 삭제 메서드 *//*
+	private void deleteCookie(HttpServletResponse response, String name) {
+		Cookie cookie = new Cookie(name, null);
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+	}*/
 }

@@ -17,12 +17,34 @@ public class JwtService {
 	private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 	private static final long EXPIRATION_TIME = 1000L * 60 * 30; // 30분
 
-	public String createToken(String email, int empno, String role) {
+	public String createToken(String email, Long empno, String role) {
 		return Jwts.builder().setSubject(email).claim("empno", empno).claim("role", role).setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(SECRET_KEY, SignatureAlgorithm.HS256)
 				.compact();
 	}
+	
+	/** Access Token 생성 *//*
+	public String createAccessToken(String email, Long empno, String role) {
+		return Jwts.builder()
+				.setSubject(email)
+				.claim("empno", empno)
+				.claim("role", role)
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION))
+				.signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+				.compact();
+	}
+
+	*//** Refresh Token 생성 *//*
+	public String createRefreshToken(String email) {
+		return Jwts.builder()
+				.setSubject(email)
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
+				.signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+				.compact();
+	}*/
 
 	/** JWT 검증 */
 	public boolean validateToken(String token) {

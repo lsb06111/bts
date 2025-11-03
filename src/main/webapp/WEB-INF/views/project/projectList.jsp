@@ -119,6 +119,7 @@
 					</tbody>
 				</table>
 
+			</div>
 				<!-- 페이지네이션 -->
 				<nav
 					style="display: flex; justify-content: center; margin-top: 25px;">
@@ -135,7 +136,6 @@
 							style="color: #555; border: none;">&gt;</a></li>
 					</ul>
 				</nav>
-			</div>
 
 			<!-- 하단 버튼 -->
 			<div

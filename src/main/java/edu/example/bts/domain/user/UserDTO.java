@@ -1,7 +1,6 @@
 package edu.example.bts.domain.user;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-
+import edu.example.bts.domain.emp.EmpDTO;
 import edu.example.bts.domain.main.DeptDTO;
 import edu.example.bts.domain.main.JobDTO;
 import lombok.AllArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,5 +25,7 @@ public class UserDTO {
 	private String estate;
 	private DeptDTO dept;
 	private JobDTO job;
-	private int empno;
+	private Long empno;
+	private String company;
+	private EmpDTO emp;
 }

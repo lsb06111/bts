@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import edu.example.bts.dao.EmpDAO;
 import edu.example.bts.dao.MainDAO;
 import edu.example.bts.dao.UserDAO;
 import edu.example.bts.domain.emp.EmpDTO;
@@ -14,6 +16,9 @@ import edu.example.bts.domain.user.UserDTO;
 public class UserService {
 	@Autowired
 	private UserDAO userDAO;
+	
+	@Autowired
+	private EmpDAO empDAO;
 
 	// 추가
 	@Autowired
@@ -23,7 +28,7 @@ public class UserService {
 		return userDAO.findEmpByEmail(email);
 	}
 
-	public UserDTO findUserByEmpno(int empno) {
+	public UserDTO findUserByEmpno(Long empno) {
 		return userDAO.findUserByEmpno(empno);
 	}
 
@@ -48,5 +53,33 @@ public class UserService {
 	
 	public List<UserDTO> findUsersByDept(int deptno) {
 	    return userDAO.findUsersByDept(deptno);
+	}
+	
+	public List<UserDTO> findPageUsers(int offset){
+		return userDAO.findPageUsers(offset);
+	}
+	
+	public int countAllUsers(){
+		return userDAO.countAllUsers();
+	}
+	
+	public List<UserDTO> findUserByEname(String ename){
+		return userDAO.findUserByEname(ename);
+	}
+	
+	@Transactional
+	public void registerNewEmployee(UserDTO userDTO, EmpDTO empDTO) {
+		// emp에 사원 등록
+		empDAO.insertEmp(empDTO);
+		System.out.println(empDTO.getEmpno());
+		Long empno = empDAO.selectLastEmpno();
+		
+		// users.empno = emp.empno 연결
+		userDTO.setEmpno(empno);
+		
+		/*userDTO.setEmpno(empDTO.getEmpno());*/
+		
+		// users에 사원 등록
+		userDAO.insertUser(userDTO);
 	}
 }
