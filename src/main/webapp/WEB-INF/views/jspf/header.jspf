@@ -55,7 +55,7 @@
             <%} %>
             <c:if test="${loginUser.dept.deptno == 2 }">
 	            <li class="menu-item">
-	              <a href="/bts/history?project=&status=&page=1" class="menu-link">
+	              <a href="/bts/build?page=1" class="menu-link">
 	                <i class="menu-icon tf-icons bx bx-play"></i>
 	                <div data-i18n="Boxicons">지금 빌드</div>
 	              </a>
