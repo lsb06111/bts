@@ -5,7 +5,7 @@
 
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
-
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/assets/css/compareModal3.css">
 <style>
 .modal-almost-fullscreen {
 	width: calc(100% - 60px); /* 좌우 30px 여백 */
@@ -52,7 +52,7 @@
 							<!-- approvalModal -->
 							<div id="approvalModal" class="modal fade" tabindex="-1" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered" role="document">
-									<form id="approvalForm" method="post" action="/deploy/approval/submit">
+									<form id="approvalForm" method="post" action="${pageContext.request.contextPath}/deploy/approval/submit">
 										<div class="modal-content">
 											<div class="modal-header">
 												<h5 class="modal-title">결재처리</h5>
@@ -62,7 +62,7 @@
 												<label for="content" class="form-label fw-bold">결재 사유 (반려 시 필수)</label>
 												<textarea id="content" name="content" class="form-control"
 												 rows="10" cols="50"></textarea>
-												<input type="text" name="reportId">
+												<input type="text" name="reportId" value="${requestsDTO.id}">
 												<input type="text" name="actionType" value="">
 											</div>
 											<div class="modal-footer">

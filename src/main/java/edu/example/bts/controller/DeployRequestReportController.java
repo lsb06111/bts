@@ -46,5 +46,8 @@ public class DeployRequestReportController {
 		return "/deploy/deployRequestReportView";
 	}
 	
-	
+	@PostMapping("/deploy/approval/submit")
+	public String submitDeployApproval() {
+		return "redirect:/history?project=&status=&page=1";
+	}
 }

@@ -161,68 +161,108 @@
 				
 				console.log(headIndex);
 				console.log(baseIndex);
-				
+				//-----------------------------------------
 				let baseHtml = "";
 				let headHtml = "";
-				
+				const original= res.originalCode;
+				const revised = res.revisedCode;
+				console.log(original[0]);
+				let o=0;
+				let r=0;
+				try {
 					
-				while(baseCount<baseIndex || headCount < headIndex){
-					const baseLine = String(res.originalCode[baseCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
-					const headLine = String(res.revisedCode[headCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
-					
-					//console.log(baseLine);
-					//console.log(headLine);
-					
-					if(baseLine==null || headLine==null){ // 코드라인수 안맞을때 빈줄 추가
-						baseHtml += `<p class="mb-0">\${baseLine}</p>`;	
-						headHtml += `<p class="mb-0">\${headLine}</p>`;						
+				for(let i=0; i<res.delta.length; i++){
+					let d = res.delta[i];
+					while(o<d.baseStartNum){
+						baseHtml += `<p class="mb-0">\${o+1}<span class="">\${original[o]}</span></p>`;	
+						headHtml += `<p class="mb-0">\${r+1}<span class="">\${revised[r]}</span></p>`;		
+						o++;
+						r++;
 					}
 					
-					// 변경된 부분이 있는지 확인
-					let findDelta = res.delta.find(function(d){
-						return Number(d.baseStartNum) === baseCount;
-					});
-					
-					if(findDelta){ // 변경된 부분이 있다면
-						baseHtml += `<p class="mb-0">\${baseCount+1}<span class="changeOriCode">\${baseLine}</span></p>`;	
-						headHtml += `<p class="mb-0">\${headCount+1}<span class="changeRevCode">\${headLine}</span></p>`;		
-						
-						let baseLinesLength = findDelta.baseLines.length;
-						let headLinesLength = findDelta.headLines.length;
-						
-						let i=0;
-						while(i<= Math.abs(baseLinesLength-headLinesLength)){
-							if(baseLinesLength<headLinesLength){
-								console.log("왼쪽");
-								baseHtml += `<p class="mb-0">&nbsp</p>`;	
-							}else if(baseLinesLength>headLinesLength){
-								console.log("오른쪽");
-								headHtml += `<p class="mb-0">&nbsp</p>`;	
+					switch(d.type){
+						case "INSERT":
+							for(let j=0; j<d.headLines.length; j++){
+								baseHtml += `<p class="mb-0">&nbsp;</p>`;	
+								headHtml += `<p class="mb-0">\${r+1}<span class="insertCode">\${d.headLines[j]}</span></p>`
+								r++;
 							}
-							i++;	
-						}
-						
-						console.log("i", i);
-						
-					}else {
-						baseHtml += `<p class="mb-0">\${baseCount+1}<span class="">\${baseLine}</span></p>`;	
-						headHtml += `<p class="mb-0">\${headCount+1}<span class="">\${headLine}</span></p>`;		
+							break;
+						case "DELETE":
+							for(let j=0; j<d.baseLines.length; j++) {
+								baseHtml += `<p class="mb-0">\${o+1}<span class="deleteCode">\${d.baseLines[j]}</span></p>`;
+								headHtml += `<p class="mb-0">&nbsp;</p>`;	
+								o++;
+							}
+							break;
+						case "CHANGE":
+								if(d.headLines.length == d.baseLines.length){
+								baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${original[o]}</span></p>`;	
+								headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${revised[r]}</span></p>`;		
+								o++;
+								r++;
+							}else if(d.headLines.length < d.baseLines.length){
+								for(let j=0; j<headLines.length; j++) {
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${original[o]}</span></p>`;	
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${revised[r]}</span></p>`;		
+									o++;
+									r++;
+								}
+								for(let j=d.headLines.length; j<d.baseLines.length; j++) {
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${original[j]}</span></p>`;
+									headHtml += `<p class="mb-0">&nbsp;</p>`;
+									o++;
+								}
+							} else if(d.headLines.length > d.baseLines.length) {
+								for(let j=0; j< d.baseLines.length; j++) {
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${original[o]}</span></p>`;	
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${revised[r]}</span></p>`;
+									o++;
+									r++;
+								}
+								for(let j=d.baseLines.length; j<d.headLines.length; j++) {
+									baseHtml += `<p class="mb-0">&nbsp;</p>`;	
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${revised[r]}</span></p>`
+									r++;
+								}
+							}
+							break;
 					}
-					
-				
-					
-					
-					baseCount++; headCount++;
 				}
 				
+					
+				while(r<revised.length){
+					headHtml += `<p class="mb-0">\${r+1}<span class="">\${revised[r]}</span></p>`;		
+					r++;
+				}
+				while(o<original.length){
+					baseHtml += `<p class="mb-0">\${o+1}<span class="">\${original[o]}</span></p>`;	
+					o++;
+				}
+				
+				} catch (e) {
+					console.error(e)
+				}
+				
+				
+				
+				const baseLine = String(res.originalCode[baseCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
+				const headLine = String(res.revisedCode[headCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
+					
+				//baseHtml += `<p class="mb-0">\${baseCount+1}<span class="changeOriCode">\${baseLine}</span></p>`;	
+				//headHtml += `<p class="mb-0">\${headCount+1}<span class="changeRevCode">\${headLine}</span></p>`;		
+				
+				
 			
+				
+				
+				
+				
+				
+				//------------------------------------------
 				$("#head-code").html(headHtml);
 				$("#base-code").html(baseHtml);
 				 
-				
-				
-			
-					
 				
 			},
 			error: function(e){
