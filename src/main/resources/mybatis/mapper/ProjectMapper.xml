@@ -19,6 +19,22 @@
 		#{offset} ROWS FETCH NEXT 10
 		ROWS ONLY
 	</select>
+	
+	<!-- ProjectName으로 조회하기 -->
+	<select id="findProjectByProjectName" resultType="DevRepoDTO">
+		SELECT d.project_name AS projectName,
+		d.repo_name AS repoName,
+		d.owner_username AS ownerUsername,
+		LISTAGG(e.ename, ', ') AS memberNames,
+		d.current_stage AS currentStage
+		FROM dev_repo d JOIN project_member p ON d.id = p.dev_repo_id
+		join
+		users u ON p.user_id = u.id
+		JOIN emp e ON u.empno = e.empno
+		WHERE d.project_name LIKE '%' || #{project_name} ||'%'
+		GROUP BY
+		d.project_name, d.repo_name, d.owner_username, d.current_stage
+	</select>
 
 	<!-- 프로젝트 페이지네이션 전체 데이터 수 -->
 	<select id="countAllProject" resultType="int">

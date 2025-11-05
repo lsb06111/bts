@@ -13,4 +13,7 @@ public interface ProjectDAO {
 	
 	// 프로젝트 페이지네이션 카운팅
 	public int countAllProject();
+	
+	// 프로젝트명으로 검색하기
+	public List<DevRepoDTO> findProjectByProjectName(String projectName);
 }

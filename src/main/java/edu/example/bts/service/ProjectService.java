@@ -22,4 +22,9 @@ public class ProjectService {
 	public int countAllProject() {
 		return projectDAO.countAllProject();
 	}
+	
+	// 프로젝트명으로 검색하기
+	public List<DevRepoDTO> findProjectByProjectName(String projectName){
+		return projectDAO.findProjectByProjectName(projectName);
+	}
 }

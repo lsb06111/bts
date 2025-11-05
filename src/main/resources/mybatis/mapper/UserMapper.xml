@@ -91,6 +91,7 @@
 		ROWS ONLY
 	</select>
 
+	<!-- Ename으로 사원 검색하기 -->
 	<select id="findUserByEname" resultMap="userMap">
 		select u.id,
 		u.github_username,
@@ -111,6 +112,6 @@
 		JOIN dept d ON e.deptno = d.deptno
 		JOIN job j ON
 		e.jobno = j.jobno
-		where e.ename = #{ename}
+		where e.ename LIKE '%' || #{ename} || '%'
 	</select>
 </mapper>

@@ -16,7 +16,7 @@
 	<mvc:resources mapping="/resources/**"
 		location="/resources/" />
 
-	<!-- ✅ JWT 인터셉터 등록 -->
+	<!-- JWT 인터셉터 등록 -->
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**" />

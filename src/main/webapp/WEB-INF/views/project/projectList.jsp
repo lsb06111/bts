@@ -19,7 +19,7 @@
 				<h4 style="font-weight: 700; color: #222;">프로젝트 관리</h4>
 				<div class="input-group" style="width: 240px;">
 				<form action="/bts/project/list" method="get" class="input-group" style="width: 240px;">
-					<input type="text" class="form-control" placeholder="검색..."
+					<input type="text" class="form-control" name="projectName" value="${projectName}" placeholder="검색..."
 						style="font-size: 13px; border-right: 0; background-color: #fafafa;">
 					<button class="btn btn-outline-light" type="button"
 						style="border-left: 0; border-color: #ddd; background-color: #fff;">

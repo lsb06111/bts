@@ -19,25 +19,24 @@ public class ProjectController {
 	private ProjectService projectService;
 
 	@GetMapping("/list")
-	public String projectList(@RequestParam(value = "page", defaultValue = "1") Integer page, Model model) {
+	public String projectList(@RequestParam(value = "page", defaultValue = "1") Integer page, 
+			@RequestParam(value = "projectName", required = false) String projectName, Model model) {
 		if (page < 1) {
 			page = 1;
 		}
 		int pageSize = 10;
 		int offset = (page - 1) * pageSize;
-
-		System.out.println("=== ProjectController 실행 ===");
-		System.out.println("=== offset: " + offset + " ===");
-
 		List<DevRepoDTO> projectList = projectService.findPageProject(offset);;
-
-		System.out.println("=== Service 결과 === " + projectList); // 여기서 콘솔에 출력되는지 확인
-
 		int totalCount;
 		int totalPage;
-
-		projectList = projectService.findPageProject(offset);
-		totalCount = projectService.countAllProject();
+		
+		if(projectName!=null && !projectName.isEmpty()) {						// 프로젝트명으로 검색
+			projectList = projectService.findProjectByProjectName(projectName);
+			totalCount = projectList.size();
+		} else {
+			projectList = projectService.findPageProject(offset);				// 프로젝트 조회
+			totalCount = projectService.countAllProject();
+		}
 		totalPage = (int) Math.ceil((double) totalCount / pageSize);
 		if (totalPage == 0) {
 			totalPage = 1;
