@@ -308,6 +308,7 @@ public class DeployRequestGithubAPIService {
 				int headEndNum = d.getTarget().last();
 				List<String> headLines = d.getTarget().getLines();
 				
+				
 				while(o<baseStartNum) {
 					log.info("{}", String.format("[%-3s]%-100s |[%-3s]%-100s",o+1 ,original.get(o),r+1 ,revised.get(r)));
 					o++;
