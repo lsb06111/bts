@@ -8,7 +8,7 @@ div#head-code span.changeRevCode{
 }
 div#head-code span.insertCode{
 	color:red;
-	background-color: rgba(178, 251, 165, 0.2);
+	/* background-color: rgba(178, 251, 165, 0.2); */
 }
 
 
@@ -20,5 +20,5 @@ div#base-code span.changeOriCode{
 }
 div#base-code span.deleteCode{
 	color:red;
-	background-color: rgba(251, 165, 187, 0.2);
+	/* background-color: rgba(251, 165, 187, 0.2); */
 }

@@ -113,6 +113,7 @@
 					else if(i==1) {$("#compareDropdown").append("<option>" + res[i] + "</option>");}
 					else{$("#compareDropdown").append("<option>" + res[i] + "</option>");}
 				}
+				chageCompareSHA();
 			},
 			error: function(e){
 				alert("같은 파일 목록 못가져옴");
@@ -164,6 +165,14 @@
 				//-----------------------------------------
 				let baseHtml = "";
 				let headHtml = "";
+
+				//const original = String(res.originalCode[baseCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
+				//const revised = String(res.revisedCode[headCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
+				
+				//const original = String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
+				//const revised = String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
+		
+				
 				const original= res.originalCode;
 				const revised = res.revisedCode;
 				console.log(original[0]);
@@ -174,8 +183,8 @@
 				for(let i=0; i<res.delta.length; i++){
 					let d = res.delta[i];
 					while(o<d.baseStartNum){
-						baseHtml += `<p class="mb-0">\${o+1}<span class="">\${original[o]}</span></p>`;	
-						headHtml += `<p class="mb-0">\${r+1}<span class="">\${revised[r]}</span></p>`;		
+						baseHtml += `<p class="mb-0">\${o+1}<span class="">\${String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;	
+						headHtml += `<p class="mb-0">\${r+1}<span class="">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;		
 						o++;
 						r++;
 					}
@@ -184,45 +193,45 @@
 						case "INSERT":
 							for(let j=0; j<d.headLines.length; j++){
 								baseHtml += `<p class="mb-0">&nbsp;</p>`;	
-								headHtml += `<p class="mb-0">\${r+1}<span class="insertCode">\${d.headLines[j]}</span></p>`
+								headHtml += `<p class="mb-0">\${r+1}<span class="insertCode">\${String(d.headLines[j] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`
 								r++;
 							}
 							break;
 						case "DELETE":
 							for(let j=0; j<d.baseLines.length; j++) {
-								baseHtml += `<p class="mb-0">\${o+1}<span class="deleteCode">\${d.baseLines[j]}</span></p>`;
+								baseHtml += `<p class="mb-0">\${o+1}<span class="deleteCode">\${String(d.baseLines[j] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;
 								headHtml += `<p class="mb-0">&nbsp;</p>`;	
 								o++;
 							}
 							break;
 						case "CHANGE":
-								if(d.headLines.length == d.baseLines.length){
-								baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${original[o]}</span></p>`;	
-								headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${revised[r]}</span></p>`;		
+							if(d.headLines.length == d.baseLines.length){
+								baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;	
+								headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;		
 								o++;
 								r++;
 							}else if(d.headLines.length < d.baseLines.length){
-								for(let j=0; j<headLines.length; j++) {
-									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${original[o]}</span></p>`;	
-									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${revised[r]}</span></p>`;		
+								for(let j=0; j<d.headLines.length; j++) {
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;	
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;		
 									o++;
 									r++;
 								}
 								for(let j=d.headLines.length; j<d.baseLines.length; j++) {
-									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${original[j]}</span></p>`;
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${String(original[j] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;
 									headHtml += `<p class="mb-0">&nbsp;</p>`;
 									o++;
 								}
 							} else if(d.headLines.length > d.baseLines.length) {
 								for(let j=0; j< d.baseLines.length; j++) {
-									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${original[o]}</span></p>`;	
-									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${revised[r]}</span></p>`;
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;	
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;
 									o++;
 									r++;
 								}
 								for(let j=d.baseLines.length; j<d.headLines.length; j++) {
 									baseHtml += `<p class="mb-0">&nbsp;</p>`;	
-									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${revised[r]}</span></p>`
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`
 									r++;
 								}
 							}
@@ -245,9 +254,6 @@
 				}
 				
 				
-				
-				const baseLine = String(res.originalCode[baseCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
-				const headLine = String(res.revisedCode[headCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
 					
 				//baseHtml += `<p class="mb-0">\${baseCount+1}<span class="changeOriCode">\${baseLine}</span></p>`;	
 				//headHtml += `<p class="mb-0">\${headCount+1}<span class="changeRevCode">\${headLine}</span></p>`;		
