@@ -18,4 +18,7 @@ public interface DeployRequestReportDAO {
 
 	DeployFormDevRepoDTO selectDevRepoById(@Param("id")Long devRepoId);
 
+	void insertApprovalHistory(@Param("req_id")Long reportId, @Param("status_id") long statusId, @Param("content") String content);
+	
+
 }

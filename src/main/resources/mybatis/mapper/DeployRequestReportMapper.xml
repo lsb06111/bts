@@ -16,4 +16,8 @@
 </select>
 
 
+<insert id="insertApprovalHistory">
+insert into approval_history(req_id, status_id, content) values(#{req_id}, #{status_id}, #{content})
+</insert>
+
 </mapper>

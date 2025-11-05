@@ -45,9 +45,23 @@
 					<div class="d-flex justify-content-between align-item-center mt-4">
 						<h3 class="mb-0">보고서 확인</h3>
 						<div>
-							<button type="button" class="btn btn-primary me-2"
-								data-bs-toggle="modal" data-bs-target="#approvalModal">결재하기</button>
-							<!-- <input type="button" class="btn btn-outline-primary" onclick="" value="승인"></input> -->
+							<c:choose>
+							<c:when test="${isMine}">
+							<!-- true : 작성자이면 -->
+								<c:if test="${latests eq '반려'}">
+									<button type="button" class="btn btn-primary me-2">수정하기</button>
+								</c:if>
+							</c:when>
+
+							<c:otherwise>
+							<!-- 작성자가 아니라면 -->
+								<c:if test="${jobNo!= 1 and (latests eq '승인요망' or latests eq '반려')}">
+									<button type="button" class="btn btn-primary me-2"
+										data-bs-toggle="modal" data-bs-target="#approvalModal">결재하기</button>
+								</c:if>
+							</c:otherwise>
+							</c:choose>
+							
 							
 							<!-- approvalModal -->
 							<div id="approvalModal" class="modal fade" tabindex="-1" aria-hidden="true">
@@ -193,16 +207,20 @@
 	<%@ include file="/WEB-INF/views/deploy/deployRequestCompareModal4.jspf"%>
 	
 	<script>
+	// 반려버튼 클릭
 	$("#approvalModal").on("click", "#rejectBtn",  function(){
 		const content = $("#approvalModal #content").val().trim();  // trim()공백제거
 		if(!content){
 			alert("반려 사유를 입력해주세요");	
 			return;
 		}
+
 		$("#approvalModal input[name='actionType']").val("반려");
 		$("#approvalForm").submit();
 		
 	});
+	
+	// 승인버튼 클릭
 	$("#approvalModal").on("click", "#approveBtn",  function(){
 		$("#approvalModal input[name='actionType']").val("승인");
 		$("#approvalForm").submit();

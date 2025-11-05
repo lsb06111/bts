@@ -30,4 +30,9 @@ public class DeployRequestReportService {
 		//return null;
 	}
 
+	public void insertApprovalHistory(Long reportId, long statusId, String content) {
+		deployRequestReportDAO.insertApprovalHistory(reportId, statusId, content);
+		
+	}
+
 }
