@@ -1,20 +1,23 @@
 package edu.example.bts.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import edu.example.bts.domain.history.RequestsDTO;
-import edu.example.bts.domain.jenkins.JCommitDTO;
 import edu.example.bts.domain.project.DevRepoDTO;
 import edu.example.bts.domain.user.UserDTO;
 import edu.example.bts.service.BuildService;
@@ -57,15 +60,34 @@ public class BuildController {
 	
 	@ResponseBody
 	@PostMapping("doBuild")
-	public ResponseEntity<String> doBuild(@RequestParam List<Long> reqIds){
+	public Map<String, Object> doBuild(@RequestParam List<Long> reqIds){
 
 		System.out.println("hehehehhehehhe");
+		Map<String, Object> map = new HashMap<>();
 		if(buildService.addDeployResult(reqIds)){
-			String buildResult = jenkinsService.triggerBuildNow("test1");
-			System.out.println(buildResult);
-			return new ResponseEntity<>("빌드 성공", HttpStatus.OK);
+			//String buildResult = jenkinsService.triggerBuildNow("test1");
+			//System.out.println(buildResult);
+			// add buildNum
+			map.put("buildNum", jenkinsService.triggerBuildNow("test1"));
+			return map;
 		}
-		return new ResponseEntity<>("빌드 실패", HttpStatus.CONFLICT);
+		map.put("buildNum", -1);
+		return map;
+	}
+	
+	@ResponseBody
+	@GetMapping(value="getBuildLog", produces="text/event-stream; charset=UTF-8")
+	public SseEmitter getBuildLog(@RequestParam String projectName,
+								  @RequestParam Integer buildNum,
+								  HttpServletResponse res){
+		res.setCharacterEncoding("UTF-8");
+		res.setHeader("Content-Type", "text/event-stream; charset=UTF-8");
+		res.setHeader("Cache-Control", "no-cache");
+		SseEmitter emitter = new SseEmitter(1800000L);
+		
+		jenkinsService.streamLogs(projectName, buildNum, emitter);
+		
+		return emitter;
 	}
 	
 	
