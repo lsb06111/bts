@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import edu.example.bts.domain.deployRequest.ApprovalHistoryDetailDTO;
 import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
+import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.deployRequest.RequestCommitFileDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
@@ -27,6 +28,14 @@ public interface DeployRequestReportDAO {
 	List<ApprovalHistoryDTO> findApprovalHistoryByReqId(@Param("req_id")Long requestId);
 
 	List<String> findApprovalLinesByDevRepoId(@Param("reqId")Long reqId);
+
+	DeployRequestsDTO findRequestsById(@Param("id")Long requestId);
+
+	void deleteCommitFilesByReqId(@Param("req_id")Long reqId);
+
+	void updateRequestById(DeployRequestFormDTO deployRequestFormDTO);
+
+	void insertApprovalHistoryModify(@Param("req_id")Long reqId);
 
 
 

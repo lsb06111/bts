@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.example.bts.domain.deployRequest.ApprovalHistoryDetailDTO;
 import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
+import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.deployRequest.RequestCommitFileDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
 import edu.example.bts.domain.user.UserDTO;
+import edu.example.bts.service.DeployFormService;
 import edu.example.bts.service.DeployRequestHistoryService;
 import edu.example.bts.service.DeployRequestReportService;
 
@@ -29,6 +31,9 @@ public class DeployRequestReportController {
 	
 	@Autowired
 	DeployRequestHistoryService deployRequestHistoryService;
+	
+	@Autowired
+	DeployFormService deployFormService;
 	
 	@GetMapping("/deployRequestView")
 	public String deployRequestView(@RequestAttribute("loginUser") UserDTO user, @RequestParam Long requestId, @RequestParam Long userId,@RequestParam String latests, Model model, HttpSession session) {
@@ -100,5 +105,48 @@ public class DeployRequestReportController {
 		
 		
 		return "redirect:/history?project=&status=&page=1";
+	}
+	
+	@GetMapping("/deploy/approval/modify")
+	public String modifyDeployReport(@RequestParam Long requestId, Model model, HttpSession session) {
+		System.out.println("신청번호 : " + requestId);
+		// 하나의 보고서 내용 가져오기
+		DeployRequestsDTO requestsDTO = requestReportService.getRequestByReportId(requestId);
+		System.out.println("하나의 보고서(requests): " + requestsDTO);
+		// 보고서와 관련된 커밋 파일 목록들
+		List<RequestCommitFileDTO> commitFilesList = requestReportService.getCommitFilesByReportId(requestId);
+		System.out.println("보고서와 관련된 커밋 파일 목록 : " + commitFilesList);
+		// 개발 레포 정보 가져오기 > 세션
+		DeployFormDevRepoDTO devRepoDTO = requestReportService.getDevRepoById(requestsDTO.getDevRepoId());
+		String ownerName = devRepoDTO.getOwnerUsername();
+		String repoName = devRepoDTO.getRepoName();
+		String token=devRepoDTO.getRepoToken();
+		
+		session.setAttribute("ownerName", ownerName);
+		session.setAttribute("repoName", repoName);
+		session.setAttribute("token", token);
+		
+		//
+		List<DeployFormDevRepoDTO> devRepoByUserIdList = deployFormService.findProjectsByUserId(requestsDTO.getUserId());
+		
+		model.addAttribute("requestsDTO", requestsDTO);
+		model.addAttribute("commitFilesList", commitFilesList);
+		
+		model.addAttribute("devRepoByUserIdList", devRepoByUserIdList);
+		
+		return "/deploy/deployReportModifyForm";
+	}
+	
+	@PostMapping("/deployForm/sumbmitmodifyRequestForm")
+	public String sumbmitModifyRequestForm (@RequestAttribute("loginUser") UserDTO user, DeployRequestFormDTO deployRequestFormDTO, HttpSession session) {
+		// 작성자만 수정하니까.. 로그인 유저로 넘겨도 되겟지..?
+		deployRequestFormDTO.setUserId(user.getId());
+		System.out.println("저기요????   : " + deployRequestFormDTO);
+		
+		// 수정
+		requestReportService.modifyRequestForm(deployRequestFormDTO);
+		
+		
+		return "redirect:/";
 	}
 }

@@ -55,7 +55,7 @@
 								<c:when test="${isMine}">
 									<!-- true : 작성자이면 -->
 									<c:if test="${latests eq '반려'}">
-										<button type="button" class="btn btn-primary me-2">수정하기</button>
+										<button id="modifyBtn" type="button" class="btn btn-primary me-2">수정하기</button>
 									</c:if>
 								</c:when>
 
@@ -302,6 +302,14 @@
 
 		})
 
+		// 수정버튼 클릭 
+		$("#modifyBtn").on("click", function(){
+			var requestId = ${requestsDTO.id};
+			
+			window.location.href = "${pageContext.request.contextPath}/deploy/approval/modify?requestId=" + requestId ;
+			
+		});
+		
 		// 반려버튼 클릭
 		$("#approvalModal").on("click", "#rejectBtn", function() {
 			const content = editor.getContents();//$("#approvalModal #content").val(); // trim()공백제거

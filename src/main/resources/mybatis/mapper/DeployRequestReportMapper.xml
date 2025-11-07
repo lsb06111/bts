@@ -82,5 +82,18 @@
 
 
 
+<select id="findRequestsById" parameterType="long" resultType="DeployRequestsDTO">
+	select * from requests where id = #{id}
+</select>
+
+<delete id="deleteCommitFilesByReqId" parameterType="long">
+	delete from commit_file where req_id=#{req_id}
+</delete>
+<update id="updateRequestById" parameterType="DeployRequestFormDTO">
+	update requests set title=#{title}, created_at=sysdate, dev_repo_id=#{devRepoId}, content=#{content} where id=#{reqId}
+</update>
+<insert id="insertApprovalHistoryModify" parameterType="long">
+	insert into approval_history(req_id, status_id) values(#{req_id}, 1)
+</insert>
 
 </mapper>
