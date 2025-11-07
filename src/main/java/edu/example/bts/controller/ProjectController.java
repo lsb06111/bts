@@ -1,6 +1,8 @@
 package edu.example.bts.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,15 +10,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import edu.example.bts.domain.emp.EmpDTO;
 import edu.example.bts.domain.project.DevRepoDTO;
 import edu.example.bts.service.ProjectService;
+import edu.example.bts.service.UserService;
 
 @Controller
 @RequestMapping("/project")
 public class ProjectController {
 	@Autowired
 	private ProjectService projectService;
+	
+	@Autowired
+	private UserService userService;
 
 	@GetMapping("/list")
 	public String projectList(@RequestParam(value = "page", defaultValue = "1") Integer page, 
@@ -55,5 +63,37 @@ public class ProjectController {
 		System.out.println("totalPage" + totalPage);
 		return "/project/projectList";
 	}
+	
+	/*// AJAX 모달에서 사원 불러오기
+	@GetMapping("/employee")
+	@ResponseBody
+	public List<EmpDTO> findAllUser(@RequestParam(value = "page", defaultValue = "1") int page) {
+		int pageSize = 6;
+		int offset = (page-1) * pageSize;
+		return projectService.findAllUserInModal(offset);
+	}*/
+	
+	@GetMapping("/employee")
+	@ResponseBody
+	public Map<String, Object> findAllUser(@RequestParam(value="page", defaultValue="1") int page){
+		int pageSize = 8; // 페이지에 보여줄 데이터
+		int totalCount = userService.countAllUsers(); //전체 데이터 수
+		int totalPage = (int)Math.ceil((double)totalCount/pageSize);
+		
+		// 현재 페이지 기준 offset
+		int offset = (page - 1) * pageSize;
+		
+		List<EmpDTO> list = projectService.findAllUserInModal(offset);
+		
+		Map<String, Object> result = new HashMap<>();
+		result.put("list", list);
+	    result.put("page", page);
+	    result.put("totalCount", totalCount);
+	    result.put("totalPage", totalPage);
+
+	    return result;
+		
+	}
+	
 
 }

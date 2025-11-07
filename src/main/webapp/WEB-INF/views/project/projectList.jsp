@@ -18,13 +18,15 @@
 				style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
 				<h4 style="font-weight: 700; color: #222;">프로젝트 관리</h4>
 				<div class="input-group" style="width: 240px;">
-				<form action="/bts/project/list" method="get" class="input-group" style="width: 240px;">
-					<input type="text" class="form-control" name="projectName" value="${projectName}" placeholder="검색..."
-						style="font-size: 13px; border-right: 0; background-color: #fafafa;">
-					<button class="btn btn-outline-light" type="button"
-						style="border-left: 0; border-color: #ddd; background-color: #fff;">
-						<i class="bi bi-search" style="color: #777;"></i>
-					</button>
+					<form action="/bts/project/list" method="get" class="input-group"
+						style="width: 240px;">
+						<input type="text" class="form-control" name="projectName"
+							value="${projectName}" placeholder="검색..."
+							style="font-size: 13px; border-right: 0; background-color: #fafafa;">
+						<button class="btn btn-outline-light" type="button"
+							style="border-left: 0; border-color: #ddd; background-color: #fff;">
+							<i class="bi bi-search" style="color: #777;"></i>
+						</button>
 					</form>
 				</div>
 			</div>
@@ -55,9 +57,10 @@
 								<td>${project.memberNames}</td>
 								<td>${project.currentStage}</td>
 								<td><button class="btn btn-light"
-									style="border: none; background: transparent; padding: 4px 8px;">
-									<i class="bi bi-trash" style="color: #808080; font-size: 16px;"></i>
-								</button></td>
+										style="border: none; background: transparent; padding: 4px 8px;">
+										<i class="bi bi-trash"
+											style="color: #808080; font-size: 16px;"></i>
+									</button></td>
 							</tr>
 						</c:forEach>
 					</tbody>
@@ -100,13 +103,15 @@
 			</nav>
 
 			<!-- 하단 버튼 -->
-			<div
-				style="display: flex; justify-content: flex-end; margin-top: 25px;">
-				<button type="button" class="btn"
-					style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
-					data-bs-toggle="modal" data-bs-target="#projectAddModal">
-					프로젝트 추가</button>
-			</div>
+				<div
+					style="display: flex; justify-content: flex-end; margin-top: 25px;">
+			<c:if test="${loginUser.job.jobno == 3 && loginUser.dept.deptno == 1}">
+					<button type="button" class="btn"
+						style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
+						data-bs-toggle="modal" data-bs-target="#projectAddModal">
+						프로젝트 추가</button>
+			</c:if>
+				</div>
 		</div>
 	</div>
 
@@ -114,5 +119,11 @@
 	<%@ include file="/WEB-INF/views/project/projectAddModal.jsp"%>
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
+	<script>
+	const loginDeptno = "${loginUser.dept.deptno}"
+	const loginJobno = "${loginUser.job.jobno}"
+	console.log('loginDeptno = ' + loginDeptno);
+	console.log('loginJobno = ' + loginJobno);
+	</script>
 </body>
 </html>

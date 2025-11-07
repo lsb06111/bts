@@ -6,6 +6,49 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
+<style>
+.page-link {
+  transition: none !important;
+}
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+}
+.tag-container input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 13px;
+  min-width: 100px;
+  box-shadow: none;
+}
+.tag {
+  background-color: #f3f4f6;
+  color: #333;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag.approver {
+  background-color: #fdeaea;
+  color: #b91c1c;
+}
+
+.tag .remove-tag {
+  cursor: pointer;
+  font-weight: bold;
+  color: #666;
+}
+</style>
 <body>
 	<!-- 프로젝트 추가 모달 -->
 	<div class="modal fade" id="projectAddModal" tabindex="-1"
@@ -61,19 +104,26 @@
 									style="font-size: 14px;">
 							</div>
 
-							<div>
-								<label class="form-label fw-semibold">프로젝트 멤버</label> <input
+						<div>
+							<label class="form-label fw-semibold">프로젝트 멤버</label>
+								<div class="tag-container" id="memberTags">
+								 <input
 									type="text" name="members" class="form-control"
 									placeholder="예: 김지아 (공공사업1 Div), 박지수 (전략사업2 Div)"
 									style="font-size: 14px;">
 							</div>
+						</div>
 
-							<div>
-								<label class="form-label fw-semibold">운영팀 결재자</label> <input
+						<div>
+							<label class="form-label fw-semibold">운영팀 결재자</label>
+							<div class="tag-container" id="approverTags">
+								 <input
 									type="text" name="approver" class="form-control"
 									placeholder="예: 이준호 (운영팀2)" style="font-size: 14px;">
 							</div>
 						</div>
+						</div>
+						
 
 						<!-- 세로 구분선 -->
 						<div
@@ -98,70 +148,20 @@
 									<thead
 										style="background-color: #f9fafc; color: #555; font-weight: 600;">
 										<tr>
-											<th>부서번호</th>
+											<th>사원번호</th>
 											<th>이름</th>
 											<th>부서</th>
 											<th>직급</th>
 											<th>상태</th>
 										</tr>
 									</thead>
-									<tbody>
-										<tr>
-											<td>OTEXA210</td>
-											<td>박지현</td>
-											<td>공공사업1 Div</td>
-											<td>사원</td>
-											<td>
-												<button type="button" class="btn btn-outline-primary btn-sm"
-													style="border-radius: 6px; font-size: 13px;">멤버추가</button>
-											</td>
-										</tr>
-										<tr>
-											<td>OTEXA013</td>
-											<td>이준호</td>
-											<td>운영팀2</td>
-											<td>과장</td>
-											<td>
-												<button type="button" class="btn btn-outline-danger btn-sm"
-													style="border-radius: 6px; font-size: 13px;">결재자추가</button>
-											</td>
-										</tr>
-										<tr>
-											<td>OTEXA230</td>
-											<td>이수빈</td>
-											<td>공공사업2 Div</td>
-											<td>사원</td>
-											<td>
-												<button type="button" class="btn btn-outline-primary btn-sm"
-													style="border-radius: 6px; font-size: 13px;">멤버추가</button>
-											</td>
-										</tr>
-										<tr>
-											<td>OTEXA312</td>
-											<td>최예나</td>
-											<td>운영팀1</td>
-											<td>대리</td>
-											<td>
-												<button type="button" class="btn btn-outline-danger btn-sm"
-													style="border-radius: 6px; font-size: 13px;">결재자추가</button>
-											</td>
-										</tr>
-										<tr>
-											<td>OTEXA122</td>
-											<td>장종현</td>
-											<td>공공사업3 Div</td>
-											<td>사원</td>
-											<td>
-												<button type="button" class="btn btn-outline-primary btn-sm"
-													style="border-radius: 6px; font-size: 13px;">멤버추가</button>
-											</td>
-										</tr>
+									<tbody id="employeeTableBody">
 									</tbody>
 								</table>
 							</div>
-							<!-- ✅ 여기 아래에 페이지네이션 추가 -->
+							<!-- 페이지네이션 -->
 							<nav aria-label="Page navigation" style="margin-top: 15px;">
-								<ul class="pagination pagination-sm justify-content-center mb-0">
+								<ul id="pagination" class="pagination pagination-sm justify-content-center mb-0">
 									<li class="page-item disabled"><a class="page-link"
 										href="#" tabindex="-1" aria-disabled="true">&lt;</a></li>
 									<li class="page-item active"><a class="page-link" href="#">1</a>
@@ -190,5 +190,138 @@
 			</div>
 		</div>
 	</div>
+	<script>		
+	
+	function loadEmployeePage(pageNum) {		
+		
+	    $.ajax({
+	        url: "/bts/project/employee",
+	        type: "GET",
+	        data: { page: pageNum },
+	        dataType: "json",
+	        success: function(data) {
+	            var tbody = $("#employeeTableBody");
+	            //const tbodyDom = document.querySelector('#employeeTableBody');
+	            tbody.empty();
+
+	            
+	            // 테이블 데이터 렌더링
+	            $.each(data.list, function(i, emp) {
+	                var addBtn = "";
+
+	                if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "사원") {
+	                    addBtn = "<button type='button' class='btn btn-outline-primary btn-sm memberBtn' style='border-radius: 6px; font-size: 13px;'>멤버추가</button>";
+	                } else if (emp.dept && emp.dept.dname == "운영팀") {
+	                    addBtn = "<button type='button' class='btn btn-outline-danger btn-sm approveBtn' style='border-radius: 6px; font-size: 13px;'>결재자추가</button>";
+	                }
+
+	                var row =
+	                    "<tr>" +
+	                    "<td>" + emp.empno + "</td>" +
+	                    "<td>" + emp.ename + "</td>" +
+	                    "<td>" + (emp.dept ? emp.dept.dname : "-") + "</td>" +
+	                    "<td>" + (emp.job ? emp.job.jname : "-") + "</td>" +
+	                    "<td>" + addBtn + "</td>" +
+	                    "</tr>";
+
+	                tbody.append(row);
+	            });
+
+	            // 페이지네이션 생성
+	            var pagination = $("#pagination");
+	            pagination.empty();
+
+	            // 이전(<) 버튼
+	            if (data.page > 1) {
+	                pagination.append(
+	                    "<li class='page-item'>" +
+	                    "<a class='page-link' href='#' onclick='loadEmployeePage(" + (data.page - 1) + ")'>&lt;</a>" +
+	                    "</li>"
+	                );
+	            } else {
+	                pagination.append(
+	                    "<li class='page-item disabled'>" +
+	                    "<a class='page-link' href='#' tabindex='-1' aria-disabled='true'>&lt;</a>" +
+	                    "</li>"
+	                );
+	            }
+
+	            // 숫자 버튼
+	            for (var i = 1; i <= data.totalPage; i++) {
+	                var active = (i == data.page) ? "active" : "";
+	                var li =
+	                    "<li class='page-item " + active + "'>" +
+	                    "<a class='page-link' href='#' onclick='loadEmployeePage(" + i + ")'>" + i + "</a>" +
+	                    "</li>";
+	                pagination.append(li);
+	            }
+
+	            // 다음(>) 버튼
+	            if (data.page < data.totalPage) {
+	                pagination.append(
+	                    "<li class='page-item'>" +
+	                    "<a class='page-link' href='#' onclick='loadEmployeePage(" + (data.page + 1) + ")'>&gt;</a>" +
+	                    "</li>"
+	                );
+	            } else {
+	                pagination.append(
+	                    "<li class='page-item disabled'>" +
+	                    "<a class='page-link' href='#' tabindex='-1' aria-disabled='true'>&gt;</a>" +
+	                    "</li>"
+	                );
+	            }
+	        },
+	        error: function() {
+	            alert("사원 목록을 불러오지 못했습니다.");
+	        }
+	    });
+	}
+	
+	// 멤버추가 버튼 클릭 시
+	$(document).on("click", ".memberBtn", function() {
+	    var empName = $(this).closest("tr").find("td:nth-child(2)").text();
+	    var deptName = $(this).closest("tr").find("td:nth-child(3)").text();
+
+	    var tagText = empName + " (" + deptName + ")";
+	    var tagHtml = "<div class='tag'>" + tagText +
+	                  " <span class='remove-tag'>&times;</span></div>";
+
+	    $("#memberTags").prepend(tagHtml); // 멤버 영역에 태그 추가
+	    
+	    $("input[name='members']").attr("placeholder", "");
+	});
+
+	// 결재자추가 버튼 클릭 시
+	$(document).on("click", ".approveBtn", function() {
+	    var empName = $(this).closest("tr").find("td:nth-child(2)").text();
+	    var deptName = $(this).closest("tr").find("td:nth-child(3)").text();
+
+	    var tagText = empName + " (" + deptName + ")";
+	    var tagHtml = "<div class='tag approver'>" + tagText +
+	                  " <span class='remove-tag'>&times;</span></div>";
+
+	    $("#approverTags").html(tagHtml); // 결재자는 1명만 유지 → 이전거 교체
+	});
+
+	// 태그의 x 클릭 시 제거
+	$(document).on("click", ".remove-tag", function() {
+    $(this).parent().remove();
+
+    // 멤버 태그가 다 사라지면 placeholder 다시 복구
+    if ($("#memberTags .tag").length === 0) {
+        $("input[name='members']").attr("placeholder", "예: 김지아 (공공사업1 Div), 박지수 (전략사업2 Div)");
+    }
+
+    // 결재자 태그가 다 사라지면 placeholder 복구
+    if ($("#approverTags .tag").length === 0) {
+        $("input[name='approver']").attr("placeholder", "예: 이준호 (운영팀2)");
+    }
+});
+
+	// 페이지 최초 로드시 1페이지 불러오기
+	$(document).ready(function() {
+	    loadEmployeePage(1);
+	});
+	</script>
 </body>
 </html>
