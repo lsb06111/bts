@@ -20,7 +20,8 @@ public class DeployRequestsDTO {
     private Long userId;           // 작성자 ID
     private Long devRepoId;        // 연관된 dev_repo ID
 	
-    
+    // 사용자 이름이 필요한데.. 에러날려나?
+    private String ename;
     
     public DeployRequestsDTO(String title, String content, Long userId, Long devRepoId) {
 		this.title = title;

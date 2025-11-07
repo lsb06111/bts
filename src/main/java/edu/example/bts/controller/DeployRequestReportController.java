@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.example.bts.domain.deployRequest.ApprovalHistoryDetailDTO;
 import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.deployRequest.RequestCommitFileDTO;
+import edu.example.bts.domain.history.ApprovalHistoryDTO;
 import edu.example.bts.domain.user.UserDTO;
+import edu.example.bts.service.DeployRequestHistoryService;
 import edu.example.bts.service.DeployRequestReportService;
 
 @Controller
@@ -23,6 +26,9 @@ public class DeployRequestReportController {
 
 	@Autowired
 	DeployRequestReportService requestReportService;
+	
+	@Autowired
+	DeployRequestHistoryService deployRequestHistoryService;
 	
 	@GetMapping("/deployRequestView")
 	public String deployRequestView(@RequestAttribute("loginUser") UserDTO user, @RequestParam Long requestId, @RequestParam Long userId,@RequestParam String latests, Model model, HttpSession session) {
@@ -43,10 +49,22 @@ public class DeployRequestReportController {
 		session.setAttribute("token", token);
 	
 		// 글 작성자인지 아닌지 확인  -> 따로 함수로 만들고 싶네?
-		//System.out.println("로그인 한 사람입니다 : " +  user.getId());
 		boolean isMine = user.getId()== userId ? true : false;
-		//System.out.println(isMine);
-		//System.out.println("잡NO???" + user.getJob().getJobno());
+		
+		
+		// 승인/반려 사유
+		List<ApprovalHistoryDetailDTO> approvalHistory =requestReportService.getApprovalHistoryDetailList(requestId);
+		System.out.println(approvalHistory);
+		
+		// 결재라인정보
+		List<String> approvlaLines = requestReportService.getApprovalLinesByDevRepoId(requestId);
+		System.out.println("결재자 : " + approvlaLines);
+		// 결재 단계 확인
+		List<ApprovalHistoryDTO> approvals = requestReportService.getApprovalHistoryByReqId(requestId);
+		String result = deployRequestHistoryService.getTotalStep(approvals).charAt(0)+"";
+		System.out.println("누가 결재 해야하냐????? : " + result);
+		
+		
 		
 		
 		model.addAttribute("requestsDTO", requestsDTO);
@@ -56,6 +74,10 @@ public class DeployRequestReportController {
 		model.addAttribute("latests", latests);  // 대기중, 승인요망..
 		model.addAttribute("jobNo", user.getJob().getJobno());  // 다른 직원(사원)의 배포신청을 보게 되야한다면 필요
 
+		model.addAttribute("approvalHistory", approvalHistory);
+		
+		model.addAttribute("approvlaLines", approvlaLines);
+		model.addAttribute("result", result);
 		
 		return "/deploy/deployRequestReportView";
 	}

@@ -85,8 +85,11 @@
 										</div>
 										<div class="mb-3">
 											<h5 class="mb-2">보고서 내용</h5>
-											<textarea class="form-control" id="rquestTBcontent" name="content"
-												rows="14"></textarea>
+											<textarea id="editor_content" name="content" style="display:none"></textarea>
+											 <textarea id="editor" ></textarea>
+											
+											<!-- <textarea class="form-control" id="rquestTBcontent" name="content"
+												rows="14"></textarea> -->
 										</div>
 									</div>
 								</div>
@@ -151,6 +154,8 @@
 	</div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/ko.js"></script>
 
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
@@ -160,6 +165,33 @@
 		file="/WEB-INF/views/deploy/deployRequestCompareModal4.jspf"%>  <!-- 수정 2 또는 3 -->
 	
 	<script>
+	let editor;
+	$(function(){
+		editor = SUNEDITOR.create('editor', {
+			  lang: SUNEDITOR_LANG.ko,    // 한국어 UI
+			  height: '300px',
+			  width:'100%',
+			  minHeight: '200px',
+			  buttonList: [
+			    ['undo', 'redo'],
+			    ['formatBlock'],
+			    ['bold', 'underline', 'italic', 'strike'],
+			    ['fontColor', 'hiliteColor'],
+			    ['align', 'list', 'lineHeight'],
+			    ['link', 'image', 'video'],
+			    ['removeFormat', 'showBlocks', 'codeView', 'fullScreen']
+			  ],
+			  // 이미지 업로드를 직접 처리하려면 다음 옵션 활용 (예시 비활성화) - 컨트롤러 구현 예정 - 11/04
+			  // callBackSave: (contents, isChanged) => { ... }
+			  // imageUploadUrl: '/your/upload/url', // 서버 업로드 엔드포인트
+			});
+
+			
+	})
+	
+	
+	
+	
 		function prevDeployForm(){
 			$("#prevDeployForm").show();
 			$("#nextDeployForm").css("display", "none"); // .show();
@@ -220,12 +252,18 @@
 		function submmitDeployForm(){
 			/* 값 확인해서 통과시키기 */
 			const titleVal = $("#rquestTBtitle").val();
-			const contentVal = $("#rquestTBcontent").val();
+			const contentVal = editor.getContents();
+			
 			const selectedFileLength = $("tbody").children().length;
+			
+			console.log(titleVal);
+			console.log(contentVal);
+			console.log(selectedFileLength);
 			
 			if(titleVal == "" || contentVal=="" || selectedFileLength==0){
 				alert("필수항목을 채워주세요");
 			}else {
+				document.querySelector('#editor_content').value = contentVal;
 				$("#deployRequestForm").submit();			
 			}
 		}

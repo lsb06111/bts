@@ -4,7 +4,15 @@
 
 
 <select id="selectRequestByReportId" parameterType="Long" resultType="DeployRequestsDTO">
-	SELECT * FROM requests WHERE id=#{id}
+	<!-- SELECT * FROM requests WHERE id=#{id} -->
+	select r.*,
+        u.empno,
+        e.ename
+	from requests r
+	join users u on r.user_id = u.id
+	join emp e on u.empno = e.empno
+	where r.id=#{id}
+	
 </select>
 
 <select id="selectCommitFilesByReportId" parameterType="Long" resultType="RequestCommitFileDTO">
@@ -17,7 +25,62 @@
 
 
 <insert id="insertApprovalHistory">
-insert into approval_history(req_id, status_id, content) values(#{req_id}, #{status_id}, #{content})
+	INSERT INTO approval_history(req_id, status_id, content) VALUES(#{req_id}, #{status_id}, #{content})
 </insert>
+
+
+<select id="findApprovalHistoryDetailList" parameterType="Long" resultType="ApprovalHistoryDetailDTO">
+	select ah.id, ah.created_at, ah.req_id, ah.status_id, ah.content,  
+	        s.description,
+	        r.user_id, r.dev_repo_id,
+	        al.empno, 
+	        e.ename, e.jobno, e.deptno,
+	        j.jname,
+	        d.dname
+	from approval_history ah
+	join status s on ah.status_id = s.id
+	join requests r on ah.req_id = r.id
+	join approval_line al on r.dev_repo_id = al.dev_repo_id
+	join emp e on al.empno = e.empno
+	join job j on e.jobno = j.jobno
+	join dept d on e.deptno = d.deptno
+	where ah.req_id=#{req_id}
+	order by ah.id desc
+</select>
+<!-- 취소... 
+<select id="findAllByReqId" parameterType="Long" resultMap="approvalHistoryResultMap">
+	SELECT ah.id,
+        	ah.content,
+        	ah.created_at,
+        	ah.req_id,
+        	s.id as status_id,
+        	s.description as description
+	FROM approval_history ah
+	JOIN status s ON ah.status_id = s.id 
+	WHERE ah.req_id =#{req_id} AND ah.status_id !=1  ORDER BY ah.id DESC
+</select>
+  -->
+
+
+<resultMap id="approvalHistoryResultMap" type="ApprovalHistoryDTO">
+	<id property="id" column="ID"/>
+	<result property="content" column="CONTENT" />
+	<result property="createdAt" column="CREATED_AT"/>
+	<result property="reqId" column="REQ_ID" />
+	<association property="status" javaType="StatusDTO">
+		<id property="id" column="status_id"/>
+		<result property="description" column="description"/>
+	</association>
+</resultMap>
+<select id="findApprovalHistoryByReqId" parameterType="long" resultMap="approvalHistoryResultMap">
+	select * from approval_history where req_id = #{req_id} order by id desc
+</select>
+
+<select id="findApprovalLinesByDevRepoId" parameterType="long" resultType="String">
+	select e.ename from emp e where empno in (select empno from approval_line where dev_repo_id in (select dev_repo_id from requests where id = #{reqId}))
+</select>
+
+
+
 
 </mapper>
