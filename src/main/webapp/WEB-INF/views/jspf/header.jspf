@@ -257,6 +257,18 @@
 		<!-- / chat -->
 <script>
 
+const userId = '${loginUser.id}';
+const es = new EventSource('/bts/sse/subscribe?userId=' + userId);
+
+es.addEventListener('INIT', (e) => console.log('SSE connected:', e.data));
+es.addEventListener('REQUEST_CREATED', (e) => {
+  const data = JSON.parse(e.data);
+  console.log('신규 신청 알림:', data);
+
+});
+
+es.onerror = (e) => console.warn('SSE error (auto-retry):', e);
+
 
 document.addEventListener('DOMContentLoaded', function() {
   const currentPath = window.location.pathname; // 쿼리 제외한 경로만 비교

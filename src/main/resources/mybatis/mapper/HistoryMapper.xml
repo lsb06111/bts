@@ -284,4 +284,20 @@ order by
     r.id desc
 </select>
 
+<select id="getApprovalLines" resultType="ApprovalLineDTO" parameterType="long">
+	select a.*, u.id user_id from approval_line a join emp e on a.empno = e.empno join users u on e.empno = u.empno where a.dev_repo_id = #{devRepoId}
+</select>
+
+<insert id="addNotification">
+	insert into notification (title, slug, user_id) values(#{title}, #{slug}, #{userId})
+</insert>
+
+<select id="getRequestsById" resultType="DeployRequestsDTO" parameterType="long">
+	select * from requests where id = #{reqId}
+</select>
+
+<select id="getNotificationsByUserId" resultType="NotificationDTO" parameterType="long">
+	select * from notification where user_id = #{userId} and is_read = 0
+</select>
+
 </mapper>
