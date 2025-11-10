@@ -95,4 +95,34 @@
 		NEXT 8 ROWS ONLY
 	</select>
 
+	<!-- 프로젝트 등록 -->
+	<insert id="insertProject"
+		parameterType="edu.example.bts.domain.project.DevRepoDTO"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO DEV_REPO (
+		PROJECT_NAME, OWNER_USERNAME, REPO_NAME, REPO_TOKEN, CURRENT_STAGE, PROD_REPO_ID
+		) VALUES (
+		#{projectName}, #{ownerUsername}, #{repoName}, #{repoToken}, 'INIT', 1
+		)
+	</insert>
+
+	<!-- 멤버 등록 -->
+	<insert id="insertProjectMember">
+		INSERT INTO PROJECT_MEMBER (DEV_REPO_ID, USER_ID)
+		VALUES (#{projectId}, #{empno})
+	</insert>
+
+	<!-- 결재자 등록 -->
+	<update id="updateProjectApprover">
+		UPDATE DEV_REPO SET APPROVER_ID = #{approverEmpno}
+		WHERE ID = #{projectId}
+	</update>
+
+	<!-- 결재 라인 등록 -->
+	<insert id="insertApprovalLine">
+		INSERT INTO APPROVAL_LINE (APPROVAL_ORDER, EMPNO,
+		DEV_REPO_ID)
+		VALUES (#{approvalOrder}, #{empno}, #{projectId})
+	</insert>
+
 </mapper>
