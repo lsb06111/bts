@@ -194,7 +194,11 @@ public class DeployRequestHistoryService {
 		Collections.reverse(approvals);
 		for(ApprovalHistoryDTO approval : approvals) {
 			switch(approval.getStatus().getId().intValue()) {
-				case 2:
+			case 1:
+				reject = "";
+				result=1;
+				break;
+			case 2:
 					System.out.println("승인");
 					reject = "";
 					result += 1;

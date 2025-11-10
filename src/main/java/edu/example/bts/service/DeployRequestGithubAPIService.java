@@ -37,7 +37,9 @@ import com.github.difflib.patch.Patch;
 import edu.example.bts.dao.DeployRequestDAO;
 import edu.example.bts.domain.deployRequest.CommitDTO;
 import edu.example.bts.domain.deployRequest.CommitFileDTO;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class DeployRequestGithubAPIService {
 
@@ -286,6 +288,8 @@ public class DeployRequestGithubAPIService {
 			
 
 			System.out.println("****확인중입니다 ******");
+			int o=0;
+			int r=0;
 			
 			List<Map<String, Object>> delta = new ArrayList<>();
 			for(AbstractDelta<String> d : dt) {
@@ -304,24 +308,87 @@ public class DeployRequestGithubAPIService {
 				int headEndNum = d.getTarget().last();
 				List<String> headLines = d.getTarget().getLines();
 				
+				
+				while(o<baseStartNum) {
+					log.info("{}", String.format("[%-3s]%-100s |[%-3s]%-100s",o+1 ,original.get(o),r+1 ,revised.get(r)));
+					o++;
+					r++;
+					
+				}
+				
+				switch (d.getType()) {
+				case INSERT:
+					log.info("insert");
+					for(int i=0; i<headLines.size(); i++) {
+						log.info("{}", String.format("[%-3s]%-100s | [%-3s]%-100s", "","",r+1, headLines.get(i)));											
+					
+					r++;
+					}
+					break;
+				case DELETE:
+					log.info("delete");
+					for(int i=0; i<baseLines.size(); i++) {
+						log.info("{}", String.format("[%-3s]%-100s | [%-3s]%-100s", o+1,baseLines.get(i),"", ""));					
+					o++;
+					}
+					break;
+				case CHANGE:
+					log.info("CHANGE");
+					if(headLines.size() == baseLines.size()){
+						log.info("{}", String.format("[%-3s]%-100s |[%-3s]%-100s",o+1 ,original.get(o),r+1 ,revised.get(r)));
+						o++;
+						r++;
+					}else if(headLines.size() < baseLines.size()){
+						for(int i=0; i<headLines.size(); i++) {
+							log.info("{}", String.format("[%-3s]%-100s |[%-3s]%-100s",o+1 ,original.get(o),r+1 ,revised.get(r)));
+							o++;
+							r++;
+						}
+						for(int i=headLines.size();i<baseLines.size(); i++) {
+							log.info("{}", String.format("[%-3s]%-100s | [%-3s]%-100s", o+1,baseLines.get(i),"", ""));	
+							o++;
+						}
+					} else if(headLines.size() > baseLines.size()) {
+						for(int i=0; i<baseLines.size(); i++) {
+							log.info("{}", String.format("[%-3s]%-100s |[%-3s]%-100s",o+1 ,original.get(o),r+1 ,revised.get(r)));
+							o++;
+							r++;
+						}
+						for(int i=baseLines.size(); i<headLines.size(); i++) {
+							log.info("{}", String.format("[%-3s]%-100s | [%-3s]%-100s", "","",r+1, headLines.get(i)));	
+							r++;
+						}
+					}
+					
+				/*	for(int i=0; i<baseLines.size(); i++) {
+						log.info("{}", String.format("[%-3s]%-100s | [%-3s]%-100s", o+1,baseLines.get(i),"", ""));					
+					o++;
+					}
+					for(int i=0; i<headLines.size(); i++) {
+						log.info("{}", String.format("[%-3s]%-100s | [%-3s]%-100s", "","",r+1, headLines.get(i)));											
+					
+					r++;
+					}*/
+					break;
+				default:
+					break;
+				}
+				
 				block.put("type", type);
 				block.put("baseStartNum", baseStartNum);
-				block.put("baseEndNum", baseEndNum);
+				//block.put("baseEndNum", baseEndNum);
 				block.put("baseLines", baseLines);
 				block.put("headStartNum", headStartNum);
-				block.put("headEndNum", headEndNum);
+				//block.put("headEndNum", headEndNum);
 				block.put("headLines", headLines);
 				
 				delta.add(block);
-				System.out.println("delta : " + block);
 			}
 			
 			result.put("delta", delta);
 			result.put("originalCode", original);
 			result.put("revisedCode", revised);
-			
-			System.out.println(delta);
-			System.out.println(result);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

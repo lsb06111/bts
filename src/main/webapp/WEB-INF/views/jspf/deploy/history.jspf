@@ -101,7 +101,7 @@
               <td>
                 <button class="btn btn-sm btn-outline-secondary"
                         style="border-radius:6px; font-size:0.85rem;"
-                        onclick="location.href='${pageContext.request.contextPath}/deployRequestView?requestId=${request.id}'">
+                        onclick="location.href='${pageContext.request.contextPath}/deployRequestView?requestId=${request.id}&userId=${userDetails[status.index].id}&latests=${latests[status.index]}'">
                   자세히 보기
                 </button>
               </td>
