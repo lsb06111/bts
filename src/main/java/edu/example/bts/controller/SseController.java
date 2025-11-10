@@ -8,27 +8,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import edu.example.bts.sse.SseEmitterRepository;
+import edu.example.bts.service.sse.NotifyService;
+
 
 @Controller
 @RequestMapping("/sse")
 public class SseController {
-	/*
-	@Autowired
-	SseEmitterRepository repo;
 
-    @GetMapping(value = "/subscribe", produces = "text/event-stream;charset=UTF-8")
-    @ResponseBody
-    public SseEmitter subscribe(@RequestParam("userId") Long userId) {
-        //타임아웃 30분
-        SseEmitter emitter = new SseEmitter(30L * 60L * 1000L);
-        repo.save(userId, emitter);
-
-        try {
-            emitter.send(SseEmitter.event().name("INIT").data("connected"));
-        } catch (Exception ignore) {}
-
-        return emitter;
+	@Autowired 
+	NotifyService notifyService;
+	
+	@ResponseBody
+	@GetMapping(value="/subscribe", produces="text/event-stream;charset=UTF-8")
+    public SseEmitter subscribe(@RequestParam Long userId) {
+        return notifyService.subscribe(userId);
     }
-    */
 }

@@ -1,6 +1,8 @@
 package edu.example.bts.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -16,12 +18,20 @@ import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.user.UserDTO;
 import edu.example.bts.service.DeployFormService;
+import edu.example.bts.service.DeployRequestHistoryService;
+import edu.example.bts.service.sse.NotifyService;
 
 @Controller
 public class DeployFormController {
 
 	@Autowired
 	DeployFormService deployFormService;
+	
+	@Autowired
+	NotifyService notifyService;
+	
+	@Autowired
+	DeployRequestHistoryService historyService;
 	
 	
 	@GetMapping("/deployForm")
@@ -56,7 +66,18 @@ public class DeployFormController {
 		
 		deployRequestFormDTO.setUserId(user.getId());
 		
-		deployFormService.createRequests(deployRequestFormDTO);
+		DeployRequestsDTO deployRequestsDTO = deployFormService.createRequests(deployRequestFormDTO);
+		
+		// 에미터로 알림 보내기
+		Map<String, Object> notiPayload = new HashMap<>();
+		String title = deployRequestFormDTO.getTitle();
+		Long reqId = deployRequestsDTO.getId();
+		notiPayload.put("title", title);
+		notiPayload.put("reqId", reqId);
+		Long userId = notifyService.getNextApprovalLine(deployRequestFormDTO.getDevRepoId(), user.getId(), deployRequestFormDTO.getUserId());
+		
+		notifyService.notifyUser(userId, notiPayload);
+		historyService.addNotification(title, ""+reqId, userId);
 		
 		// git저장한 세션 제거?
 		session.removeAttribute("ownerName");

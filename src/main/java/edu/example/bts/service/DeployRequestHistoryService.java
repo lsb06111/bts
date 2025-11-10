@@ -11,7 +11,9 @@ import edu.example.bts.dao.BoardDAO;
 import edu.example.bts.dao.HistoryDAO;
 import edu.example.bts.dao.MainDAO;
 import edu.example.bts.domain.board.QnaDTO;
+import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
+import edu.example.bts.domain.history.NotificationDTO;
 import edu.example.bts.domain.history.RequestsDTO;
 import edu.example.bts.domain.history.StatusDTO;
 import edu.example.bts.domain.project.DevRepoDTO;
@@ -228,5 +230,17 @@ public class DeployRequestHistoryService {
 		}*/
 		
 		return results;
+	}
+	
+	public boolean addNotification(String title, String slug, Long userId) {
+		return historyDAO.addNotification(title, slug, userId);
+	}
+	
+	public DeployRequestsDTO getRequestsById(Long reqId) {
+		return historyDAO.getRequestsById(reqId);
+	}
+	
+	public List<NotificationDTO> getNotificationsByUserId(Long userId){
+		return historyDAO.getNotificationsByUserId(userId);
 	}
 }

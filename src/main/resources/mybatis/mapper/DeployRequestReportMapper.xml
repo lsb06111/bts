@@ -77,7 +77,8 @@
 </select>
 
 <select id="findApprovalLinesByDevRepoId" parameterType="long" resultType="String">
-	select e.ename from emp e where empno in (select empno from approval_line where dev_repo_id in (select dev_repo_id from requests where id = #{reqId}))
+	select e.ename from approval_line a join emp e on a.empno = e.empno where dev_repo_id in 
+	(select dev_repo_id from requests where id = #{reqId}) order by approval_order
 </select>
 
 

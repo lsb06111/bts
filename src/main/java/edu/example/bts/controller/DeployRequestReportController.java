@@ -1,6 +1,8 @@
 package edu.example.bts.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -18,10 +20,12 @@ import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.deployRequest.RequestCommitFileDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
+import edu.example.bts.domain.history.RequestsDTO;
 import edu.example.bts.domain.user.UserDTO;
 import edu.example.bts.service.DeployFormService;
 import edu.example.bts.service.DeployRequestHistoryService;
 import edu.example.bts.service.DeployRequestReportService;
+import edu.example.bts.service.sse.NotifyService;
 
 @Controller
 public class DeployRequestReportController {
@@ -34,6 +38,9 @@ public class DeployRequestReportController {
 	
 	@Autowired
 	DeployFormService deployFormService;
+	
+	@Autowired
+	NotifyService notifyService;
 	
 	@GetMapping("/deployRequestView")
 	public String deployRequestView(@RequestAttribute("loginUser") UserDTO user, @RequestParam Long requestId, @RequestParam Long userId,@RequestParam String latests, Model model, HttpSession session) {
@@ -88,7 +95,7 @@ public class DeployRequestReportController {
 	}
 	
 	@PostMapping("/deploy/approval/submit")
-	public String submitDeployApproval(@RequestParam String content, @RequestParam Long reportId, @RequestParam String actionType) {
+	public String submitDeployApproval(@RequestAttribute("loginUser") UserDTO user, @RequestParam String content, @RequestParam Long reportId, @RequestParam String actionType) {
 		System.out.println("********************");
 		System.out.println("content : " + content);
 		System.out.println("reportId : " + reportId);
@@ -100,8 +107,22 @@ public class DeployRequestReportController {
 		}else if(actionType.equals("반려")) {
 			statusId=3;
 		}
-		requestReportService.insertApprovalHistory(reportId, statusId, content);
 		
+		requestReportService.insertApprovalHistory(reportId, statusId, content);
+		Map<String, Object> notiPayload = new HashMap<>();
+		DeployRequestsDTO deployRequestsDTO = deployRequestHistoryService.getRequestsById(reportId);
+		String title = deployRequestsDTO.getTitle();
+		Long reqId = deployRequestsDTO.getId();
+		notiPayload.put("title", title);
+		notiPayload.put("reqId", reqId);
+		Long userId;
+		if(statusId == 3)
+			userId = notifyService.getPreviousApprovalLine(deployRequestsDTO.getDevRepoId(), user.getId(), deployRequestsDTO.getUserId());
+		else
+			userId = notifyService.getNextApprovalLine(deployRequestsDTO.getDevRepoId(), user.getId(), deployRequestsDTO.getUserId());
+		
+		notifyService.notifyUser(userId, notiPayload);
+		deployRequestHistoryService.addNotification(title, ""+reqId, userId);
 		
 		
 		return "redirect:/history?project=&status=&page=1";
@@ -146,6 +167,16 @@ public class DeployRequestReportController {
 		// 수정
 		requestReportService.modifyRequestForm(deployRequestFormDTO);
 		
+		//modify sse
+		Map<String, Object> notiPayload = new HashMap<>();
+		String title = deployRequestFormDTO.getTitle();
+		Long reqId = deployRequestFormDTO.getReqId();
+		notiPayload.put("title", title);
+		notiPayload.put("reqId", reqId);
+		Long userId = notifyService.getNextApprovalLine(deployRequestFormDTO.getDevRepoId(), user.getId(), deployRequestFormDTO.getUserId());
+		
+		notifyService.notifyUser(userId, notiPayload);
+		deployRequestHistoryService.addNotification(title, ""+reqId, userId);
 		
 		return "redirect:/";
 	}
