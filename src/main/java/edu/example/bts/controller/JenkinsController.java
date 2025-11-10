@@ -46,7 +46,9 @@ public class JenkinsController {
 	public Map<String, String> getLatestBuild(@RequestParam String projectName) {
 		
 		Map<String, String> map = new HashMap<>();
-		map.put("result", jenkinsService.getLatestBuild(projectName));
+		List<String> results = jenkinsService.getLatestBuild(projectName);
+		map.put("result", results.get(0));
+		map.put("buildNum", results.get(1));
 		return map;
 	}
 }

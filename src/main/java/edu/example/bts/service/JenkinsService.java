@@ -1,9 +1,12 @@
 package edu.example.bts.service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -11,7 +14,18 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.client.JenkinsHttpClient;
+import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildResult;
+import com.offbytwo.jenkins.model.JobWithDetails;
+import com.offbytwo.jenkins.model.QueueItem;
+import com.offbytwo.jenkins.model.QueueReference;
 
 import edu.example.bts.dao.JenkinsDAO;
 import edu.example.bts.domain.jenkins.JCommitDTO;
@@ -19,11 +33,31 @@ import edu.example.bts.domain.jenkins.JCommitDTO;
 @Service
 public class JenkinsService {
 
+	private static final MediaType TEXT_UTF8 =
+		    new MediaType("text", "plain", StandardCharsets.UTF_8); // emitter logchunk 보낼때 한글 깨짐 방지용
 	@Autowired
 	JenkinsDAO jenkinsDAO;
 	
 	String user = "test1";
-	String token = "qwer1234"; // token & password 둘다 가능
+	String token = "11de287229e552b77c029bb87098ad3c6d"; // token & password 둘다 가능
+	String jenkinsUrl = "http://localhost:9000";
+	
+	private JenkinsServer getJenkinsServer() {
+		try {
+            return new JenkinsServer(new URI(jenkinsUrl), user, token);
+        } catch (Exception e) {
+            
+            throw new RuntimeException("Jenkins 서버 연결 실패", e);
+        }
+	}
+	private JenkinsHttpClient getJenkinsHttpClient() {
+        try {
+            return new JenkinsHttpClient(new URI(jenkinsUrl), user, token);
+        } catch (Exception e) {
+            throw new RuntimeException("Jenkins HttpClient 생성 실패", e);
+        }
+    }
+	
 	
 	public List<JCommitDTO> getCommitList(){
 		return jenkinsDAO.getCommitList();
@@ -42,103 +76,57 @@ public class JenkinsService {
 		return commits;
 	}
 	
-	public String triggerBuildNow(String projectName) {
-	    String base = "http://localhost:9000";
-	    String crumbApi = base + "/crumbIssuer/api/json";
-	    String buildApi = base + "/job/" + projectName + "/build";
-
+	public Long triggerBuildNow(String projectName) {
 	    try {
-	        String auth = user + ":" + token;
-	        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-
-	        URL cUrl = new URL(crumbApi);
-	        HttpURLConnection cConn = (HttpURLConnection) cUrl.openConnection();
-	        cConn.setRequestMethod("GET");
-	        cConn.setRequestProperty("Authorization", "Basic " + encodedAuth);
-	        cConn.setUseCaches(false);
-	        cConn.setInstanceFollowRedirects(false);
-
+	        JenkinsServer jenkins = getJenkinsServer();
+	        JobWithDetails job = jenkins.getJob(projectName);
 	        
-	        String setCookie = cConn.getHeaderField("Set-Cookie"); 
-	        String cookieHeader = null;
-	        if (setCookie != null) {
-	            
-	            cookieHeader = setCookie.split(";", 2)[0];
-	        }
-
-	        StringBuilder csb = new StringBuilder();
-	        try (BufferedReader br = new BufferedReader(new InputStreamReader(cConn.getInputStream(), "UTF-8"))) {
-	            String line;
-	            while ((line = br.readLine()) != null) csb.append(line);
-	        } catch (Exception e) {
-
-	        } finally {
-	            cConn.disconnect();
-	        }
-
-	        String crumbField = null;
-	        String crumbValue = null;
-	        if (csb.length() > 0) {
-	            JSONObject cj = new JSONObject(csb.toString());
-	            crumbField = cj.optString("crumbRequestField", null);
-	            crumbValue = cj.optString("crumb", null);
-	        }
-
+	        QueueReference queueRef = job.build(); 
+	        long timeout = 60_000; // 최대 60초 대기
+	        long waited = 0L;
+	        long step = 1000L;
 	        
-	        URL bUrl = new URL(buildApi);
-	        HttpURLConnection bConn = (HttpURLConnection) bUrl.openConnection();
-	        bConn.setRequestMethod("POST");
-	        bConn.setDoOutput(true);
-	        bConn.setRequestProperty("Authorization", "Basic " + encodedAuth);
+	        while (waited < timeout) {
+	        	QueueItem queueItem = jenkins.getQueueItem(queueRef);
+	            if (queueItem != null && queueItem.getExecutable() != null) {
+	                return queueItem.getExecutable().getNumber();
+	            }
+	            if (queueItem != null && queueItem.isCancelled()) {
+	                return -2L; // 취소됨
+	            }
 
-	        
-	        if (cookieHeader != null) {
-	            bConn.setRequestProperty("Cookie", cookieHeader);
-	        }
-	        
-	        if (crumbField != null && crumbValue != null) {
-	            bConn.setRequestProperty(crumbField, crumbValue);
+	            Thread.sleep(step);
+	            waited += step;
 	        }
 
-	        int code = bConn.getResponseCode();
-	        String location = bConn.getHeaderField("Location");
-	        bConn.disconnect();
-
-	        if (code == 201 && location != null) return "QUEUED: " + location;
-	        return "ERROR: HTTP " + code;
-
+	        return -3L;
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return "ERROR";
+	        return -1L;
 	    }
 	}
 	
-	public String getLatestBuild(String projectName) {
-		String jenkinsUrl = "http://localhost:9000/job/test1/lastBuild/api/json?pretty=true";
+	
+	public List<String> getLatestBuild(String projectName) {
+		System.out.println("new buildnew buildnew buildnew buildnew build");
+		List<String> infos = new ArrayList<>();
 		try {
-			URL url = new URL(jenkinsUrl);
-	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	        conn.setRequestMethod("GET");
-	        String auth = user + ":" + token;
-	        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-	        conn.setRequestProperty("Authorization", "Basic " + encodedAuth);
-
-	        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-	        StringBuilder response = new StringBuilder();
-	        String line;
-	        while ((line = br.readLine()) != null) {
-	            response.append(line);
-	        }
-	        br.close();
-	        JSONObject json = new JSONObject(response.toString());
-	        return json.optString("result", "UNKNOWN");
-	        
-		}catch(Exception e) {
-			System.out.println("error");
+			JenkinsServer jenkins = getJenkinsServer();
+			JobWithDetails job = jenkins.getJob("test1");
+			
+			Build lastBuild = job.getLastBuild();
+            BuildResult result = lastBuild.details().getResult();
+            
+            infos.add(result != null ? result.name() : "BUILDING");
+            infos.add(lastBuild.getNumber()+"");
+            return infos;
+            
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		return "ERROR";
-		
+		infos.add("ERROR");
+		infos.add("-1");
+		return infos;
 	}
 	
 	public List<Integer> getSuccessRate(String projectName){
@@ -155,7 +143,6 @@ public class JenkinsService {
 	        String auth = user + ":" + token;
 	        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 	        conn.setRequestProperty("Authorization", "Basic " + encodedAuth);
-
 	        
 	        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 	        StringBuilder response = new StringBuilder();
@@ -193,4 +180,87 @@ public class JenkinsService {
 		
 		return data;
 	}
+	
+	@Async
+	public void streamLogs(String projectName, Integer buildNum, SseEmitter emitter) {
+        
+		String jobName = "test1";
+        long pos = 0;
+        boolean buildIsRunning = true;
+        HttpURLConnection conn = null;
+
+        try {
+            String auth = user + ":" + token;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeader = "Basic " + encodedAuth;
+
+            emitter.send(SseEmitter.event().name("connect").data("Log stream started..."));
+
+            while (buildIsRunning) {
+                String apiUrl = String.format("%s/job/%s/%d/logText/progressiveText?start=%d",
+                                            jenkinsUrl, jobName, buildNum, pos);
+                URL url = new URL(apiUrl);
+                
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Authorization", authHeader);
+                conn.setUseCaches(false);
+                
+                int statusCode = conn.getResponseCode();
+                if (statusCode != 200) {
+                    throw new RuntimeException("Log stream failed, status: " + statusCode);
+                }
+
+                //logchunck 읽기
+                StringBuilder logChunkBuilder = new StringBuilder();
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        logChunkBuilder.append(line).append("\n\n"); //
+                    }
+                }
+                String logChunk = logChunkBuilder.toString();
+                
+                //헤더 읽기
+                String textSize = conn.getHeaderField("X-Text-Size");
+                if (textSize != null) {
+                    pos = Long.parseLong(textSize);
+                }
+
+                // emitter로 데이터 전송
+                if (logChunk != null && !logChunk.isEmpty()) {
+                	//System.out.println(logChunk);
+                    emitter.send(SseEmitter.event().name("log").data(logChunk, TEXT_UTF8));
+                }
+
+                // 종료 헤더 읽기
+                String moreData = conn.getHeaderField("X-More-Data");
+                if (moreData == null || !"true".equals(moreData)) {
+                    
+                    buildIsRunning = false; 
+                }
+                
+                conn.disconnect();
+                
+                if (buildIsRunning) {
+                    Thread.sleep(200); //
+                }
+            }
+
+            emitter.send(SseEmitter.event().name("complete").data("Build finished."));
+            emitter.complete();
+
+        } catch (Exception e) {
+            try {
+                emitter.send(SseEmitter.event().name("error").data(e.getMessage()));
+            } catch (IOException ioEx) {
+            }
+            emitter.completeWithError(e);
+        } finally {
+            if (conn != null) {
+                conn.disconnect(); 
+            }
+        }
+	}
+
 }

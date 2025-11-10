@@ -101,7 +101,7 @@ where a.req_id=#{reqId} order by a.id desc
 
 <select id="getAllRequestsForS" resultMap="RequestsMap">
     select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
-    where user_id = #{userId} 
+     
     <if test="projectName != null and projectName != ''">
     	and d.project_name = #{projectName}
   	</if>
