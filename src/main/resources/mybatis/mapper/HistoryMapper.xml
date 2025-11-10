@@ -288,7 +288,7 @@ order by
 	select a.*, u.id user_id from approval_line a join emp e on a.empno = e.empno join users u on e.empno = u.empno where a.dev_repo_id = #{devRepoId}
 </select>
 
-<insert id="addNotification">
+<insert id="addNotification" useGeneratedKeys="true" keyProperty="id" keyColumn="ID">
 	insert into notification (title, slug, user_id) values(#{title}, #{slug}, #{userId})
 </insert>
 
@@ -299,5 +299,13 @@ order by
 <select id="getNotificationsByUserId" resultType="NotificationDTO" parameterType="long">
 	select * from notification where user_id = #{userId} and is_read = 0
 </select>
+
+<update id="readAllNotifications" parameterType="long">
+	update notification set is_read = 1 where user_id = #{userId}
+</update>
+
+<update id="readNotification" parameterType="long">
+	update notification set is_read = 1 where id = #{id}
+</update>
 
 </mapper>

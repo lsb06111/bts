@@ -232,8 +232,8 @@ public class DeployRequestHistoryService {
 		return results;
 	}
 	
-	public boolean addNotification(String title, String slug, Long userId) {
-		return historyDAO.addNotification(title, slug, userId);
+	public boolean addNotification(NotificationDTO notificationDTO) {
+		return historyDAO.addNotification(notificationDTO);
 	}
 	
 	public DeployRequestsDTO getRequestsById(Long reqId) {
@@ -241,6 +241,19 @@ public class DeployRequestHistoryService {
 	}
 	
 	public List<NotificationDTO> getNotificationsByUserId(Long userId){
-		return historyDAO.getNotificationsByUserId(userId);
+		List<NotificationDTO> notis = historyDAO.getNotificationsByUserId(userId);
+		for(NotificationDTO n : notis) {
+			String status = n.getSlug().split("latests")[1].substring(1);
+			n.setMessage(status);
+		}
+		return notis;
+	}
+	
+	public boolean readAllNotifications(Long userId) {
+		return historyDAO.readAllNotifications(userId);
+	}
+	
+	public boolean readNotification(Long id) {
+		return historyDAO.readNotification(id);
 	}
 }

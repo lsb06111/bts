@@ -70,11 +70,13 @@ public interface HistoryDAO {
 	
 	public List<ApprovalLineDTO> getApprovalLines(Long devRepoId);
 	
-	public boolean addNotification(@Param("title") String title,
-								   @Param("slug") String slug,
-								   @Param("userId") Long userId);
+	public boolean addNotification(NotificationDTO notificationDTO);
 	
 	public DeployRequestsDTO getRequestsById(Long reqId);
 	
 	public List<NotificationDTO> getNotificationsByUserId(Long userId);
+	
+	public boolean readAllNotifications(Long userId);
+	
+	public boolean readNotification(Long id);
 }

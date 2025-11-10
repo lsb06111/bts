@@ -36,11 +36,11 @@
 	<filter>
 		<filter-name>characterEncodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<async-supported>true</async-supported>
 		<init-param>
 			<param-name>encoding</param-name>
 			<param-value>UTF-8</param-value>
 		</init-param>
-		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
 		<filter-name>characterEncodingFilter</filter-name>

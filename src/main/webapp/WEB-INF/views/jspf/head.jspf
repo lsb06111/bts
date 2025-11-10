@@ -137,5 +137,22 @@
   
   transition: letter-spacing 0.3s ease;
 }
+
+/* 종모양 깜빡임 효과 */
+@keyframes bellBlink {
+  0%, 100% {
+    box-shadow: 0 0 0px rgba(255, 0, 0, 0);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 12px 4px rgba(255, 0, 0, 0.7);
+    transform: scale(1.1);
+  }
+}
+
+/* 깜빡임 효과 (무한 반복) */
+.bell-blink {
+  animation: bellBlink 1.2s ease-in-out infinite;
+}
 	</style>
 	
