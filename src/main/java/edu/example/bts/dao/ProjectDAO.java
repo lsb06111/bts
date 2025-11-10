@@ -35,5 +35,10 @@ public interface ProjectDAO {
 
 	// 결재라인 등록
 	public void insertApprovalLine(@Param("order") int order, @Param("empno") Long empno, @Param("projectId") Long projectId);
+	
+	/*new 테스트*/
+	public void insertProject1(DevRepoDTO project);
+	public void insertProjectMember1(@Param("projectId") Long ProjectId, @Param("userId") Long userId);
+	
 
 }

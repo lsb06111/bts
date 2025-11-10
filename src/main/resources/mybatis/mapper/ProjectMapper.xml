@@ -100,9 +100,11 @@
 		parameterType="edu.example.bts.domain.project.DevRepoDTO"
 		useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO DEV_REPO (
-		PROJECT_NAME, OWNER_USERNAME, REPO_NAME, REPO_TOKEN, CURRENT_STAGE, PROD_REPO_ID
+		PROJECT_NAME, OWNER_USERNAME, REPO_NAME, REPO_TOKEN, CURRENT_STAGE,
+		PROD_REPO_ID
 		) VALUES (
-		#{projectName}, #{ownerUsername}, #{repoName}, #{repoToken}, 'INIT', 1
+		#{projectName}, #{ownerUsername}, #{repoName},
+		#{repoToken}, 'INIT', 1
 		)
 	</insert>
 
@@ -125,4 +127,17 @@
 		VALUES (#{approvalOrder}, #{empno}, #{projectId})
 	</insert>
 
+
+	<!-- 새로시작 -->
+	<insert id="insertProject1" parameterType="DevRepoDTO"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO DEV_REPO(project_name,
+		owner_username, repo_name, repo_token, current_stage)
+		VALUES(#{projectName},#{ownerUsername},#{repoName},#{repoToken},'진행중')
+	</insert>
+
+	<insert id="insertProjectMember1">
+		INSERT INTO project_member(dev_repo_id, user_id)
+		values(#{projectId},#{userId})
+	</insert>
 </mapper>

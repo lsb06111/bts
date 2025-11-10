@@ -37,7 +37,8 @@ public class ProjectService {
 	}
 
 	@Transactional
-	public void createProject(DevRepoDTO project, List<Long> memberEmpnos, Long approverEmpno, Long loginEmpno) {
+	public void createProject(DevRepoDTO project, List<Long> memberUserIds, Long approverEmpno, Long loginEmpno) {
+/*		
 		// 프로젝트 기본정보 저장
 		projectDAO.insertProject(project);
 		Long projectId = project.getId();
@@ -60,5 +61,15 @@ public class ProjectService {
 		if (approverEmpno != null) {
 			projectDAO.insertApprovalLine(2, approverEmpno, projectId);
 		}
+		*/
+		
+		/*//프로젝트 등록
+		projectDAO.insertProject1(project);
+		Long projectId = project.getId(); // useGeneratedKeys로 자동매핑
+		
+		//멤버 등록
+		if(memberUserIds != null && !memberUserIds.isEmpty()) {
+			for(Long user)
+		}*/
 	}
 }

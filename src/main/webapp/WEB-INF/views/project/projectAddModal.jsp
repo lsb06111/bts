@@ -20,20 +20,23 @@
 	border: 1px solid #ddd;
 	border-radius: 8px;
 	padding: 8px;
+	max-height: 120px; /* 높이 제한 */
+	overflow-y: auto; /* 넘치면 스크롤 */
+	min-height: 30px;   /* 기본 높이 */
 }
 
 .tag-container input {
 	border: none;
 	outline: none;
 	font-size: 13px;
-	flex: 1 1 120px; /* ✅ 입력창이 한 줄에서 자연스럽게 이어지도록 */
+	flex: 1 1 120px; /* 입력창이 한 줄에서 자연스럽게 이어지도록 */
 	min-width: 100px;
 	box-shadow: none;
 }
 
 .tag {
-	background-color: #f3f4f6;
-	color: #333;
+	background-color: #eef2ff;
+	color: #3730a3;   
 	padding: 6px 10px;
 	border-radius: 12px;
 	font-size: 13px;

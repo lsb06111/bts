@@ -21,7 +21,7 @@
 					<form action="/bts/project/list" method="get" class="input-group"
 						style="width: 240px;">
 						<input type="text" class="form-control" name="projectName"
-							value="${projectName}" placeholder="검색..."
+							value="${param.projectName}" placeholder="검색..."
 							style="font-size: 13px; border-right: 0; background-color: #fafafa;">
 						<button class="btn btn-outline-light" type="button"
 							style="border-left: 0; border-color: #ddd; background-color: #fff;">
