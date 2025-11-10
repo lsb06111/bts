@@ -49,7 +49,7 @@
 				<div class="col-md-12">
 
 					<div class="d-flex justify-content-between align-item-center mt-4">
-						<h3 class="mb-0">배포신청</h3>
+						<h3 class="mb-0">배포신청 </h3>
 						<div>
 							<button id="prevBtn" type="button" class="btn btn-primary" style="display: none;" onclick="prevDeployForm()">이전</button>
 							<button id="nextBtn" type="button" class="btn btn-primary" onclick="nextDeployForm()">다음</button>
@@ -57,18 +57,21 @@
 					</div>
 					<hr>
 
-					<form id="deployRequestForm" method="post" name="deployRequestForm"
-						action="/bts/deployForm/sumbmitDeployRequestForm">
+					<form id="modifyRequestForm" method="post" name="modifyRequestForm"
+						action="/bts/deployForm/sumbmitmodifyRequestForm">
 
 						<div id="prevDeployForm" style="display: block;">
 							<div class="card mb-4">
 								<div class="card-body">
+									<input type="hidden" name="reqId"  value="${requestsDTO.id}">
 									<div>
 										<h5 class="mb-2">프로젝트명</h5>
 										<select id="rquestTBdevRepoId" name="devRepoId"
 											class="form-select form-select-lg">
 											<c:forEach var="devrepoList" items="${devRepoByUserIdList}">
-												<option value="${devrepoList.id }">${devrepoList.projectName }</option>
+												<option value="${devrepoList.id }"
+													<c:if test="${ devrepoList.id == requestsDTO.devRepoId}">selected</c:if>>
+												${devrepoList.projectName }</option>
 											</c:forEach>
 										</select>
 									</div>
@@ -81,11 +84,11 @@
 										<div class="mb-4">
 											<h5 class="mb-2">보고서 제목</h5>
 											<input type="text" id="rquestTBtitle" name="title"
-												class="form-control">
+												class="form-control" value="${requestsDTO.title}">
 										</div>
 										<div class="mb-3">
 											<h5 class="mb-2">보고서 내용</h5>
-											<textarea id="editor_content" name="content" style="display:none"></textarea>
+											<textarea id="editor_content" name="content" style="display:none" >${fn:escapeXml(requestsDTO.content)}</textarea>
 											 <textarea id="editor" ></textarea>
 											
 											<!-- <textarea class="form-control" id="rquestTBcontent" name="content"
@@ -136,7 +139,23 @@
 												</tr>
 											</thead>
 											<tbody>
-
+												<c:if test="${not empty commitFilesList}">
+													<c:forEach var="commitFile" items="${commitFilesList }">
+														<tr>
+															<td style="display:none;"><input id="fileSha" name="" type="text" class="form-control-plaintext" value="${commitFile.fileSha}"/></td>
+															<td><input id="sha" name="" type="text" class="form-control-plaintext" value="${commitFile.sha}" /></td>
+															<td><input id="fileName" name="" tyep="text" class="form-control-plaintext" value="${commitFile.fileName}" /></td>
+															<td>
+																<button id="compareFileItemBtn" class="btn btn-sm btn-outline-primary file-comapare-btn"
+																	data-sha="${commitFile.fileSha}" data-filename="${commitFile.fileName}" data-commitsha="${commitFile.sha}"
+																	data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
+																<button id="removeFileItemBtn" class="btn btn-sm btn-outline-secondary file-comapare-btn"
+																	data-sha="${commitFile.fileSha}" data-filename="${commitFile.fileName}" data-commitsha="${commitFile.sha}">
+																	<i class="tf-icons bi bi-trash3-fill"></i></button>
+															</td>
+														</tr>
+													</c:forEach>
+												</c:if>
 											</tbody>
 										</table>
 									</div>
@@ -186,8 +205,12 @@
 			  // imageUploadUrl: '/your/upload/url', // 서버 업로드 엔드포인트
 			});
 
-			
-	})
+	    // JSP에서 넘어온 content 불러오기
+	    const content = $("#editor_content").val();
+
+	    // SunEditor에 내용 세팅
+	    editor.setContents(content);	
+	});
 	
 	
 	
@@ -264,7 +287,7 @@
 				alert("필수항목을 채워주세요");
 			}else {
 				document.querySelector('#editor_content').value = contentVal;
-				$("#deployRequestForm").submit();			
+				$("#modifyRequestForm").submit();			
 			}
 		}
 		
@@ -410,6 +433,10 @@
 	}
 
 
+	</script>
+
+	<script>
+	// 수정할때 사용하는 것. 
 	</script>
 </body>
 </html>
