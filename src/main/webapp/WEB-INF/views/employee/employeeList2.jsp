@@ -201,7 +201,7 @@
 		    $("#employeeUpdateModal2").modal("show");
 		  });
 
-		  // 수정 버튼 클릭 시
+		  // 수정 버튼 클릭시
 		  $("#updateEmpBtn").on("click", function() {
 		    const formData = $("#empUpdateForm").serialize();
 		    $.ajax({

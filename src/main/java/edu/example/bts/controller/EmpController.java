@@ -28,6 +28,7 @@ public class EmpController {
 	private UserService userService;
 	//////////////////////////////////////
 
+	// 사원 조회 & 검색하기
 	@GetMapping("/list2")
 	public String employee(@RequestParam(value = "page", defaultValue = "1") Integer page,
 			@RequestParam(value = "ename", required = false) String ename, Model model) {
@@ -40,12 +41,12 @@ public class EmpController {
 		int totalCount;
 		int totalPage;
 
-		if (ename != null && !ename.isEmpty()) {
+		if (ename != null && !ename.isEmpty()) {		// 사원명으로 검색
 			users = userService.findUserByEname(ename);
 			totalCount = users.size();
 		} else {
-			users = userService.findPageUsers(offset);
-			totalCount = userService.countAllUsers(); // 전체 데이터 조회
+			users = userService.findPageUsers(offset);	// 페이지 조회
+			totalCount = userService.countAllUsers(); 	// 전체 데이터 조회
 			
 		}
 		totalPage = (int) Math.ceil((double) totalCount / pageSize); // 전체 페이지 계산

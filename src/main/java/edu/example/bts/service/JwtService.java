@@ -16,7 +16,7 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService {
 	private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 //	private static final long ACCESS_EXPIRATION = 1000L * 10; // 10초
-//	private static final long REFRESH_EXPIRATION = 1000L * 15; // 15초
+//	private static final long REFRESH_EXPIRATION = 1000L * 20; // 20초
 	private static final long ACCESS_EXPIRATION = 1000L * 60 * 30; // 30분
 	private static final long REFRESH_EXPIRATION = 1000L * 60 * 60 * 24 * 7; // 7일
 	
@@ -28,7 +28,7 @@ public class JwtService {
 				.claim("role", role)
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION))
-				.signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+				.signWith(SECRET_KEY, SignatureAlgorithm.HS256) //Signature 생성
 				.compact();
 	}
 
@@ -38,7 +38,7 @@ public class JwtService {
 				.setSubject(email)
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
-				.signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+				.signWith(SECRET_KEY, SignatureAlgorithm.HS256) //Signature 생성
 				.compact();
 	}
 
@@ -53,7 +53,7 @@ public class JwtService {
 		}
 	}
 
-	/** 이메일 추출 */
+	/** 이메일 추출, 페이지 이동 시 이메일 검증*/
 	public String getEmailFromToken(String token) {
 		Claims claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
 		return claims.getSubject();

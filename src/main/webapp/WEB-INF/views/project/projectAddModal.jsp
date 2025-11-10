@@ -6,6 +6,53 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
+<style>
+.page-link {
+	transition: none !important;
+}
+
+.tag-container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	padding: 8px;
+}
+
+.tag-container input {
+	border: none;
+	outline: none;
+	font-size: 13px;
+	flex: 1 1 120px; /* ✅ 입력창이 한 줄에서 자연스럽게 이어지도록 */
+	min-width: 100px;
+	box-shadow: none;
+}
+
+.tag {
+	background-color: #f3f4f6;
+	color: #333;
+	padding: 6px 10px;
+	border-radius: 12px;
+	font-size: 13px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.tag.approver {
+	background-color: #fdeaea;
+	color: #b91c1c;
+}
+
+.tag .remove-tag {
+	cursor: pointer;
+	font-weight: bold;
+	color: #666;
+}
+</style>
 <body>
 	<!-- 프로젝트 추가 모달 -->
 	<div class="modal fade" id="projectAddModal" tabindex="-1"
@@ -29,7 +76,7 @@
 				<div class="modal-body" style="padding: 0 32px 32px;">
 
 					<!-- form 유지하면서 flex 적용 -->
-					<form action="/project/add" method="post"
+					<form id="projectAddForm" action="/bts/project/add" method="post"
 						style="display: flex; gap: 32px; flex-wrap: wrap;">
 
 						<!-- 왼쪽 입력 영역 -->
@@ -56,24 +103,29 @@
 
 							<div>
 								<label class="form-label fw-semibold">레포 토큰</label> <input
-									type="password" name="repoToken" class="form-control"
+									type="text" name="repoToken" class="form-control"
 									placeholder="예: ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 									style="font-size: 14px;">
 							</div>
 
 							<div>
-								<label class="form-label fw-semibold">프로젝트 멤버</label> <input
-									type="text" name="members" class="form-control"
-									placeholder="예: 김지아 (공공사업1 Div), 박지수 (전략사업2 Div)"
-									style="font-size: 14px;">
+								<label class="form-label fw-semibold">프로젝트 멤버</label>
+								<div class="tag-container" id="memberTags">
+									<input type="hidden" name="members" class="form-control"
+										placeholder="예: 김지아 (공공사업1 Div), 박지수 (전략사업2 Div)"
+										style="font-size: 14px;">
+								</div>
 							</div>
 
 							<div>
-								<label class="form-label fw-semibold">운영팀 결재자</label> <input
-									type="text" name="approver" class="form-control"
-									placeholder="예: 이준호 (운영팀2)" style="font-size: 14px;">
+								<label class="form-label fw-semibold">운영팀 결재자</label>
+								<div class="tag-container" id="approverTags">
+									<input type="hidden" name="approver" class="form-control"
+										placeholder="예: 이준호 (운영팀2)" style="font-size: 14px;">
+								</div>
 							</div>
 						</div>
+
 
 						<!-- 세로 구분선 -->
 						<div
@@ -98,70 +150,21 @@
 									<thead
 										style="background-color: #f9fafc; color: #555; font-weight: 600;">
 										<tr>
-											<th>부서번호</th>
+											<th>사원번호</th>
 											<th>이름</th>
 											<th>부서</th>
 											<th>직급</th>
 											<th>상태</th>
 										</tr>
 									</thead>
-									<tbody>
-										<tr>
-											<td>OTEXA210</td>
-											<td>박지현</td>
-											<td>공공사업1 Div</td>
-											<td>사원</td>
-											<td>
-												<button type="button" class="btn btn-outline-primary btn-sm"
-													style="border-radius: 6px; font-size: 13px;">멤버추가</button>
-											</td>
-										</tr>
-										<tr>
-											<td>OTEXA013</td>
-											<td>이준호</td>
-											<td>운영팀2</td>
-											<td>과장</td>
-											<td>
-												<button type="button" class="btn btn-outline-danger btn-sm"
-													style="border-radius: 6px; font-size: 13px;">결재자추가</button>
-											</td>
-										</tr>
-										<tr>
-											<td>OTEXA230</td>
-											<td>이수빈</td>
-											<td>공공사업2 Div</td>
-											<td>사원</td>
-											<td>
-												<button type="button" class="btn btn-outline-primary btn-sm"
-													style="border-radius: 6px; font-size: 13px;">멤버추가</button>
-											</td>
-										</tr>
-										<tr>
-											<td>OTEXA312</td>
-											<td>최예나</td>
-											<td>운영팀1</td>
-											<td>대리</td>
-											<td>
-												<button type="button" class="btn btn-outline-danger btn-sm"
-													style="border-radius: 6px; font-size: 13px;">결재자추가</button>
-											</td>
-										</tr>
-										<tr>
-											<td>OTEXA122</td>
-											<td>장종현</td>
-											<td>공공사업3 Div</td>
-											<td>사원</td>
-											<td>
-												<button type="button" class="btn btn-outline-primary btn-sm"
-													style="border-radius: 6px; font-size: 13px;">멤버추가</button>
-											</td>
-										</tr>
+									<tbody id="employeeTableBody">
 									</tbody>
 								</table>
 							</div>
-							<!-- ✅ 여기 아래에 페이지네이션 추가 -->
+							<!-- 페이지네이션 -->
 							<nav aria-label="Page navigation" style="margin-top: 15px;">
-								<ul class="pagination pagination-sm justify-content-center mb-0">
+								<ul id="pagination"
+									class="pagination pagination-sm justify-content-center mb-0">
 									<li class="page-item disabled"><a class="page-link"
 										href="#" tabindex="-1" aria-disabled="true">&lt;</a></li>
 									<li class="page-item active"><a class="page-link" href="#">1</a>
@@ -182,7 +185,7 @@
 					<button type="button" class="btn btn-light" data-bs-dismiss="modal"
 						style="border: 1px solid #ddd; color: #555; border-radius: 8px; font-size: 14px; padding: 8px 20px;">
 						취소</button>
-					<button type="submit" form="projectAddModal" class="btn"
+					<button type="submit" form="projectAddForm" class="btn"
 						style="background-color: #4f46e5; color: #fff; border-radius: 8px; font-weight: 500; font-size: 14px; padding: 8px 20px;">
 						완료</button>
 				</div>
@@ -190,5 +193,128 @@
 			</div>
 		</div>
 	</div>
+	<script>
+	function loadEmployeePage(pageNum) {
+	    $.ajax({
+	        url: "/bts/project/employee",
+	        type: "GET",
+	        data: { page: pageNum },
+	        dataType: "json",
+	        success: function(data) {
+	            var tbody = $("#employeeTableBody");
+	            tbody.empty();
+
+	            // 직원 목록 출력
+	            $.each(data.list, function(i, emp) {
+	                var addBtn = "";
+
+	                if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "사원") {
+	                    addBtn = "<button type='button' class='btn btn-outline-primary btn-sm memberBtn' style='border-radius:6px;font-size:13px;'>멤버추가</button>";
+	                } else if (emp.dept && emp.dept.dname == "운영팀") {
+	                    addBtn = "<button type='button' class='btn btn-outline-danger btn-sm approveBtn' style='border-radius:6px;font-size:13px;'>결재자추가</button>";
+	                }
+
+	                var row = "<tr>" +
+	                            "<td>" + emp.empno + "</td>" +
+	                            "<td>" + emp.ename + "</td>" +
+	                            "<td>" + (emp.dept ? emp.dept.dname : "-") + "</td>" +
+	                            "<td>" + (emp.job ? emp.job.jname : "-") + "</td>" +
+	                            "<td>" + addBtn + "</td>" +
+	                          "</tr>";
+
+	                tbody.append(row);
+	            });
+
+	            // 페이지네이션
+	            var pagination = $("#pagination");
+	            pagination.empty();
+
+	            // 이전 버튼
+	            if (data.page > 1) {
+	                pagination.append("<li class='page-item'><a class='page-link' href='#' onclick='loadEmployeePage(" + (data.page - 1) + ")'>&lt;</a></li>");
+	            } else {
+	                pagination.append("<li class='page-item disabled'><a class='page-link' href='#'>&lt;</a></li>");
+	            }
+
+	            // 페이지 번호
+	            for (var i = 1; i <= data.totalPage; i++) {
+	                var active = (i == data.page) ? "active" : "";
+	                pagination.append("<li class='page-item " + active + "'><a class='page-link' href='#' onclick='loadEmployeePage(" + i + ")'>" + i + "</a></li>");
+	            }
+
+	            // 다음 버튼
+	            if (data.page < data.totalPage) {
+	                pagination.append("<li class='page-item'><a class='page-link' href='#' onclick='loadEmployeePage(" + (data.page + 1) + ")'>&gt;</a></li>");
+	            } else {
+	                pagination.append("<li class='page-item disabled'><a class='page-link' href='#'>&gt;</a></li>");
+	            }
+	        },
+	        error: function() {
+	            alert("사원 목록을 불러오지 못했습니다.");
+	        }
+	    });
+	}
+
+	// 멤버추가 버튼
+	$(document).on("click", ".memberBtn", function() {
+	    var tr = $(this).closest("tr");
+	    var empno = tr.find("td:eq(0)").text();
+	    var empName = tr.find("td:eq(1)").text();
+	    var deptName = tr.find("td:eq(2)").text();
+
+	    // 중복 방지
+	    if ($("#memberTags .tag[data-empno='" + empno + "']").length > 0) return;
+
+	    var tagHtml = "<div class='tag' data-empno='" + empno + "'>" +
+	                    empName + " (" + deptName + ")" +
+	                    " <span class='remove-tag'>&times;</span></div>";
+
+	    $("#memberTags input").before(tagHtml);
+	});
+
+	// 결재자추가 버튼
+	$(document).on("click", ".approveBtn", function() {
+	    var tr = $(this).closest("tr");
+	    var empno = tr.find("td:eq(0)").text();
+	    var empName = tr.find("td:eq(1)").text();
+	    var deptName = tr.find("td:eq(2)").text();
+
+	    var tagHtml = "<div class='tag approver' data-empno='" + empno + "'>" +
+	                    empName + " (" + deptName + ")" +
+	                    " <span class='remove-tag'>&times;</span></div>";
+
+	    $("#approverTags").html(tagHtml); // 한 명만 유지
+	});
+
+	// 태그 삭제
+	$(document).on("click", ".remove-tag", function() {
+	    $(this).parent().remove();
+	});
+
+	// 폼 제출 시 hidden input 추가
+	$(document).on("submit", "#projectAddForm", function() {
+	    var form = $(this);
+
+	    // 이전 hidden 제거
+	    form.find("input[name='memberEmpnos'], input[name='approverEmpno']").remove();
+
+	    // 멤버 리스트 추가
+	    $("#memberTags .tag").each(function() {
+	        var empno = $(this).attr("data-empno");
+	        form.append("<input type='hidden' name='memberEmpnos' value='" + empno + "'>");
+	    });
+
+	    // 결재자 추가
+	    var approver = $("#approverTags .tag").attr("data-empno");
+	    if (approver) {
+	        form.append("<input type='hidden' name='approverEmpno' value='" + approver + "'>");
+	    }
+	});
+
+	// 페이지 로드 시 첫 페이지
+	$(document).ready(function() {
+	    loadEmployeePage(1);
+	});
+	</script>
 </body>
 </html>

@@ -81,12 +81,8 @@
 							<label class="form-label" style="font-weight: 600;">직위</label> <select
 								name="jobno" id="updateJobInput" class="form-select"
 								style="font-size: 14px;">
-								<option value="1">사원</option>
-								<option value="2">주임</option>
-								<option value="3">대리</option>
-								<option value="4">과장</option>
-								<option value="5">차장</option>
-								<option value="6">부장</option>
+								<option value="2">사원</option>
+								<option value="3">팀장</option>
 							</select>
 						</div>
 

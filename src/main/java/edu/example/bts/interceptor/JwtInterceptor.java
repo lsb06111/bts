@@ -22,20 +22,21 @@ public class JwtInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
+		// 쿠키에서 Access Token, Refresh Token 꺼내오기
 		String accessToken = getTokenFromCookies(req, "accessToken");
 		String refreshToken = getTokenFromCookies(req, "refreshToken");
 
-		// Access Token 유효한 경우
+		// Access Token 유효한 경우 그대로 통과(null or 토큰 유효한지 검증)
 		if (accessToken != null && jwtService.validateToken(accessToken)) {
 			String email = jwtService.getEmailFromToken(accessToken);
 			UserDTO user = userService.getUserByEmail(email);
 			req.setAttribute("loginUser", user);
-			return true;
+			return true; // (컨트롤러로 이동)
 		}
 
-		// Access Token 만료 → Refresh Token 확인
+		// Access Token 만료 → Refresh Token 검증 시도(null or 토큰 유효한지 검증)
 		if (refreshToken != null && jwtService.validateToken(refreshToken)) {
-			String email = jwtService.getEmailFromToken(refreshToken);
+			String email = jwtService.getEmailFromToken(refreshToken); // Refresh Token도 유효하면 email 꺼내기
 			UserDTO user = userService.getUserByEmail(email);
 
 			if (user != null) {
