@@ -102,7 +102,7 @@
 								<div class="card-body">
 									<div class="row">
 										<!-- 커밋목록 -->
-										<div class="col-md-6">
+										<div class="col-md-6 mb-3">
 											<h5 class="mb-3">커밋목록</h5>
 											<div id="commit-list-group" class="list-group"
 												style="max-height: 300px; overflow-y: auto;">
@@ -111,8 +111,11 @@
 										</div>
 
 										<!-- 파일 목록 -->
-										<div class="col-md-6">
-											<h5 class="mb-3">파일목록</h5>
+										<div class="col-md-6 mb-3">
+											<div class="d-flex justify-content-between align-items-center ">
+												<h5 class="mb-0">파일목록</h5>
+												<input type="text" id="fileSearch" class="form-control mb-2" style="width:300px;" placeholder="파일명 검색..">
+											</div>
 											<div class="list-group file-item"
 												style="max-height: 300px; overflow-y: auto;"></div>
 										</div>
@@ -297,6 +300,8 @@
 				data: {"sha": sha},
 				dataType: "json",  
 				success: function(res){
+					$('#fileSearch').val("");
+					
 					for(let file of res){
 						const fileName = file.fileName;
 						const fileSha = file.fileSha;
@@ -379,7 +384,19 @@
 			//console.log($(this).index());
 			$(this).find("span").addClass("text-truncate");
 		});
-	
+		
+		
+	/* 파일 검색  */
+		$('#fileSearch').on("keyup", function(){
+			const searchTerm = $(this).val().toLowerCase().trim();
+			
+			$(".file-item > div").each(function(){
+				const fileName = $(this).find("span").text().toLowerCase();
+				//console.log(fileName.indexOf(searchTerm));
+				const visible = searchTerm.length === 0 || fileName.indexOf(searchTerm) > -1	
+				$(this).toggleClass('d-none', !visible);
+			});		
+		});
 	});
 	
 /* 비교 버튼 눌렀을 때 */
