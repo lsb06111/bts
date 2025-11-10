@@ -12,6 +12,7 @@ import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestFormDTO.FileDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
+import edu.example.bts.domain.history.RequestsDTO;
 
 @Service
 public class DeployFormService {
@@ -49,7 +50,7 @@ public class DeployFormService {
 	}
 */
 	@Transactional
-	public void createRequests(DeployRequestFormDTO deployRequestFormDTO) {
+	public DeployRequestsDTO createRequests(DeployRequestFormDTO deployRequestFormDTO) {
 		int statusId = 1;
 		DeployRequestsDTO deployRequestsDTO = new DeployRequestsDTO(deployRequestFormDTO.getTitle(), deployRequestFormDTO.getContent(), deployRequestFormDTO.getUserId(), deployRequestFormDTO.getDevRepoId());
 		
@@ -59,8 +60,7 @@ public class DeployFormService {
 		for(FileDTO file : deployRequestFormDTO.getSelectedFiles()) {
 			deployFormDAO.createCommitFile(file, deployRequestsDTO.getId());			
 		}
-		
-		
+		return deployRequestsDTO;
 		//boolean createCommitFile = deployFormDAO.createCommitFile(); 
 	}
 

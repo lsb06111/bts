@@ -7,11 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import edu.example.bts.domain.history.NotificationDTO;
 import edu.example.bts.domain.history.RequestsDTO;
 import edu.example.bts.domain.user.UserDTO;
 import edu.example.bts.service.DeployRequestHistoryService;
@@ -70,5 +72,11 @@ public class MainController {
 			return new ResponseEntity<>("정보수정 성공", HttpStatus.OK);
 		
 		return new ResponseEntity<>("정보수정 실패", HttpStatus.CONFLICT);
+	}
+	
+	@ResponseBody
+	@GetMapping("getNotifications")
+	public List<NotificationDTO> getNotifications(Long userId){
+		return historyService.getNotificationsByUserId(userId);
 	}
 }

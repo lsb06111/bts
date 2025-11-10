@@ -308,7 +308,8 @@
 	// 파일 중복 추가 확인을 위한 set
 	const addFileSet = new Set();
 	
-	$(document).ready(function(){				
+	$(document).ready(function(){	
+		reindexSelectedFiles();
 	/* 커밋목록 선택후, 해당 커밋으로 조회 */
 		$(".list-group").on("click", ".commit-item", function(e){  // 무한스크롤-이벤트위임
 			//alert($(this).data("sha"));   //alert(e.currentTarget.dataset.sha);
