@@ -7,7 +7,10 @@ import org.apache.ibatis.annotations.Param;
 
 import edu.example.bts.domain.board.NoticeDTO;
 import edu.example.bts.domain.board.QnaDTO;
+import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
+import edu.example.bts.domain.history.ApprovalLineDTO;
+import edu.example.bts.domain.history.NotificationDTO;
 import edu.example.bts.domain.history.RequestsDTO;
 import edu.example.bts.domain.history.StatusDTO;
 import edu.example.bts.domain.project.DevRepoDTO;
@@ -64,4 +67,14 @@ public interface HistoryDAO {
 	//
 	public List<RequestsDTO> getRequestsForT(Long userId);
 	public List<ApprovalHistoryDTO> getApprovalHistoryForT(Long reqId);
+	
+	public List<ApprovalLineDTO> getApprovalLines(Long devRepoId);
+	
+	public boolean addNotification(@Param("title") String title,
+								   @Param("slug") String slug,
+								   @Param("userId") Long userId);
+	
+	public DeployRequestsDTO getRequestsById(Long reqId);
+	
+	public List<NotificationDTO> getNotificationsByUserId(Long userId);
 }

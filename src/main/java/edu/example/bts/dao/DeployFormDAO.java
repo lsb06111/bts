@@ -6,9 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
-import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestFormDTO.FileDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
+import edu.example.bts.domain.history.RequestsDTO;
 
 @Mapper
 public interface DeployFormDAO {
