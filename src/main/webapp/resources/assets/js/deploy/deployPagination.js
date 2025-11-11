@@ -82,6 +82,4 @@ function loadCommit(page){
 $(document).on("click", "#commitPagination .page-num a", function(){
 	const page = parseInt($(this).text());
 	loadCommit(page);
-	
-	
 });

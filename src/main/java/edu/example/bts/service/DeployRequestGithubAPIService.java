@@ -148,7 +148,9 @@ public class DeployRequestGithubAPIService {
 		return result;
 	}
 	
-
+/*	
+ 	// 각각 실행하니까 시간이 너무 오래 걸려서 한번에 실행하도록 변경했기때문에 필요 없음 
+ 	 
 	public boolean hasNextPage(String ownerName, String repoName, String token, int page) {
 		try {
 			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
@@ -178,7 +180,7 @@ public class DeployRequestGithubAPIService {
 			return 1;
 		}
 	}
-	
+	*/
 
 	// 선택한 커밋에 해당하는 파일정보 가져오기
 	public List<CommitFileDTO> getCommitDetail(String ownerName, String repoName, String token, String sha) {
