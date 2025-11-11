@@ -127,8 +127,13 @@
 					                        </div>
 											<div id="commit-list-group" class="list-group"
 												style="max-height: 300px; overflow-y: auto;">
-												
 											</div>
+											<!-- 스피너 -->
+											<div class="demo-inline-spacing">
+						                        <div class="spinner-border spinner-border-lg text-primary" role="status">
+						                          <span class="visually-hidden">Loading...</span>
+						                        </div>
+					                        </div>
 										</div>
 
 										<!-- 파일 목록 -->
@@ -180,7 +185,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/ko.js"></script>
-
+<script src="${pageContext.request.contextPath}/resources/assets/js/deploy/deployPagination.js"></script>
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
 
@@ -213,7 +218,7 @@
 				
 		});
 	
-	
+		/*
 		// 페이지..?
 		let currentPage = 1;
 		
@@ -288,12 +293,12 @@
 				if(current>1) loadCommit(1);
 			});
 			// >> 페이지 눌렸을 떄 
-			pagination.find(".prev a").off("click").on("click", function(){
+			pagination.find(".next a").off("click").on("click", function(){
 				if(current < totalPage) loadCommit(totalPage); // 마지막 페이지
 			});
 		}
 		
-		
+		*/
 		//  -------------------------
 	
 		function prevDeployForm(){

@@ -49,7 +49,7 @@
 				<div class="col-md-12">
 
 					<div class="d-flex justify-content-between align-item-center mt-4">
-						<h3 class="mb-0">배포신청 </h3>
+						<h3 class="mb-0">배포수정</h3>
 						<div>
 							<button id="prevBtn" type="button" class="btn btn-primary" style="display: none;" onclick="prevDeployForm()">이전</button>
 							<button id="nextBtn" type="button" class="btn btn-primary" onclick="nextDeployForm()">다음</button>
@@ -105,18 +105,44 @@
 								<div class="card-body">
 									<div class="row">
 										<!-- 커밋목록 -->
-										<div class="col-md-6">
-											<h5 class="mb-3">커밋목록</h5>
+										<div class="col-md-6 mb-3">
+											<div class="d-flex justify-content-between">
+												<h5 class="mb-3">커밋목록</h5>
+												<nav aria-label="Page navigation" class="ml-1">
+						                          <ul id="commitPagination" class="pagination pagination-sm">
+						                            <li class="page-item prev">
+						                              <a class="page-link" href="javascript:void(0);"
+						                                ><i class="tf-icon bx bx-chevrons-left"></i
+						                              ></a>
+						                            </li>
+						                            <!-- 
+						                            <li class="page-item page-num">
+						                              <a class="page-link" href="javascript:void(0);">1</a>
+						                            </li>						                            
+						                             -->
+						                            <li class="page-item next">
+						                              <a class="page-link" href="javascript:void(0);"
+						                                ><i class="tf-icon bx bx-chevrons-right"></i
+						                              ></a>
+						                            </li>
+						                          </ul>
+						                        </nav>
+					                        </div>
 											<div id="commit-list-group" class="list-group"
 												style="max-height: 300px; overflow-y: auto;">
-												
 											</div>
+											<!-- 스피너 -->
+											<div class="demo-inline-spacing">
+						                        <div class="spinner-border spinner-border-lg text-primary" role="status">
+						                          <span class="visually-hidden">Loading...</span>
+						                        </div>
+					                        </div>
 										</div>
 
 										<!-- 파일 목록 -->
 										<div class="col-md-6">
 											<div class="d-flex justify-content-between align-items-center ">
-												<h5 class="mb-0">파일목록</h5>
+												<h5 class="mb-3">파일목록</h5>
 												<input type="text" id="fileSearch" class="form-control mb-2" style="width:300px;" placeholder="파일명 검색..">
 											</div>
 											<div class="list-group file-item"
@@ -178,10 +204,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/ko.js"></script>
-
+<script src="${pageContext.request.contextPath}/resources/assets/js/deploy/deployPagination.js"></script>
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
-
+s
 
 	<%@ include
 		file="/WEB-INF/views/deploy/deployRequestCompareModal4.jspf"%>  <!-- 수정 2 또는 3 -->
@@ -237,7 +263,9 @@
 			
 			$("#commit-list-group").empty();
 			
+			loadCommit(1);
 			
+			/*
 			// 레포지토리커밋목록 가져오기
 			const repoId = $("#rquestTBdevRepoId").val();
 			console.log(repoId);
@@ -271,13 +299,13 @@
 			});
 			
 			
-			
+			*/
 			
 		}	
 		
 		function submmitDeployForm(){
 			/* 값 확인해서 통과시키기 */
-			const titleVal = $("#rquestTBtitle").val();
+			const titleVal = $("#requestTBtitle").val();
 			const contentVal = editor.getContents();
 			
 			const selectedFileLength = $("tbody").children().length;
