@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.example.bts.domain.deployRequest.CommitDTO;
 import edu.example.bts.domain.deployRequest.CommitFileDTO;
+import edu.example.bts.domain.deployRequest.CommitPageDTO;
 import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
 import edu.example.bts.service.DeployFormService;
 import edu.example.bts.service.DeployRequestGithubAPIService;
@@ -52,7 +53,7 @@ public class DeployRequestController {
 		return commitList;
 	}
 	*/ 
-	/* : Ajax data 선택된 devRepo의 id */
+	/* : Ajax data 선택된 devRepo의 id 
 	@GetMapping("/deployRequest")
 	@ResponseBody
 	public List<CommitDTO> deployRequest(Model model,@RequestParam("repoId") Long repoId, HttpSession session) {
@@ -73,6 +74,35 @@ public class DeployRequestController {
 		
 		System.out.println(commitList);
 		//model.addAttribute("commitList", commitList);
+		return commitList;
+	}
+	*/
+	
+	// 페이지....
+	@GetMapping("/deployRequest")
+	@ResponseBody
+	public CommitPageDTO deployRequest(Model model,@RequestParam("repoId") Long repoId, @RequestParam(value="page", defaultValue="1")int page, HttpSession session) {
+		// devRepo 정보 가져오기 
+		DeployFormDevRepoDTO devRepoDTO = deployFormService.findDevRepoById(repoId);   // 그냥 처음부터 다 가져올수 없는건가?
+		String ownerName = devRepoDTO.getOwnerUsername();
+		String repoName = devRepoDTO.getRepoName();
+		String token=devRepoDTO.getRepoToken();
+		
+		// session에 넣어서  여러번 DB안가고 사용할 수 있을까?
+		session.setAttribute("ownerName", ownerName);
+		session.setAttribute("repoName", repoName);
+		session.setAttribute("token", token);
+		
+		
+		//Github repo의 commitList 가져오기
+		//List<CommitDTO> commitList = deployGithubService.getCommitList(ownerName, repoName, token);
+		CommitPageDTO commitList = deployGithubService.getCommitList(ownerName, repoName, token, page);
+		//boolean hasNext = deployGithubService.hasNextPage(ownerName, repoName, token, page);
+		//int totalPage = deployGithubService.getTotalPage(ownerName, repoName, token, page);
+				
+		System.out.println(commitList);
+		//model.addAttribute("commitList", commitList);
+		//return commitList;
 		return commitList;
 	}
 		

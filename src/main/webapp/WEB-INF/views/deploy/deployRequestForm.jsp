@@ -103,7 +103,28 @@
 									<div class="row">
 										<!-- 커밋목록 -->
 										<div class="col-md-6 mb-3">
-											<h5 class="mb-3">커밋목록</h5>
+											<div class="d-flex justify-content-between">
+												<h5 class="mb-3">커밋목록</h5>
+												<nav aria-label="Page navigation" class="ml-1">
+						                          <ul id="commitPagination" class="pagination pagination-sm">
+						                            <li class="page-item prev">
+						                              <a class="page-link" href="javascript:void(0);"
+						                                ><i class="tf-icon bx bx-chevrons-left"></i
+						                              ></a>
+						                            </li>
+						                            <!-- 
+						                            <li class="page-item page-num">
+						                              <a class="page-link" href="javascript:void(0);">1</a>
+						                            </li>						                            
+						                             -->
+						                            <li class="page-item next">
+						                              <a class="page-link" href="javascript:void(0);"
+						                                ><i class="tf-icon bx bx-chevrons-right"></i
+						                              ></a>
+						                            </li>
+						                          </ul>
+						                        </nav>
+					                        </div>
 											<div id="commit-list-group" class="list-group"
 												style="max-height: 300px; overflow-y: auto;">
 												
@@ -113,7 +134,7 @@
 										<!-- 파일 목록 -->
 										<div class="col-md-6 mb-3">
 											<div class="d-flex justify-content-between align-items-center ">
-												<h5 class="mb-0">파일목록</h5>
+												<h5 class="mb-3">파일목록</h5>
 												<input type="text" id="fileSearch" class="form-control mb-2" style="width:300px;" placeholder="파일명 검색..">
 											</div>
 											<div class="list-group file-item"
@@ -168,32 +189,112 @@
 		file="/WEB-INF/views/deploy/deployRequestCompareModal4.jspf"%>  <!-- 수정 2 또는 3 -->
 	
 	<script>
-	let editor;
-	$(function(){
-		editor = SUNEDITOR.create('editor', {
-			  lang: SUNEDITOR_LANG.ko,    // 한국어 UI
-			  height: '300px',
-			  width:'100%',
-			  minHeight: '200px',
-			  buttonList: [
-			    ['undo', 'redo'],
-			    ['formatBlock'],
-			    ['bold', 'underline', 'italic', 'strike'],
-			    ['fontColor', 'hiliteColor'],
-			    ['align', 'list', 'lineHeight'],
-			    ['link', 'image', 'video'],
-			    ['removeFormat', 'showBlocks', 'codeView', 'fullScreen']
-			  ],
-			  // 이미지 업로드를 직접 처리하려면 다음 옵션 활용 (예시 비활성화) - 컨트롤러 구현 예정 - 11/04
-			  // callBackSave: (contents, isChanged) => { ... }
-			  // imageUploadUrl: '/your/upload/url', // 서버 업로드 엔드포인트
-			});
+		let editor;
+		$(function(){
+			editor = SUNEDITOR.create('editor', {
+				  lang: SUNEDITOR_LANG.ko,    // 한국어 UI
+				  height: '300px',
+				  width:'100%',
+				  minHeight: '200px',
+				  buttonList: [
+				    ['undo', 'redo'],
+				    ['formatBlock'],
+				    ['bold', 'underline', 'italic', 'strike'],
+				    ['fontColor', 'hiliteColor'],
+				    ['align', 'list', 'lineHeight'],
+				    ['link', 'image', 'video'],
+				    ['removeFormat', 'showBlocks', 'codeView', 'fullScreen']
+				  ],
+				  // 이미지 업로드를 직접 처리하려면 다음 옵션 활용 (예시 비활성화) - 컨트롤러 구현 예정 - 11/04
+				  // callBackSave: (contents, isChanged) => { ... }
+				  // imageUploadUrl: '/your/upload/url', // 서버 업로드 엔드포인트
+				});
+	
+				
+		});
+	
+	
+		// 페이지..?
+		let currentPage = 1;
+		
+		// 숫자 페이지 눌렀을떄 
+		$(document).on("click", "#commitPagination .page-num a", function(){
+			const page = parseInt($(this).text());
+			loadCommit(page);
+		});
+		
+		
+		// 페이지를 로드해야하는데?
+		function loadCommit(page){
+			const repoId = $("#rquestTBdevRepoId").val();
 
+			$.ajax({
+				url:"/bts/deployRequest",
+				method: "GET",
+				data: {
+					repoId: repoId,
+					page: page   // 이거 페이지 땜에 넣음
+				},
+				dataType: "json", 
+				success: function(res){
+					console.log(res.commitList);
+					$("#commit-list-group").empty();
+					
+					for(var i=0; i < res.commitList.length; i++ ){
+						console.log(res.commitList[i].sha);
+						
+						$("#commit-list-group").append(`
+								<a href="#" class="list-group-item list-group-item-action commit-item" data-sha="\${res.commitList[i].sha}">
+									<div class="fw-bold">\${res.commitList[i].commitMessage}</div> 
+									<small class="text-muted"> \${res.commitList[i].sha.substring(0,7)}· 
+									\${res.commitList[i].userName? res.commitList[i].userName : "알 수 없음"}
+									(\${res.commitList[i].authorName}) · 
+									\${res.commitList[i].authorDate}</small>
+								</a>
+						`);
+					}
+					
+					currentPage = res.currentPage;
+					updatePagination(res);
+				},
+				error: function(){
+					alert("커밋목록 불러오기 실패")
+				}
+			});			
+		}
+		// 페이지를 동적으로 만들어줘야하는데;;;
+		function updatePagination(res){
+			const pagination = $("#commitPagination");
+			pagination.find("li.page-num").remove();
 			
-	})
-	
-	
-	
+			const totalPage = res.totalPage;
+			const current = res.currentPage;
+			const startPage = Math.max(1, current -2);
+			const endPage = Math.min(totalPage, current + 2);
+			
+			// 번호 생성
+		    for (let i = startPage; i <= endPage; i++) {
+		        const activeClass = (i === current) ? "active" : "";
+		        $("<li>", { class: `page-item page-num ${activeClass}` })
+		            .append($("<a>", { class: "page-link", href: "javascript:void(0);", text: i }))
+		            .insertBefore(pagination.find(".next"));
+		    }
+			
+			pagination.find(".prev").toggleClass("disabled", current === 1);
+			pagination.find(".next").toggleClass("disabled", !res.hasNext);
+			
+			// << 페이지 눌렸을 떄 
+			pagination.find(".prev a").off("click").on("click", function(){
+				if(current>1) loadCommit(1);
+			});
+			// >> 페이지 눌렸을 떄 
+			pagination.find(".prev a").off("click").on("click", function(){
+				if(current < totalPage) loadCommit(totalPage); // 마지막 페이지
+			});
+		}
+		
+		
+		//  -------------------------
 	
 		function prevDeployForm(){
 			$("#prevDeployForm").show();
@@ -214,7 +315,8 @@
 			
 			$("#commit-list-group").empty();
 			
-			
+			loadCommit(1)
+			/*
 			// 레포지토리커밋목록 가져오기
 			const repoId = $("#rquestTBdevRepoId").val();
 			console.log(repoId);
@@ -222,7 +324,8 @@
 				url:"/bts/deployRequest",
 				method: "GET",
 				data: {
-					repoId: repoId
+					repoId: repoId,
+					page: 1   // 이거 페이지 땜에 넣음
 				},
 				dataType: "json", 
 				success: function(commitList){
@@ -246,7 +349,7 @@
 					alert("커밋목록 불러오기 실패")
 				}
 			});
-			
+			*/
 			
 			
 			
