@@ -80,64 +80,73 @@
 	</select>
 
 	<!-- 모달에서 멤버 조회하기 -->
-	<select id="findAllUserInModal" parameterType="int"
+	<select id="findAllUserInModal" parameterType="map"
 		resultMap="ProjectMap">
 		SELECT e.empno, e.ename, j.jname, d.dname
 		from emp e join job
-		j on e.jobno =
+		j on
+		e.jobno =
 		j.jobno
 		join dept d on e.deptno = d.deptno
 		where e.empno
-		not in (select e2.empno from emp e2 where (e2.deptno=1 and e2.jobno =
-		3) or ( e2.deptno = 3))
-		order by e.empno asc
+		Not IN
+		(select e2.empno FROM emp e2 where (e2.deptno=1 AND e2.jobno =
+		3) or (
+		e2.deptno = 3))
+		<if test="ename != null and ename !=''">
+			AND e.ename LIKE '%' || #{ename} || '%'
+		</if>
+		order by e.empno
 		OFFSET #{offset} ROWS FETCH
 		NEXT 8 ROWS ONLY
 	</select>
 
-	<!-- 프로젝트 등록 -->
-	<insert id="insertProject"
-		parameterType="edu.example.bts.domain.project.DevRepoDTO"
-		useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO DEV_REPO (
-		PROJECT_NAME, OWNER_USERNAME, REPO_NAME, REPO_TOKEN, CURRENT_STAGE,
-		PROD_REPO_ID
-		) VALUES (
-		#{projectName}, #{ownerUsername}, #{repoName},
-		#{repoToken}, 'INIT', 1
+	<!-- 검색시에 결과 카운트 -->
+	<select id="countUserByEnameInModal" parameterType="string"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM emp e
+		WHERE e.empno NOT IN (
+		SELECT e2.empno
+		FROM emp e2
+		WHERE (e2.deptno = 1 AND e2.jobno = 3)
+		OR (e2.deptno = 3)
 		)
+		<if test="ename != null and ename != ''">
+			AND e.ename LIKE '%' || #{ename} || '%'
+		</if>
+	</select>
+
+
+	<!-- 프로젝트 생성(dev_repo) -->
+	<insert id="insertProject" parameterType="DevRepoDTO"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="ID">
+		INSERT INTO
+		DEV_REPO(project_name,
+		owner_username, repo_name, repo_token,
+		current_stage, prod_repo_id)
+		VALUES(#{projectName},#{ownerUsername},#{repoName},#{repoToken},'진행중',
+		1)
 	</insert>
 
-	<!-- 멤버 등록 -->
 	<insert id="insertProjectMember">
-		INSERT INTO PROJECT_MEMBER (DEV_REPO_ID, USER_ID)
-		VALUES (#{projectId}, #{empno})
-	</insert>
-
-	<!-- 결재자 등록 -->
-	<update id="updateProjectApprover">
-		UPDATE DEV_REPO SET APPROVER_ID = #{approverEmpno}
-		WHERE ID = #{projectId}
-	</update>
-
-	<!-- 결재 라인 등록 -->
-	<insert id="insertApprovalLine">
-		INSERT INTO APPROVAL_LINE (APPROVAL_ORDER, EMPNO,
-		DEV_REPO_ID)
-		VALUES (#{approvalOrder}, #{empno}, #{projectId})
-	</insert>
-
-
-	<!-- 새로시작 -->
-	<insert id="insertProject1" parameterType="DevRepoDTO"
-		useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO DEV_REPO(project_name,
-		owner_username, repo_name, repo_token, current_stage)
-		VALUES(#{projectName},#{ownerUsername},#{repoName},#{repoToken},'진행중')
-	</insert>
-
-	<insert id="insertProjectMember1">
 		INSERT INTO project_member(dev_repo_id, user_id)
 		values(#{projectId},#{userId})
 	</insert>
+
+	<!-- 결재라인 추가 -->
+	<insert id="insertProjectApprovalLine">
+		INSERT INTO approval_line(dev_repo_id,
+		approval_order, empno)
+		VALUES(#{projectId}, #{order},
+		#{approverUserId})
+
+	</insert>
+
+	<select id="findUserByEmpno" parameterType="Long"
+		resultType="Long">
+		SELECT u.id FROM USERS u JOIN EMP e ON u.empno = e.empno
+		WHERE e.empno = #{empno}
+	</select>
+
 </mapper>

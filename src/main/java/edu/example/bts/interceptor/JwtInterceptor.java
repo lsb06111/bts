@@ -31,6 +31,7 @@ public class JwtInterceptor implements HandlerInterceptor {
 			String email = jwtService.getEmailFromToken(accessToken);
 			UserDTO user = userService.getUserByEmail(email);
 			req.setAttribute("loginUser", user);
+			System.out.println("loginUser email 찾기 :" + user);
 			return true; // (컨트롤러로 이동)
 		}
 

@@ -20,25 +20,21 @@ public interface ProjectDAO {
 	public List<DevRepoDTO> findProjectByProjectName(String projectName);
 
 	// 모달에서 사원 리스트 페이지네이션으로 불러오기
-	public List<EmpDTO> findAllUserInModal(int offset);
+	public List<EmpDTO> findAllUserInModal(@Param("offset") int offset, @Param("ename") String ename);
+	
+	// 모달에서 검색시에 결과 카운팅
+	public int countUserByEnameInModal(String ename);
 
-	// insert
-
-	// 프로젝트 기본정보 등록
+	// 프로젝트 생성(dev_repo)
 	public void insertProject(DevRepoDTO project);
-
-	// 프로젝트 멤버 등록
-	public void insertProjectMember(@Param("projectId") Long projectId, @Param("empno") Long empno);
-
-	// 프로젝트 결재자 등록 (혹은 수정)
-	public void updateProjectApprover(@Param("projectId") Long projectId, @Param("approverEmpno") Long approverEmpno);
-
-	// 결재라인 등록
-	public void insertApprovalLine(@Param("order") int order, @Param("empno") Long empno, @Param("projectId") Long projectId);
 	
-	/*new 테스트*/
-	public void insertProject1(DevRepoDTO project);
-	public void insertProjectMember1(@Param("projectId") Long ProjectId, @Param("userId") Long userId);
+	// 프로젝트에 멤버 추가
+	public void insertProjectMember(@Param("projectId") Long ProjectId, @Param("userId") Long userId);
+
+	// empno로 user.id 조회
+	public Long findUserByEmpno(Long empno);
 	
+	// 결재라인 생성
+	public void insertProjectApprovalLine(@Param("projectId") Long projectId, @Param("approverUserId")Long approverUserId, @Param("order")int order);
 
 }
