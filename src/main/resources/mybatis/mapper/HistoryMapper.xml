@@ -24,6 +24,9 @@
     <result property="isDraft" column="is_draft"/>
     <result property="delYn" column="del_yn"/>
     <result property="userId" column="user_id"/>
+    <result property="ename" column="ename"/>
+    <result property="result" column="result"/>
+    <result property="buildAt" column="build_at"/>
 
     <!-- 연관 객체 매핑 -->
     <association property="devRepo" javaType="DevRepoDTO" resultMap="DevRepoMap"/>
@@ -245,12 +248,20 @@ where
             pm.dev_repo_id = d.id 
         where 
             pm.user_id = #{userId}
-    ) and r.id not in (select req_id from deploy_result)
+    ) and r.id not in (select req_id from deploy_result where result != 'fail')
     <if test="projectName != null and projectName != ''">
     	and d.project_name = #{projectName}
   	</if>
   	<if test="keyword != null and keyword != ''">
-    	and r.title like '%'||#{keyword}||'%'
+    	and 
+    	<choose>
+		    <when test="forCreatedAt">
+		      r.created_at LIKE '%' || #{keyword} || '%'
+		    </when>
+		    <otherwise>
+		      r.title LIKE '%' || #{keyword} || '%'
+		    </otherwise>
+		  </choose>
   	</if>
 order by 
     r.id desc
@@ -307,5 +318,94 @@ order by
 <update id="readNotification" parameterType="long">
 	update notification set is_read = 1 where id = #{id}
 </update>
+
+<select id="getRequestsForBuildByPage" resultMap="RequestsMap">
+select 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, e.ename,
+    d.*, dr.result, to_char(dr.build_at, 'yy/mm/dd') build_at
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+join
+    users u
+on 
+    r.user_id = u.id
+join
+    emp e
+on
+    u.empno = e.empno
+join deploy_result dr
+on dr.req_id = r.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    ) and r.id in 
+    (
+    select req_id from deploy_result 
+	    <if test="buildStatus != null and buildStatus != ''">
+	    	where result = #{buildStatus}
+	    </if>
+    )
+    <if test="keyword != null and keyword != ''">
+    	and ${filter} like '%'||#{keyword}||'%'
+    </if>
+    order by r.id desc
+    offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getRequestsSizeForBuild" resultType="int">
+	select 
+    count(*)
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+join
+    users u
+on 
+    r.user_id = u.id
+join
+    emp e
+on
+    u.empno = e.empno
+join deploy_result dr
+on dr.req_id = r.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    ) and r.id in 
+    (
+    select req_id from deploy_result 
+	    <if test="buildStatus != null and buildStatus != ''">
+	    	where result = #{buildStatus}
+	    </if>
+    )
+    <if test="keyword != null and keyword != ''">
+    	and ${filter} like '%'||#{keyword}||'%'
+    </if>
+</select>
 
 </mapper>

@@ -154,5 +154,9 @@
 .bell-blink {
   animation: bellBlink 1.2s ease-in-out infinite;
 }
-	</style>
+
+figure > img {
+	width: 100%;
+}
+</style>
 	

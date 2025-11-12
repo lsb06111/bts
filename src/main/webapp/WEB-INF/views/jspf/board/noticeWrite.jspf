@@ -91,9 +91,14 @@ $(function(){
 		    ['link', 'image', 'video'],
 		    ['removeFormat', 'showBlocks', 'codeView', 'fullScreen']
 		  ],
-		  // 이미지 업로드를 직접 처리하려면 다음 옵션 활용 (예시 비활성화) - 컨트롤러 구현 예정 - 11/04
+		  attributesWhitelist: {
+			    all: "style|class|width|height|src|alt"
+			  },
+		  defaultStyle: 'img {width:100% !important; height:auto !important;}',
+		  // 이미지 업로드를 직접 처리하려면 다음 옵션 활용 (예시 비활성화)
 		  // callBackSave: (contents, isChanged) => { ... }
 		  // imageUploadUrl: '/your/upload/url', // 서버 업로드 엔드포인트
+		  
 		});
 
 		

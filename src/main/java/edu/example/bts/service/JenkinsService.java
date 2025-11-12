@@ -69,7 +69,7 @@ public class JenkinsService {
 		List<JCommitDTO> commits = new ArrayList<>();
 		for(Long reqId : reqIds) {
 			commits.addAll(jenkinsDAO.getCommitListByReqId(reqId));
-			jenkinsDAO.updateResult(reqId);
+			jenkinsDAO.updateResult(reqId, "process", null);
 		}
 		
 		
@@ -216,6 +216,7 @@ public class JenkinsService {
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
                     String line;
                     while ((line = br.readLine()) != null) {
+                    	
                         logChunkBuilder.append(line).append("\n\n"); //
                     }
                 }

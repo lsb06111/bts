@@ -233,7 +233,7 @@ public class DeployRequestHistoryService {
 	}
 	
 	public boolean addNotification(NotificationDTO notificationDTO) {
-		return historyDAO.addNotification(notificationDTO);
+		return  historyDAO.addNotification(notificationDTO);
 	}
 	
 	public DeployRequestsDTO getRequestsById(Long reqId) {

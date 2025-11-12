@@ -56,7 +56,8 @@ public interface HistoryDAO {
 	
 	public List<RequestsDTO> getAllRequestsForBuild(@Param("userId") Long userId,
 													@Param("projectName") String projectName,
-													@Param("keyword") String keyword);
+													@Param("keyword") String keyword,
+													@Param("forCreatedAt") boolean forCreatedAt);
 	
 	public List<RequestsDTO> getAllRequestsForSUByProject(@Param("userId") Long userId,
 														  @Param("projectName") String projectName);
@@ -79,4 +80,18 @@ public interface HistoryDAO {
 	public boolean readAllNotifications(Long userId);
 	
 	public boolean readNotification(Long id);
+	
+	public boolean updateDeployResult(@Param("reqId") Long reqId,
+									@Param("resultType") String result);
+	
+	public List<RequestsDTO> getRequestsForBuildByPage(@Param("userId") Long userId,
+													   @Param("page") int page,
+													   @Param("buildStatus") String buildStatus,
+													   @Param("keyword") String keyword,
+													   @Param("filter") String filter);
+	
+	public int getRequestsSizeForBuild(@Param("userId") Long userId,
+								       @Param("buildStatus") String buildStatus,
+								       @Param("keyword") String keyword,
+								       @Param("filter") String filter);
 }
