@@ -117,8 +117,14 @@
 
 					<div class="card mb-4">
 						<div class="card-header">
-							<h5 class="fw-bold mb-3">결재 진행 상황</h5>
-
+							<div class="d-flex align-items-center justify-content-between">
+								<h5 class="fw-bold mb-3">결재 진행 상황</h5>
+								<div class="demo-inline-spacing">
+									<p class="d-inline-block mb-0"><span class="badge badge-center rounded-pill bg-label-success">완 료</span></p>
+									<p class="d-inline-block mb-0"><span class="badge badge-center rounded-pill bg-label-warning">진 행</span></p>
+									<p class="d-inline-block mb-0"><span class="badge badge-center rounded-pill bg-label-secondary">대 기</span></p>
+								</div>
+							</div>
 							<div class="container">
 								<div
 									class="row text-center align-items-center position-relative">
@@ -133,7 +139,7 @@
      										${result == 0 ? 'bg-warning' : (result > 0 ? 'bg-success opacity-75' : 'bg-secondary')}"
 											style="width: 60px; height: 60px;">1</div>
 										<div class="fw-semibold">${requestsDTO.ename}</div>
-										<div class="text-muted small">${fn:substring(requestsDTO.createdAt,0,10)}</div>
+										<%-- <div class="text-muted small">${fn:substring(requestsDTO.createdAt,0,10)}</div> --%>
 									</div>
 
 									<!-- 팀장 -->
@@ -173,7 +179,11 @@
 												value="${fn:substring(requestsDTO.createdAt,0, 16) }" />
 											${createdAt }</td>
 										<td>완료 일시</td>
-										<td>????-??-??</td>
+										<td>
+										<c:if test="${approvalHistory[0].dname eq '운영팀'  and approvalHistory[0].description eq '승인' }">
+											${fn:substring(approvalHistory[0].createdAt, 0, 16) }
+										</c:if>
+										</td>
 									</tr>
 
 									<tr>
@@ -207,6 +217,7 @@
 																		data-sha="${commitFiles.fileSha}"
 																		data-filename="${commitFiles.fileName}"
 																		data-commitsha="${commitFiles.sha}"
+																		data-repoId="${requestsDTO.devRepoId }"
 																		data-bs-toggle="modal"
 																		data-bs-target="#deployRequestCompareModal">비교</button>
 

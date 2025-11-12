@@ -1,5 +1,6 @@
 package edu.example.bts.service;
 
+import org.kohsuke.github.GHCommit.File; // 이게 중요!
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -224,10 +225,12 @@ public class DeployRequestGithubAPIService {
 			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
 			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
 			PagedIterable<GHCommit> queryCommitPath = repository.queryCommits().path(fileName).list();
-					
+			
 			for(GHCommit fileCommit : queryCommitPath) {
+				//System.out.println("select가 이상합니다.!!!!비상");
 				//System.out.println(fileCommit + "-" + fileCommit.getSHA1());
 				fileShaList.add(fileCommit.getSHA1());
+	
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

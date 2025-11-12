@@ -177,6 +177,7 @@
 															<td>
 																<button id="compareFileItemBtn" class="btn btn-sm btn-outline-primary file-comapare-btn"
 																	data-sha="${commitFile.fileSha}" data-filename="${commitFile.fileName}" data-commitsha="${commitFile.sha}"
+																	data-repoId="${requestsDTO.devRepoId}"
 																	data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
 																<button id="removeFileItemBtn" class="btn btn-sm btn-outline-secondary file-comapare-btn"
 																	data-sha="${commitFile.fileSha}" data-filename="${commitFile.fileName}" data-commitsha="${commitFile.sha}">
@@ -419,6 +420,7 @@ s
 						<td>
 							<button id="compareFileItemBtn" class="btn btn-sm btn-outline-primary file-comapare-btn"
 								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}"
+								data-repoId="${requestsDTO.devRepoId}"
 								data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
 							<button id="removeFileItemBtn" class="btn btn-sm btn-outline-secondary file-comapare-btn"
 								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}">

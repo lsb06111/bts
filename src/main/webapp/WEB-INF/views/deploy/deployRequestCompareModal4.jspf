@@ -108,18 +108,22 @@
 			},
 			dataType: "json",
 			success: function(res){
+				console.log('저 드롭 다운인데');
 				console.log(res);
 				 /* for(let queryPathCommitSha of res) {
 					$("#compareDropdown").append("<option>" + queryPathCommitSha + "</option>");
 				}  */
 				$('#compareDropdown option').remove();
-				
-				for(let i=0; i<res.length; i++){
-					if(res[i] == $('#selectedCommit').val()) {continue;}
-					else if(i==1) {$("#compareDropdown").append("<option>" + res[i] + "</option>");}
-					else{$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+				if(res.length==0){
+					$("#compareDropdown").append("<option>비교 커밋 없음</option>");
+				}else {		
+					for(let i=0; i<res.length; i++){
+						if(res[i] == $('#selectedCommit').val()) {continue;}
+						else if(i==1) {$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+						else{$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+					}
+					chageCompareSHA();
 				}
-				chageCompareSHA();
 			},
 			error: function(e){
 				alert("같은 파일 목록 못가져옴");
