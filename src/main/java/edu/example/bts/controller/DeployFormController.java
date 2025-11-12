@@ -35,7 +35,7 @@ public class DeployFormController {
 	
 	
 	@GetMapping("/deployForm")
-	public String deployForm(@RequestAttribute("loginUser") UserDTO user, Model model, HttpSession session) {
+	public String deployForm(@RequestAttribute("loginUser") UserDTO user, Model model) {
 		Long userId = user.getId();
 		// 사용자가 속한 진행중인 프로젝트 찾기
 		List<DeployFormDevRepoDTO> devRepoByUserIdList = deployFormService.findProjectsByUserId(userId);
@@ -80,9 +80,9 @@ public class DeployFormController {
 		historyService.addNotification(title, ""+reqId, userId);
 		
 		// git저장한 세션 제거?
-		session.removeAttribute("ownerName");
-		session.removeAttribute("repoName");
-		session.removeAttribute("token");
+		//session.removeAttribute("ownerName");
+		//session.removeAttribute("repoName");
+		//session.removeAttribute("token");
 		
 		return "redirect:/"; //"redirect:/history?project=&status=&page=1";
 	}

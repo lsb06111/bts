@@ -73,13 +73,16 @@
 
 <script>
 	const compareModal = $("#deployRequestCompareModal");
-	
+	let devRepoId;
+	console.log(devRepoId);
 	compareModal.on("show.bs.modal", function(event){
 	/* deployRequest 비교 버튼 - 모달 데이터 받아오기 */
 		const button = event.relatedTarget;
 		const fileSha = button.getAttribute('data-sha');
 		const fileName = button.getAttribute('data-filename');
 		const commitSha = button.getAttribute('data-commitsha');
+		const repoId = button.getAttribute('data-repoId');
+		devRepoId = repoId;
 		
 		//const patch = patchMap.get(fileSha);
 		//console.log("모달의 path입니다" + patch);
@@ -99,7 +102,10 @@
 		$.ajax({
 			url: "/bts/deployRequest/commit/queryCommit/fileName",
 			method: "GET",
-			data: {"fileName" : fileName},
+			data: {
+				"fileName" : fileName,
+				"repoId": repoId
+			},
 			dataType: "json",
 			success: function(res){
 				console.log(res);
@@ -137,14 +143,16 @@
 		const compareSha = $("#compareDropdown").val();
 		const fileName = document.querySelector('.fileName').textContent;
 		const sha = document.querySelector('#selectedCommit').value;
-		
-		
+
 		$.ajax({
 			url:"/bts/deployRequest/commit/compare/basehead4",   // java-diff-utils 사용
 			method: "GET",
-			data: {fileName: fileName,
-				   sha : sha,
-				   compareSha: compareSha},
+			data: {
+				fileName: fileName,
+				sha : sha,
+				compareSha: compareSha,
+				repoId: devRepoId    // 레포아이디가 나옴 문제임
+			},
 		   dataType: "json",
 			success: function(res){
 				console.log(res);

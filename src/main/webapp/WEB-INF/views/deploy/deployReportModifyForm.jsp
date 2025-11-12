@@ -344,12 +344,15 @@ s
 			$(".file-item").empty();
 			
 			const sha = $(this).data("sha");
-			
+			const repoId = $("#rquestTBdevRepoId").val();
 			
 			$.ajax({
 				url: "/bts/deployRequest/commits/sha",
 				method: "GET",
-				data: {"sha": sha},
+				data: {
+					"sha": sha,
+					"repoId": repoId
+				},
 				dataType: "json",  
 				success: function(res){
 					$('#fileSearch').val("");

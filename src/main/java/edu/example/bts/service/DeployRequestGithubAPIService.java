@@ -27,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.util.OnCommittedResponseWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -40,6 +41,7 @@ import edu.example.bts.dao.DeployRequestDAO;
 import edu.example.bts.domain.deployRequest.CommitDTO;
 import edu.example.bts.domain.deployRequest.CommitFileDTO;
 import edu.example.bts.domain.deployRequest.CommitPageDTO;
+import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -98,13 +100,13 @@ public class DeployRequestGithubAPIService {
 	*/
 	
 	// 페이징 시도중...
-	public CommitPageDTO getCommitList(String ownerName, String repoName, String token, int page)  {
+	public CommitPageDTO getCommitList(DeployFormDevRepoDTO devRepoDTO, int page){ //(String ownerName, String repoName, String token, int page)  {
 		List<CommitDTO> commitList = new ArrayList<CommitDTO>();
 		CommitPageDTO result = new CommitPageDTO();
 		
 		try {
-			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
-			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
+			GitHub github = new GitHubBuilder().withOAuthToken(devRepoDTO.getRepoToken()).build();
+			GHRepository repository = github.getRepository(devRepoDTO.getOwnerUsername() + "/" + devRepoDTO.getRepoName());
 			PagedIterable<GHCommit> ghcommitLists = repository.listCommits();  // 페이지 사이즈 조절하면 어디부터 시작하는지 못찾겠슴... 
 			PagedIterable<GHCommit> ghcommitList = repository.listCommits().withPageSize(10);  // 페이지 사이즈 조절하면 어디부터 시작하는지 못찾겠슴... 
 			PagedIterator<GHCommit> it = repository.listCommits()._iterator(10);
@@ -356,6 +358,9 @@ public class DeployRequestGithubAPIService {
 		
 		Map<String, Object> result = new HashMap<>();
 		System.out.println("4번인가요?");
+		System.out.println(token);
+		System.out.println(ownerName);
+		System.out.println(repoName);
 		try {
 			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
 			GHRepository repository = github.getRepository(ownerName+"/"+repoName);

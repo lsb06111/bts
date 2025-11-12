@@ -400,12 +400,15 @@
 			$(".file-item").empty();
 			
 			const sha = $(this).data("sha");
-			
+			const repoId = $("#rquestTBdevRepoId").val();
 			
 			$.ajax({
 				url: "/bts/deployRequest/commits/sha",
 				method: "GET",
-				data: {"sha": sha},
+				data: {
+					"sha": sha,
+					"repoId": repoId
+				},
 				dataType: "json",  
 				success: function(res){
 					$('#fileSearch').val("");
@@ -453,6 +456,11 @@
 		$(".file-item").on("click", ".file-item-btn" ,function(e){
 			e.preventDefault();
 			
+			const repoId = $("#rquestTBdevRepoId").val();
+			console.log("모달repoID");
+			console.log(repoId);
+			
+			
 			const fileSha = $(this).attr("id");
 			//const fileShaShort = $(this).attr("id").slice(0,7);
 			const fileName = $(this).data("filename");
@@ -472,6 +480,7 @@
 						<td>
 							<button id="compareFileItemBtn" class="btn btn-sm btn-outline-primary file-comapare-btn"
 								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}"
+								data-repoId="\${repoId}"
 								data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
 							<button id="removeFileItemBtn" class="btn btn-sm btn-outline-secondary file-comapare-btn"
 								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}">
