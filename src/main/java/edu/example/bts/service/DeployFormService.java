@@ -56,7 +56,7 @@ public class DeployFormService {
 		
 		
 		boolean createRequests = deployFormDAO.createRequests(deployRequestsDTO);
-		boolean createApprovalHistory = deployFormDAO.createApprovalHistory(deployRequestsDTO.getId(), statusId);
+		boolean createApprovalHistory = deployFormDAO.createApprovalHistory(deployRequestsDTO.getId(), statusId, deployRequestsDTO.getUserId());
 		for(FileDTO file : deployRequestFormDTO.getSelectedFiles()) {
 			deployFormDAO.createCommitFile(file, deployRequestsDTO.getId());			
 		}

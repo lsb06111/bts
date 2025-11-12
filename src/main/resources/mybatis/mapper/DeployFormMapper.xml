@@ -12,7 +12,7 @@
 	insert into requests (title, content, dev_repo_id, user_id) values(#{title}, #{content}, #{devRepoId}, #{userId})
 </insert>
 <insert id="createApprovalHistory" parameterType="map">
-	insert into approval_history (req_id, status_id) values(#{reqId}, #{statusId})
+	insert into approval_history (req_id, status_id, user_id) values(#{reqId}, #{statusId}, #{userId})
 </insert>
 <insert id="createCommitFile" parameterType="map">
 	insert into commit_file(sha, file_name, req_id, file_sha) values(#{file.sha}, #{file.fileName}, #{reqId}, #{file.fileSha})

@@ -95,8 +95,10 @@
 												 rows="10" cols="50"></textarea>  -->
 
 												<input type="hidden" name="reportId"
-													value="${requestsDTO.id}"> <input type="hidden"
+													value="${requestsDTO.id}"> 
+												<input type="hidden"
 													name="actionType" value="">
+												<%-- <input type="text" name="userId" value="${userid} }"> --%>
 											</div>
 											<div class="modal-footer">
 												<input type="button" id="rejectBtn"

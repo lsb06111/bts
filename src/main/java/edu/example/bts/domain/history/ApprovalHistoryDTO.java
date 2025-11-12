@@ -13,4 +13,5 @@ public class ApprovalHistoryDTO {
 	private String createdAt;
 	private Long reqId;
 	private StatusDTO status;
+	private Long userId;
 }
