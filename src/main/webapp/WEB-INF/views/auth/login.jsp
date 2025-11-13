@@ -57,7 +57,7 @@
 							${errorPassword}</div>
 					</c:if>
 					<label class="form-label"
-						style="font-weight: 600; font-size: 13px; color: #333;">사원번호</label>
+						style="font-weight: 600; font-size: 13px; color: #333;">ID</label>
 					<input type="text" name="email" class="form-control"
 						placeholder="사원번호를 입력하세요."
 						style="font-size: 14px; padding: 10px 12px; border-radius: 8px; border: 1px solid #ddd; background-color: #f8f9fa;">
@@ -68,10 +68,10 @@
 					<div
 						style="display: flex; justify-content: space-between; align-items: center;">
 						<label class="form-label"
-							style="font-weight: 600; font-size: 13px; color: #333;">비밀번호</label>
-						<a href="#"
+							style="font-weight: 600; font-size: 13px; color: #333;">PASSWORD</label>
+						<!-- <a href="#"
 							style="font-size: 13px; color: #4f46e5; text-decoration: none;">비밀번호를
-							잊으셨나요?</a>
+							잊으셨나요?</a> -->
 					</div>
 
 					<div class="input-group">

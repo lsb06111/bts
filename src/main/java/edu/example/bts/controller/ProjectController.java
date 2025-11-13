@@ -1,5 +1,6 @@
 package edu.example.bts.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,58 +71,119 @@ public class ProjectController {
 		return "/project/projectList";
 	}
 
-	/*
-	 * // AJAX 모달에서 사원 불러오기
-	 * 
-	 * @GetMapping("/employee")
-	 * 
-	 * @ResponseBody public List<EmpDTO> findAllUser(@RequestParam(value = "page",
-	 * defaultValue = "1") int page) { int pageSize = 6; int offset = (page-1) *
-	 * pageSize; return projectService.findAllUserInModal(offset); }
-	 */
-
 	@GetMapping("/employee")
 	@ResponseBody
-	public Map<String, Object> findAllUser(@RequestParam(value = "page", defaultValue = "1") int page) {
+	public Map<String, Object> findAllUser(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "ename", required = false) String ename) {
 		int pageSize = 8; // 페이지에 보여줄 데이터
-		int totalCount = userService.countAllUsers(); // 전체 데이터 수
-		int totalPage = (int) Math.ceil((double) totalCount / pageSize);
-
-		// 현재 페이지 기준 offset
+		int totalCount;
 		int offset = (page - 1) * pageSize;
-
-		List<EmpDTO> list = projectService.findAllUserInModal(offset);
+		
+		List<EmpDTO> list;
+		if(ename != null && !ename.isEmpty()) {
+			totalCount = projectService.countUserByEnameInModal(ename);
+			list = projectService.findAllUserInModal(offset, ename);
+		} else {
+			totalCount = userService.countAllUsers();
+			list = projectService.findAllUserInModal(offset, null);
+		}
+		// 현재 페이지 기준 offset
+		int totalPage = (int) Math.ceil((double) totalCount / pageSize);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("list", list);
 		result.put("page", page);
 		result.put("totalCount", totalCount);
 		result.put("totalPage", totalPage);
+		
+		System.out.println("ename = " + ename + ", totalCount = " + totalCount);
 
 		return result;
 	}
 
 	@PostMapping("/add")
-	public String addProject(@ModelAttribute DevRepoDTO project,
-	                         @RequestParam("memberEmpnos") List<Long> memberEmpnos,
-	                         @RequestParam("approverEmpno") Long approverEmpno,
-	                         @RequestAttribute("loginUser") UserDTO loginUser,
-	                         RedirectAttributes ra) {
+	public String addProject(@ModelAttribute DevRepoDTO project, @RequestParam("memberEmpnos") List<Long> memberEmpnos,
+			@RequestParam("approverEmpno") Long approverEmpno, @RequestAttribute("loginUser") UserDTO loginUser,
+			RedirectAttributes ra) {
 
-	    // JWT에서 로그인 사용자 정보 사용
-	    Long empno = loginUser.getEmpno();
+		// 로그인한 팀장 사번(JWT에서 로그인 사용자 정보 사용)
+		Long loginEmpno = loginUser.getEmpno();
+		System.out.println("Debug Test 로그인 유저 empno = " + loginEmpno);
 
-	    // 예: 팀장 권한 확인
-	    if (loginUser.getEmp() != null 
-	        && loginUser.getEmp().getJob().getJobno() == 3 
-	        && loginUser.getEmp().getDept().getDeptno() == 1) {
+		// 프로젝트 멤버들의 empno -> user_id 변환
+		List<Long> memberUserIds = new ArrayList<>();
 
-	        projectService.createProject(project, memberEmpnos, approverEmpno, empno);
-	        ra.addFlashAttribute("msg", "프로젝트가 등록되었습니다.");
-	    } else {
-	        ra.addFlashAttribute("msg", "프로젝트 등록 권한이 없습니다.");
+		System.out.println("memberEmpnos 체크 : " + memberEmpnos);
+		System.out.println("approverEmpnos 체크 : " + approverEmpno);
+		
+		
+		for(int i = 0; i < memberEmpnos.size(); i++) {
+			Long memberEmpno = memberEmpnos.get(i);
+			Long userId = projectService.findUserByEmpno(memberEmpno);
+			System.out.println("값 체크: " + userId);
+			if(userId != null) {
+				memberUserIds.add(userId);
+			}
+		}
+	
+		System.out.println("Debug Test 멤버유저ID: " + memberUserIds);
+		
+		// 결재자 empno -> user_id 변환
+		Long approverUserId = null;
+		if (approverEmpno != null) {
+			approverUserId = projectService.findUserByEmpno(approverEmpno);
+		}
+		System.out.println("Debug Test 결재자ID : " + approverUserId);
+		
+		projectService.createProject(project, memberUserIds, approverUserId, loginEmpno);
+
+		/*if (loginUser.getEmp() != null && loginUser.getEmp().getJob().getJobno() == 3 && loginUser.getDept().getDeptno() == 1)
+			projectService.createProject(project, memberUserIds, approverUserId, loginEmpno);
+
+		// 예: 팀장 권한 확인
+		if (loginUser.getEmp() != null && loginUser.getEmp().getJob().getJobno() == 3
+				&& loginUser.getEmp().getDept().getDeptno() == 1) {
+
+			projectService.createProject(project, memberEmpnos, approverEmpno, empno);
+			ra.addFlashAttribute("msg", "프로젝트가 등록되었습니다.");
+		} else {
+			ra.addFlashAttribute("msg", "프로젝트 등록 권한이 없습니다.");
+		}*/
+
+		return "redirect:/project/list";
+	}
+	
+	@PostMapping("/update")
+	public String updateProject(
+	        @ModelAttribute DevRepoDTO project,
+	        @RequestParam(value = "memberIds", required = false) List<Long> memberIds,
+	        @RequestParam(value = "memberEmpnos", required = false) List<Long> memberEmpnos,
+	        @RequestParam(value = "approverEmpno", required = false) Long approverEmpno,
+	        @RequestAttribute("loginUser") UserDTO loginUser,
+	        RedirectAttributes ra) {
+
+	    System.out.println("==== UpdateProject Debug ====");
+	    System.out.println("projectName = " + project.getProjectName());
+	    System.out.println("repoName = " + project.getRepoName());
+	    System.out.println("ownerUsername = " + project.getOwnerUsername());
+	    System.out.println("repoToken = " + project.getRepoToken());
+	    System.out.println("memberEmpnos = " + memberEmpnos);
+	    System.out.println("approverEmpno = " + approverEmpno);
+	    System.out.println("=============================");
+
+	    if (memberEmpnos == null) memberEmpnos = new ArrayList<>();
+	    if (memberIds == null) memberIds = new ArrayList<>();
+
+	    // empno → user_id 변환
+	    List<Long> memberUserIds = new ArrayList<>();
+	    for (Long empno : memberEmpnos) {
+	        Long userId = projectService.findUserByEmpno(empno);
+	        if (userId != null) memberUserIds.add(userId);
 	    }
 
+	    projectService.updateProject(project, memberIds, memberUserIds, approverEmpno);
+
+	    ra.addFlashAttribute("msg", "프로젝트 정보가 수정되었습니다.");
 	    return "redirect:/project/list";
+
 	}
 }

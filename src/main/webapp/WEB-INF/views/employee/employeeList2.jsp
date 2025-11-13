@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
-<style>
+<!-- <style>
 .dropdown-menu {
 	min-width: 110px !important;
 }
@@ -12,7 +12,7 @@
 	right: auto !important;
 	left: 0 !important;
 }
-</style>
+</style> -->
 </head>
 <body data-ctx="<%=request.getContextPath()%>"
 	style="background-color: #f7f7fb;">
@@ -54,7 +54,7 @@
 					<div class="input-group" style="width: 240px;">
 						<form action="${pageContext.request.contextPath}/emp/list2"
 							method="get" class="input-group" style="width: 240px;">
-							<input type="text" name="ename" value="${ename}"
+							<input type="text" name="ename" value="${param.ename}"
 								class="form-control" placeholder="사원명 검색..."
 								style="font-size: 13px; border-right: 0; background-color: #fafafa;">
 							<button class="btn btn-outline-light" type="button"
