@@ -30,22 +30,44 @@
 
 
 <select id="findApprovalHistoryDetailList" parameterType="Long" resultType="ApprovalHistoryDetailDTO">
-	select ah.id, ah.created_at, ah.req_id, ah.status_id, ah.content,  
+select ah.id, ah.created_at, ah.req_id, ah.status_id, ah.content, ah.user_id as approval_user_id
+        , s.description
+        , u.empno
+        , r.user_id, r.dev_repo_id
+        , e.ename, e.jobno, e.deptno
+        , j.jname
+        , d.dname
+from approval_history ah
+    join users u on ah.user_id = u.id
+    join status s on ah.status_id = s.id
+    join requests r on ah.req_id = r.id 
+    join emp e on u.empno = e.empno
+    join job j on e.jobno = j.jobno
+    join dept d on e.deptno = d.deptno
+where req_id=#{req_id} and status_id !=1
+order by ah.id desc
+
+<!-- 	select ah.id, ah.created_at, ah.req_id, ah.status_id, ah.content,
 	        s.description,
 	        r.user_id, r.dev_repo_id,
-	        al.empno, 
+	        al.empno,
 	        e.ename, e.jobno, e.deptno,
 	        j.jname,
 	        d.dname
 	from approval_history ah
-	join status s on ah.status_id = s.id
-	join requests r on ah.req_id = r.id
-	join approval_line al on r.dev_repo_id = al.dev_repo_id
-	join emp e on al.empno = e.empno
-	join job j on e.jobno = j.jobno
-	join dept d on e.deptno = d.deptno
-	where ah.req_id=#{req_id}
-	order by ah.id desc
+	    join status s on ah.status_id = s.id
+	    join requests r on ah.req_id = r.id
+	    join approval_line al on r.dev_repo_id = al.dev_repo_id
+	       and (
+	            (ah.status_id = 2 and al.approval_order = 1)
+	         or (ah.status_id = 3 and al.approval_order = 2)
+	       )
+	    join emp e on al.empno = e.empno
+		join job j on e.jobno = j.jobno
+		join dept d on e.deptno = d.deptno
+	where ah.req_id = #{req_id}
+	  and ah.status_id != 1
+	order by ah.id desc -->
 </select>
 <!-- 취소... 
 <select id="findAllByReqId" parameterType="Long" resultMap="approvalHistoryResultMap">
@@ -93,8 +115,28 @@
 <update id="updateRequestById" parameterType="DeployRequestFormDTO">
 	update requests set title=#{title}, created_at=sysdate, dev_repo_id=#{devRepoId}, content=#{content} where id=#{reqId}
 </update>
+
 <insert id="insertApprovalHistoryModify" parameterType="long">
-	insert into approval_history(req_id, status_id) values(#{req_id}, 1)
+	insert into approval_history(req_id, status_id, user_id) values(#{req_id}, 1, #{userId})
 </insert>
+
+
+<!-- 
+<select id="findAllApprovalHistoryByReqId" parameterType="long" resultType="ApprovalHistoryDTO">
+	select * from approval_history where req_id = #{reqId} and status_id != 1 
+</select>
+
+<select id="findApprovalLinesByReqId" parameterType="long" resultType="ApprovalLineDTO">
+	select al.* from approval_line al where dev_repo_id in (select dev_repo_id from requests where id = #{reqId})
+</select>
+ -->
+
+<!-- approval_history userid(user Empno 추가)   -->
+<insert id="insertApprovalHistory2">
+INSERT INTO approval_history(req_id, status_id, content, user_id) VALUES(#{req_id}, #{status_id}, #{content}, #{userId})
+</insert>
+
+
+
 
 </mapper>

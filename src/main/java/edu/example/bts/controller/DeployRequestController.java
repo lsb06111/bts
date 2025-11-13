@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.example.bts.domain.deployRequest.CommitDTO;
 import edu.example.bts.domain.deployRequest.CommitFileDTO;
+import edu.example.bts.domain.deployRequest.CommitPageDTO;
 import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
 import edu.example.bts.service.DeployFormService;
 import edu.example.bts.service.DeployRequestGithubAPIService;
@@ -52,7 +53,7 @@ public class DeployRequestController {
 		return commitList;
 	}
 	*/ 
-	/* : Ajax data 선택된 devRepo의 id */
+	/* : Ajax data 선택된 devRepo의 id 
 	@GetMapping("/deployRequest")
 	@ResponseBody
 	public List<CommitDTO> deployRequest(Model model,@RequestParam("repoId") Long repoId, HttpSession session) {
@@ -75,15 +76,46 @@ public class DeployRequestController {
 		//model.addAttribute("commitList", commitList);
 		return commitList;
 	}
+	*/
+	
+	// 페이지....
+	@GetMapping("/deployRequest")
+	@ResponseBody
+	public CommitPageDTO deployRequest(Model model,@RequestParam("repoId") Long repoId, @RequestParam(value="page", defaultValue="1")int page) {
+		// devRepo 정보 가져오기 
+		DeployFormDevRepoDTO devRepoDTO = deployFormService.findDevRepoById(repoId);   // 그냥 처음부터 다 가져올수 없는건가?
+		String ownerName = devRepoDTO.getOwnerUsername();
+		String repoName = devRepoDTO.getRepoName();
+		String token=devRepoDTO.getRepoToken();
+		
+		
+		//Github repo의 commitList 가져오기
+		//CommitPageDTO commitList = deployGithubService.getCommitList(ownerName, repoName, token, page);  // 세션 사용
+		CommitPageDTO commitList = deployGithubService.getCommitList(devRepoDTO, page); 
+		
+		
+		
+		//boolean hasNext = deployGithubService.hasNextPage(ownerName, repoName, token, page);
+		//int totalPage = deployGithubService.getTotalPage(ownerName, repoName, token, page);
+				
+		System.out.println(commitList);
+		//model.addAttribute("commitList", commitList);
+		//return commitList;
+		return commitList;
+	}
 		
 
 	
 	@GetMapping(value = "/deployRequest/commits/sha", produces="application/json; charset=UTF-8")
 	@ResponseBody
-	public List<CommitFileDTO> getCommitFileName(@RequestParam String sha, HttpSession session) {
-		//System.out.println(sha);
-		//System.out.println(session.getAttribute("ownerName"));
-		List<CommitFileDTO> fileList = deployGithubService.getCommitDetail((String)session.getAttribute("ownerName"), (String)session.getAttribute("repoName"), (String)session.getAttribute("token"), sha);
+	public List<CommitFileDTO> getCommitFileName(@RequestParam String sha, @RequestParam("repoId") Long repoId){//HttpSession session) {
+		// devRepo 정보 가져오기 
+		DeployFormDevRepoDTO devRepoDTO = deployFormService.findDevRepoById(repoId);   // 그냥 처음부터 다 가져올수 없는건가?
+		String ownerName = devRepoDTO.getOwnerUsername();
+		String repoName = devRepoDTO.getRepoName();
+		String token=devRepoDTO.getRepoToken();
+		
+		List<CommitFileDTO> fileList = deployGithubService.getCommitDetail(ownerName, repoName, token, sha);
 		return fileList;
 	}
 	
@@ -91,8 +123,14 @@ public class DeployRequestController {
 // 같은 파일의 커밋 목록(sha)가져오기 
 	@GetMapping(value="/deployRequest/commit/queryCommit/fileName", produces="application/json; charset=UTF-8")
 	@ResponseBody
-	public List<String> getFileCommitList(@RequestParam String fileName, HttpSession session){
-		List<String> fileShaList = deployGithubService.getFileCommitList((String)session.getAttribute("ownerName"), (String)session.getAttribute("repoName"), (String)session.getAttribute("token"), fileName);
+	public List<String> getFileCommitList(@RequestParam String fileName, @RequestParam("repoId")Long repoId){
+		// devRepo 정보 가져오기 
+		DeployFormDevRepoDTO devRepoDTO = deployFormService.findDevRepoById(repoId);   // 그냥 처음부터 다 가져올수 없는건가?
+		String ownerName = devRepoDTO.getOwnerUsername();
+		String repoName = devRepoDTO.getRepoName();
+		String token=devRepoDTO.getRepoToken();
+		
+		List<String> fileShaList = deployGithubService.getFileCommitList(ownerName, repoName,token, fileName);
 	
 		return fileShaList;
 	}
@@ -118,8 +156,15 @@ public class DeployRequestController {
 // 같은 파일 커밋으로 비교 (java-diff-utils) : 모달4
 	@GetMapping(value="/deployRequest/commit/compare/basehead4", produces="application/json; charset=UTF-8")
 	@ResponseBody
-	public Map<String, Object> compareFileWithCommitSha4(@RequestParam String fileName, @RequestParam String sha, @RequestParam String compareSha, HttpSession session) {
-		Map<String, Object> diffPatch = deployGithubService.compareFileWithCommitSha4((String)session.getAttribute("ownerName"), (String)session.getAttribute("repoName"), (String)session.getAttribute("token"), fileName, sha, compareSha);
+	public Map<String, Object> compareFileWithCommitSha4(@RequestParam String fileName, @RequestParam String sha, @RequestParam String compareSha, @RequestParam("repoId")Long repoId) {
+		// devRepo 정보 가져오기 
+		DeployFormDevRepoDTO devRepoDTO = deployFormService.findDevRepoById(repoId);   // 그냥 처음부터 다 가져올수 없는건가?
+		String ownerName = devRepoDTO.getOwnerUsername();
+		String repoName = devRepoDTO.getRepoName();
+		String token = devRepoDTO.getRepoToken();
+		
+		System.out.println(token);
+		Map<String, Object> diffPatch = deployGithubService.compareFileWithCommitSha4(ownerName, repoName,token, fileName, sha, compareSha);
 		//System.out.println(diffPatch);
 		return diffPatch;
 	}

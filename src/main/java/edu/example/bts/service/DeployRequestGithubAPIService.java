@@ -1,5 +1,6 @@
 package edu.example.bts.service;
 
+import org.kohsuke.github.GHCommit.File; // 이게 중요!
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHCommit.File;
@@ -19,12 +21,14 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.PagedIterable;
+import org.kohsuke.github.PagedIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.util.OnCommittedResponseWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,6 +41,8 @@ import com.github.difflib.patch.Patch;
 import edu.example.bts.dao.DeployRequestDAO;
 import edu.example.bts.domain.deployRequest.CommitDTO;
 import edu.example.bts.domain.deployRequest.CommitFileDTO;
+import edu.example.bts.domain.deployRequest.CommitPageDTO;
+import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -47,20 +53,20 @@ public class DeployRequestGithubAPIService {
 	
 	@Autowired
 	private DeployRequestDAO dao;
-	
+	/*
 	//Github repo의 commitList 가져오기
 	public List<CommitDTO> getCommitList(String ownerName, String repoName, String token)  {
-		/*
-		String url = "https://api.github.com/repos/"+ ownerName +"/"+ repoName + "/commits";
 		
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", "application/vnd.github+json");
-		headers.setBearerAuth(token);		// headers.set("Authorization", "Bearer " + token);
-		headers.set("X-GitHub-Api-Version", "2022-11-28");
+		//String url = "https://api.github.com/repos/"+ ownerName +"/"+ repoName + "/commits";
 		
-		HttpEntity<Void> request = new HttpEntity<>(headers);	// 요청
-		RestTemplate restTemplate = new RestTemplate();
-		*/
+		//HttpHeaders headers = new HttpHeaders();
+		//headers.set("Accept", "application/vnd.github+json");
+		//headers.setBearerAuth(token);		// headers.set("Authorization", "Bearer " + token);
+		//headers.set("X-GitHub-Api-Version", "2022-11-28");
+		
+		//HttpEntity<Void> request = new HttpEntity<>(headers);	// 요청
+		//RestTemplate restTemplate = new RestTemplate();
+		
 		List<CommitDTO> commitList = new ArrayList<CommitDTO>();
 
 		try {
@@ -68,7 +74,7 @@ public class DeployRequestGithubAPIService {
 			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
 			PagedIterable<GHCommit> ghcommitList = repository.listCommits();
 			
-			int count= 0;
+			//int count= 0;
 			for(GHCommit commit : ghcommitList) {
 				Date date = commit.getCommitShortInfo().getAuthor().getDate();     //Date authorDate = commit.getCommitShortInfo().getAuthoredDate();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm");
@@ -83,7 +89,7 @@ public class DeployRequestGithubAPIService {
 				CommitDTO dto = new CommitDTO(sha, commitMessage, authorName, authorDate, userName);
 				commitList.add(dto);
 
-				if(++count>10) break;  // 10개만 출력중... DB쪽을 너무 많이 다녀오는데 생각좀;;; 
+				//if(++count>10) break;  // 10개만 출력중... DB쪽을 너무 많이 다녀오는데 생각좀;;; 
 			}
 			
 		}catch(Exception e) {
@@ -92,6 +98,92 @@ public class DeployRequestGithubAPIService {
 		
 		return commitList;
 	}
+	*/
+	
+	// 페이징 시도중...
+	public CommitPageDTO getCommitList(DeployFormDevRepoDTO devRepoDTO, int page){ //(String ownerName, String repoName, String token, int page)  {
+		List<CommitDTO> commitList = new ArrayList<CommitDTO>();
+		CommitPageDTO result = new CommitPageDTO();
+		
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(devRepoDTO.getRepoToken()).build();
+			GHRepository repository = github.getRepository(devRepoDTO.getOwnerUsername() + "/" + devRepoDTO.getRepoName());
+			PagedIterable<GHCommit> ghcommitLists = repository.listCommits();  // 페이지 사이즈 조절하면 어디부터 시작하는지 못찾겠슴... 
+			PagedIterable<GHCommit> ghcommitList = repository.listCommits().withPageSize(10);  // 페이지 사이즈 조절하면 어디부터 시작하는지 못찾겠슴... 
+			PagedIterator<GHCommit> it = repository.listCommits()._iterator(10);
+			
+		// 1페이지  또는 X페이지에 맞는 것만 가져온다. 
+			// 원하는 페이지까지는 스킵을 하고, ******** 
+			for(int i=1; i<page && it.hasNext(); i++) {
+				it.nextPage();
+			}
+			
+			// 원하는 페이지만 보내준다.
+			List<GHCommit> currentPage = it.hasNext()? it.nextPage(): Collections.emptyList();
+			for(GHCommit commit : currentPage) {
+				Date date = commit.getCommitShortInfo().getAuthor().getDate();     //Date authorDate = commit.getCommitShortInfo().getAuthoredDate();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm");
+				
+				String sha = commit.getSHA1();
+				String commitMessage = commit.getCommitShortInfo().getMessage();
+				String authorName = commit.getCommitShortInfo().getAuthor().getName();    //String authorName = commit.getAuthor().getLogin();
+				String authorDate = dateFormat.format(date);
+				
+				String userName = dao.findEmpNameByGitId(authorName);   // SET-Map으로 방법을 찾아본다
+				
+				CommitDTO dto = new CommitDTO(sha, commitMessage, authorName, authorDate, userName);
+				commitList.add(dto);
+			}
+			// hasNextPage 
+			boolean hasNext = it.hasNext();
+			int totalCommits = ghcommitLists.toList().size();
+			int totalPage = (int)Math.ceil(totalCommits/10.0);
+			
+			result.setCommitList(commitList);
+			result.setHasNext(hasNext);
+			result.setCurrentPage(page);
+			result.setTotalPage(totalPage);
+			
+		}catch(Exception e) {
+			System.err.println("Github API 호출중 에러 발생 : " + e.getMessage() );
+		}
+		
+		return result;
+	}
+	
+/*	
+ 	// 각각 실행하니까 시간이 너무 오래 걸려서 한번에 실행하도록 변경했기때문에 필요 없음 
+ 	 
+	public boolean hasNextPage(String ownerName, String repoName, String token, int page) {
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
+			PagedIterator<GHCommit> it = repository.listCommits()._iterator(10);
+			
+			for(int i=1; i<=page && it.hasNext(); i++) {
+				it.nextPage();
+			}
+			return it.hasNext(); // 그냥 i로 페이지 개수를 보내주는게 안나은가???
+			
+		} catch (Exception e) {
+			System.out.println("Github API 호출중 에러 발생 : " + e.getMessage());
+			return false;
+		}
+	}
+	
+	public int getTotalPage(String ownerName, String repoName, String token, int page) {
+		try {
+			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
+			int totalCommits = repository.listCommits().toList().size();
+			int totalPage = (int)Math.ceil(totalCommits/10.0);
+			
+			return totalPage;
+		} catch (Exception e) {
+			return 1;
+		}
+	}
+	*/
 
 	// 선택한 커밋에 해당하는 파일정보 가져오기
 	public List<CommitFileDTO> getCommitDetail(String ownerName, String repoName, String token, String sha) {
@@ -133,10 +225,12 @@ public class DeployRequestGithubAPIService {
 			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
 			GHRepository repository = github.getRepository(ownerName + "/" + repoName);
 			PagedIterable<GHCommit> queryCommitPath = repository.queryCommits().path(fileName).list();
-					
+			
 			for(GHCommit fileCommit : queryCommitPath) {
+				//System.out.println("select가 이상합니다.!!!!비상");
 				//System.out.println(fileCommit + "-" + fileCommit.getSHA1());
 				fileShaList.add(fileCommit.getSHA1());
+	
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -267,6 +361,9 @@ public class DeployRequestGithubAPIService {
 		
 		Map<String, Object> result = new HashMap<>();
 		System.out.println("4번인가요?");
+		System.out.println(token);
+		System.out.println(ownerName);
+		System.out.println(repoName);
 		try {
 			GitHub github = new GitHubBuilder().withOAuthToken(token).build();
 			GHRepository repository = github.getRepository(ownerName+"/"+repoName);
@@ -395,7 +492,8 @@ public class DeployRequestGithubAPIService {
 		
 		return result;
 	}
-	
+
+
 	
 	
 	

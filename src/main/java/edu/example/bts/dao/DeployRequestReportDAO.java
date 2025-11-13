@@ -11,6 +11,7 @@ import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.deployRequest.RequestCommitFileDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
+import edu.example.bts.domain.history.ApprovalLineDTO;
 
 @Mapper
 public interface DeployRequestReportDAO {
@@ -35,9 +36,15 @@ public interface DeployRequestReportDAO {
 
 	void updateRequestById(DeployRequestFormDTO deployRequestFormDTO);
 
-	void insertApprovalHistoryModify(@Param("req_id")Long reqId);
-
-
+	void insertApprovalHistoryModify(@Param("req_id")Long reqId, @Param("userId")Long userId);
+	
+	// ------------------------------------
+	//List<ApprovalHistoryDTO> findAllApprovalHistoryByReqId(Long reqId);
+	//List<ApprovalLineDTO> findApprovalLinesByReqId(Long reqId);
 
 	
+	// approval_history userid(user Empno 추가) 
+	void insertApprovalHistory2(@Param("req_id")Long reportId, @Param("status_id") long statusId, @Param("content") String content, @Param("userId")Long userId);
+
+
 }
