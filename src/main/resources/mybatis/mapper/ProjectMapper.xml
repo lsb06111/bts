@@ -46,6 +46,12 @@
 		repoName,
 		d.owner_username AS ownerUsername,
 		d.repo_token AS repoToken,
+		LISTAGG(e.empno, ', ')
+		WITHIN GROUP
+		(ORDER BY e.ename) AS memberEmpnos,
+		LISTAGG(de.dname, ', ')
+		WITHIN GROUP
+		(ORDER BY e.ename) AS memberDeptnos,
 		LISTAGG(e.ename, ', ')
 		WITHIN GROUP
 		(ORDER BY e.ename) AS memberNames,
@@ -60,6 +66,7 @@
 		p.user_id = u.id
 		JOIN emp e ON u.empno =
 		e.empno
+		JOIN dept de on de.deptno = e.deptno
 		LEFT JOIN approval_line
 		al
 		ON d.id = al.dev_repo_id
@@ -183,7 +190,7 @@
 
 
 
-<!-- 업데이트 -->
+	<!-- 업데이트 -->
 	<update id="updateProject" parameterType="DevRepoDTO">
 		UPDATE dev_repo
 		SET
