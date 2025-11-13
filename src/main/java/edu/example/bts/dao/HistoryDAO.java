@@ -88,10 +88,12 @@ public interface HistoryDAO {
 													   @Param("page") int page,
 													   @Param("buildStatus") String buildStatus,
 													   @Param("keyword") String keyword,
-													   @Param("filter") String filter);
+													   @Param("filter") String filter,
+													   @Param("isCombined") boolean isCombined);
 	
 	public int getRequestsSizeForBuild(@Param("userId") Long userId,
 								       @Param("buildStatus") String buildStatus,
 								       @Param("keyword") String keyword,
-								       @Param("filter") String filter);
+								       @Param("filter") String filter,
+								       @Param("isCombined") boolean isCombined);
 }

@@ -18,6 +18,8 @@ public interface JenkinsDAO {
 	
 	public List<Long> getAwaitedReqIds();
 	
+	public boolean addResult(@Param("reqId") Long reqId, @Param("resultType") String resultType);
+	
 	public boolean addDeployResult(DeployResultDTO drDTO);
 	
 	public boolean updateResult(@Param("reqId") Long reqId, 
