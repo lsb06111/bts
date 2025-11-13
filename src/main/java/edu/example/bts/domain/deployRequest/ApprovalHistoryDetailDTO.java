@@ -15,6 +15,7 @@ public class ApprovalHistoryDetailDTO {
 	private Long reqId;
 	private Long statusId;
 	private String content;
+	private Long approvalUserId;
 	
 	// status
 	private String description;

@@ -43,7 +43,7 @@ public class DeployRequestReportController {
 	NotifyService notifyService;
 	
 	@GetMapping("/deployRequestView")
-	public String deployRequestView(@RequestAttribute("loginUser") UserDTO user, @RequestParam Long requestId, @RequestParam Long userId,@RequestParam String latests, Model model, HttpSession session) {
+	public String deployRequestView(@RequestAttribute("loginUser") UserDTO user, @RequestParam Long requestId, @RequestParam Long userId,@RequestParam String latests, Model model) {
 		// 하나의 보고서 내용 가져오기
 		DeployRequestsDTO requestsDTO = requestReportService.getRequestByReportId(requestId);
 		System.out.println("하나의 보고서(requests): " + requestsDTO);
@@ -56,9 +56,9 @@ public class DeployRequestReportController {
 		String repoName = devRepoDTO.getRepoName();
 		String token=devRepoDTO.getRepoToken();
 		
-		session.setAttribute("ownerName", ownerName);
-		session.setAttribute("repoName", repoName);
-		session.setAttribute("token", token);
+		//session.setAttribute("ownerName", ownerName);
+		//session.setAttribute("repoName", repoName);
+		//session.setAttribute("token", token);
 	
 		// 글 작성자인지 아닌지 확인  -> 따로 함수로 만들고 싶네?
 		boolean isMine = user.getId()== userId ? true : false;
@@ -66,7 +66,7 @@ public class DeployRequestReportController {
 		
 		// 승인/반려 사유
 		List<ApprovalHistoryDetailDTO> approvalHistory =requestReportService.getApprovalHistoryDetailList(requestId);
-		System.out.println(approvalHistory);
+		System.out.println("저좀 보여주세요!!!!!!!" + approvalHistory);
 		
 		// 결재라인정보
 		List<String> approvlaLines = requestReportService.getApprovalLinesByDevRepoId(requestId);
@@ -107,8 +107,11 @@ public class DeployRequestReportController {
 		}else if(actionType.equals("반려")) {
 			statusId=3;
 		}
+		System.out.println("결재 승인/반려 userEMPno : "+ user.getEmpno());
+		System.out.println("결재 승인/반려 userid : "+ user.getId());
 		
-		requestReportService.insertApprovalHistory(reportId, statusId, content);
+		requestReportService.insertApprovalHistory(reportId, statusId, content, user.getId());  //requestReportService.insertApprovalHistory(reportId, statusId, content);
+		
 		Map<String, Object> notiPayload = new HashMap<>();
 		DeployRequestsDTO deployRequestsDTO = deployRequestHistoryService.getRequestsById(reportId);
 		String title = deployRequestsDTO.getTitle();
@@ -129,7 +132,7 @@ public class DeployRequestReportController {
 	}
 	
 	@GetMapping("/deploy/approval/modify")
-	public String modifyDeployReport(@RequestParam Long requestId, Model model, HttpSession session) {
+	public String modifyDeployReport(@RequestAttribute("loginUser") UserDTO user, @RequestParam Long requestId, Model model) {
 		System.out.println("신청번호 : " + requestId);
 		// 하나의 보고서 내용 가져오기
 		DeployRequestsDTO requestsDTO = requestReportService.getRequestByReportId(requestId);
@@ -143,9 +146,9 @@ public class DeployRequestReportController {
 		String repoName = devRepoDTO.getRepoName();
 		String token=devRepoDTO.getRepoToken();
 		
-		session.setAttribute("ownerName", ownerName);
-		session.setAttribute("repoName", repoName);
-		session.setAttribute("token", token);
+		//session.setAttribute("ownerName", ownerName);
+		//session.setAttribute("repoName", repoName);
+		//session.setAttribute("token", token);
 		
 		//
 		List<DeployFormDevRepoDTO> devRepoByUserIdList = deployFormService.findProjectsByUserId(requestsDTO.getUserId());

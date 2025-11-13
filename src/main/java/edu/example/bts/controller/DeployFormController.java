@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
@@ -35,7 +36,7 @@ public class DeployFormController {
 	
 	
 	@GetMapping("/deployForm")
-	public String deployForm(@RequestAttribute("loginUser") UserDTO user, Model model, HttpSession session) {
+	public String deployForm(@RequestAttribute("loginUser") UserDTO user, Model model) {
 		Long userId = user.getId();
 		// 사용자가 속한 진행중인 프로젝트 찾기
 		List<DeployFormDevRepoDTO> devRepoByUserIdList = deployFormService.findProjectsByUserId(userId);
@@ -59,7 +60,7 @@ public class DeployFormController {
 	}*/
 	
 	@PostMapping("/deployForm/sumbmitDeployRequestForm")
-	public String sumbmitDeployRequestForm(@RequestAttribute("loginUser") UserDTO user, DeployRequestFormDTO deployRequestFormDTO, HttpSession session) {
+	public String sumbmitDeployRequestForm(@RequestAttribute("loginUser") UserDTO user, DeployRequestFormDTO deployRequestFormDTO) {
 		System.out.println("제출함" + user.getId());
 		System.out.println("제출함 : " + deployRequestFormDTO.toString());
 
@@ -80,10 +81,11 @@ public class DeployFormController {
 		historyService.addNotification(title, ""+reqId, userId);
 		
 		// git저장한 세션 제거?
-		session.removeAttribute("ownerName");
-		session.removeAttribute("repoName");
-		session.removeAttribute("token");
+		//session.removeAttribute("ownerName");
+		//session.removeAttribute("repoName");
+		//session.removeAttribute("token");
 		
+
 		return "redirect:/"; //"redirect:/history?project=&status=&page=1";
 	}
 	
