@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.example.bts.dao.BoardDAO">
+
+
+
+<select id="getNoticeList" resultType="NoticeDTO" parameterType="int">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       to_char(n.created_at, 'yy/mm/dd') as created_at,
+       d.dname
+from notice n
+join users u on n.user_id = u.id
+join emp e using(empno)
+join dept d using(deptno)
+where n.del_yn = 0
+order by n.id desc
+offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getNoticeCount" resultType="int">
+	select count(*) from notice where del_yn = 0
+</select>
+
+<select id="getNoticeById" resultType="NoticeDTO">
+	select n.id, n.title, n.content, to_char(n.created_at, 'yy/mm/dd hh24:mm:ss') created_at, to_char(n.modified_at, 'yy/mm/dd hh24:mm:ss') modified_at, n.del_yn, n.user_id, d.dname from notice n join users u on n.user_id = u.id join emp e using(empno) join dept d using(deptno) where n.id = #{id}
+</select>
+
+<insert id="writeNotice" parameterType="NoticeDTO">
+	insert into notice (title, content, user_id) values(#{title}, #{content}, #{userId})
+</insert>
+
+
+<select id="getQnaList" resultType="QnaDTO" parameterType="int">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       e.ename,
+       to_char(n.created_at, 'yy/mm/dd') as created_at
+from qna n
+join users u on n.user_id = u.id
+join emp e using(empno)
+where n.del_yn = 0
+order by n.id desc
+offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getQnaCount" resultType="int">
+	select count(*) from qna where del_yn = 0
+</select>
+
+<select id="getQnaById" resultType="QnaDTO">
+	select n.id, n.title, n.content, to_char(n.created_at, 'yy/mm/dd hh24:mm:ss') created_at, to_char(n.modified_at, 'yy/mm/dd hh24:mm:ss') modified_at, n.del_yn, n.user_id, e.ename from qna n join users u on n.user_id = u.id join emp e using(empno) where n.id = #{id}
+</select>
+
+<select id="getReplyByQnaId" resultType="ReplyDTO">
+	select r.id, r.content, to_char(r.created_at, 'yy/mm/dd') created_at, r.del_yn, r.qna_id, r.user_id, e.ename, d.dname, j.jname from reply r join users u on u.id = r.user_id join emp e using(empno) join dept d using(deptno) join job j using(jobno) where qna_id = #{qnaId} and del_yn = 0
+</select>
+
+<insert id="writeQna" parameterType="QnaDTO">
+	insert into qna (title, content, user_id) values(#{title}, #{content}, #{userId})
+</insert>
+
+<insert id="writeReply" parameterType="ReplyDTO">
+	insert into reply (content, qna_id, user_id) values(#{content}, #{qnaId}, #{userId})
+</insert>
+
+<update id="deleteNotice" parameterType="long">
+	update notice set del_yn = 1 where id = #{id}
+</update>
+
+<update id="deleteQna" parameterType="long">
+	update qna set del_yn = 1 where id = #{id}
+</update>
+
+<update id="deleteQnaReply" parameterType="long">
+	update reply set del_yn = 1 where id = #{id}
+</update>
+
+
+</mapper>

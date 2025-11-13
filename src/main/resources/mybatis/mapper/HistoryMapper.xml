@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.example.bts.dao.HistoryDAO">
+
+<resultMap id="DevRepoMap" type="DevRepoDTO">
+    <id property="id" column="dev_repo_id"/>
+    <result property="projectName" column="project_name"/>
+    <result property="ownerUsername" column="owner_username"/>
+    <result property="repoName" column="repo_name"/>
+    <result property="currentStage" column="current_stage"/>
+</resultMap>
+
+<resultMap id="StatusMap" type="StatusDTO">
+    <id property="id" column="status_id"/>
+    <result property="description" column="description"/>
+</resultMap>
+
+<!-- Requests + DevRepo 조합 매핑 -->
+<resultMap id="RequestsMap" type="RequestsDTO">
+    <id property="id" column="id"/>
+    <result property="title" column="title"/>
+    <result property="content" column="content"/>
+    <result property="createdAt" column="created_at"/>
+    <result property="isDraft" column="is_draft"/>
+    <result property="delYn" column="del_yn"/>
+    <result property="userId" column="user_id"/>
+    <result property="ename" column="ename"/>
+    <result property="result" column="result"/>
+    <result property="buildAt" column="build_at"/>
+
+    <!-- 연관 객체 매핑 -->
+    <association property="devRepo" javaType="DevRepoDTO" resultMap="DevRepoMap"/>
+</resultMap>
+
+<!-- approval + status 조합 매핑 -->
+<resultMap id="ApprovalHistoryMap" type="ApprovalHistoryDTO">
+    <id property="id" column="id"/>
+    <result property="content" column="content"/>
+    <result property="createdAt" column="created_at"/>
+    <result property="reqId" column="req_id"/>
+
+    <!-- 연관 객체 매핑 -->
+    <association property="status" javaType="StatusDTO" resultMap="StatusMap"/>
+</resultMap>
+
+<select id="getLatestRequestsForS" resultMap="RequestsMap" parameterType="long">
+	select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    where user_id = #{userId} order by r.id desc fetch first 3 rows only
+</select>
+
+
+<select id="getRequestsForS" resultMap="RequestsMap" parameterType="long">
+    select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    where user_id = #{userId} order by r.id desc
+</select>
+
+<select id="getLatestApproval" resultMap="ApprovalHistoryMap" parameterType="long">
+    select * from approval_history a join status s on a.status_id = s.id 
+    where req_id= #{reqId} order by a.id desc FETCH FIRST 1 ROWS ONLY
+</select>
+
+<select id="getAllProjectsForS" resultType="DevRepoDTO" parameterType="long">
+	select * from dev_repo d where #{userId} in (select m.user_id from project_member m where m.dev_repo_id = d.id)
+</select>
+
+<select id="getRequestsCount" parameterType="long" resultType="int">
+	select count(*) from requests where user_id = #{userId} 
+	<if test="keyword != null and keyword != ''">
+    	and title like '%'||#{keyword}||'%'
+  	</if>
+</select>
+
+<select id="getAllStatus" resultType="StatusDTO">
+	select * from status
+</select>
+
+<select id="getLatestRequestsForT" resultMap="RequestsMap" parameterType="long">
+	select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
+	order by r.id desc fetch first 3 rows only
+</select>
+
+<select id="getRequestsForT" resultMap="RequestsMap" parameterType="long">
+select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
+	order by r.id desc
+</select>
+
+<select id="getApprovalHistoryForT" resultMap="ApprovalHistoryMap" parameterType="long">
+select * from approval_history a join status s on a.status_id = s.id 
+where a.req_id=#{reqId} order by a.id desc
+</select>
+
+<select id="getLatestRequestsForU" resultMap="RequestsMap" parameterType="long">
+	select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from project_member pm join requests r on pm.user_id=r.user_id join dev_repo d on r.dev_repo_id = d.id 
+	where pm.dev_repo_id in (select a.dev_repo_id from approval_line a where a.empno = (select empno from users u join emp e using(empno) where u.id=#{userId}))
+	order by r.id desc fetch first 3 rows only
+</select>
+
+<select id="getRequestsByPageForS" resultMap="RequestsMap">
+    select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+    where user_id = #{userId} order by r.id desc offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getAllRequestsForS" resultMap="RequestsMap">
+    select r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, d.* from requests r join dev_repo d on r.dev_repo_id = d.id 
+     
+    <if test="projectName != null and projectName != ''">
+    	and d.project_name = #{projectName}
+  	</if>
+  	<if test="keyword != null and keyword != ''">
+    	and r.title like '%'||#{keyword}||'%'
+  	</if>
+    order by r.id desc
+</select>
+
+<select id="getLatestNotice" resultType="NoticeDTO">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       to_char(n.created_at, 'yy/mm/dd') as created_at,
+       d.dname
+from notice n
+join users u on n.user_id = u.id
+join emp e using(empno)
+join dept d using(deptno)
+where n.del_yn = 0
+order by n.id desc
+fetch first 6 rows only
+</select>
+
+<select id="getAllQnaList" resultType="QnaDTO">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       e.ename,
+       to_char(n.created_at, 'yy/mm/dd') as created_at
+from qna n
+join users u on n.user_id = u.id
+join emp e using(empno)
+where n.del_yn = 0
+order by n.id desc
+</select>
+
+<select id="getLatestQnaList" resultType="QnaDTO">
+select n.id,
+       n.title,
+       n.content,
+       n.user_id,
+       e.ename,
+       to_char(n.created_at, 'yy/mm/dd') as created_at
+from qna n
+join users u on n.user_id = u.id
+join emp e using(empno)
+where n.del_yn = 0
+order by n.id desc fetch first 3 rows only
+</select>
+
+<select id="getRequestsCountByProjects" resultType="int" parameterType="long">
+	select count(*) from requests r where r.dev_repo_id in 
+	(select d.id from project_member pm join dev_repo d on pm.dev_repo_id = d.id where pm.user_id = #{userId})
+	<if test="keyword != null and keyword != ''">
+    	and r.title like '%'||#{keyword}||'%'
+  	</if>
+</select>
+
+<select id="getRequestsByPageForSU"  resultMap="RequestsMap">
+select 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, 
+    d.*
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    )
+order by 
+    r.id desc offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getAllRequestsForSU"  resultMap="RequestsMap">
+select 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, 
+    d.*
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    )
+    <if test="projectName != null and projectName != ''">
+    	and d.project_name = #{projectName}
+  	</if>
+  	<if test="keyword != null and keyword != ''">
+    	and r.title like '%'||#{keyword}||'%'
+  	</if>
+order by 
+    r.id desc
+</select>
+
+<select id="getAllRequestsForBuild"  resultMap="RequestsMap">
+select 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, 
+    d.*
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    ) and r.id not in (select req_id from deploy_result where result != 'fail')
+    <if test="projectName != null and projectName != ''">
+    	and d.project_name = #{projectName}
+  	</if>
+  	<if test="keyword != null and keyword != ''">
+    	and 
+    	<choose>
+		    <when test="forCreatedAt">
+		      r.created_at LIKE '%' || #{keyword} || '%'
+		    </when>
+		    <otherwise>
+		      r.title LIKE '%' || #{keyword} || '%'
+		    </otherwise>
+		  </choose>
+  	</if>
+order by 
+    r.id desc
+</select>
+
+
+<select id="getAllRequestsForSUByProject"  resultMap="RequestsMap">
+select 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd hh24:mm:ss') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, 
+    d.*
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    ) and d.project_name = #{projectName}
+order by 
+    r.id desc
+</select>
+
+<select id="getApprovalLines" resultType="ApprovalLineDTO" parameterType="long">
+	select a.*, u.id user_id from approval_line a join emp e on a.empno = e.empno join users u on e.empno = u.empno where a.dev_repo_id = #{devRepoId}
+</select>
+
+<insert id="addNotification" useGeneratedKeys="true" keyProperty="id" keyColumn="ID">
+	insert into notification (title, slug, user_id) values(#{title}, #{slug}, #{userId})
+</insert>
+
+<select id="getRequestsById" resultType="DeployRequestsDTO" parameterType="long">
+	select * from requests where id = #{reqId}
+</select>
+
+<select id="getNotificationsByUserId" resultType="NotificationDTO" parameterType="long">
+	select * from notification where user_id = #{userId} and is_read = 0
+</select>
+
+<update id="readAllNotifications" parameterType="long">
+	update notification set is_read = 1 where user_id = #{userId}
+</update>
+
+<update id="readNotification" parameterType="long">
+	update notification set is_read = 1 where id = #{id}
+</update>
+
+<select id="getRequestsForBuildByPage" resultMap="RequestsMap">
+select 
+    r.id, r.title, r.content, to_char(r.created_at, 'yy/mm/dd') created_at, r.is_draft, r.del_yn, r.user_id, r.dev_repo_id, e.ename,
+    d.*, dr.result, to_char(dr.build_at, 'yy/mm/dd') build_at
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+join
+    users u
+on 
+    r.user_id = u.id
+join
+    emp e
+on
+    u.empno = e.empno
+join deploy_result dr
+on dr.req_id = r.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    ) and r.id in 
+    (
+    select req_id from deploy_result 
+	    <if test="buildStatus != null and buildStatus != ''">
+	    	where result = #{buildStatus}
+	    </if>
+    )
+    <if test="keyword != null and keyword != '' and !isCombined">
+    	and ${filter} like '%'||#{keyword}||'%'
+    </if>
+    <if test="isCombined">
+    	and (title like '%'||#{keyword}||'%' or content like '%'||#{keyword}||'%')
+    </if>
+    order by r.id desc
+    offset #{page} * 10 rows fetch next 10 rows only
+</select>
+
+<select id="getRequestsSizeForBuild" resultType="int">
+	select 
+    count(*)
+from 
+    requests r
+join 
+    dev_repo d 
+on 
+    r.dev_repo_id = d.id
+join
+    users u
+on 
+    r.user_id = u.id
+join
+    emp e
+on
+    u.empno = e.empno
+join deploy_result dr
+on dr.req_id = r.id
+where 
+    r.dev_repo_id in (
+        select 
+            d.id 
+        from 
+            project_member pm 
+        join 
+            dev_repo d 
+        on 
+            pm.dev_repo_id = d.id 
+        where 
+            pm.user_id = #{userId}
+    ) and r.id in 
+    (
+    select req_id from deploy_result 
+	    <if test="buildStatus != null and buildStatus != ''">
+	    	where result = #{buildStatus}
+	    </if>
+    )
+    <if test="keyword != null and keyword != '' and !isCombined">
+    	and ${filter} like '%'||#{keyword}||'%'
+    </if>
+    <if test="isCombined">
+    	and (title like '%'||#{keyword}||'%' or content like '%'||#{keyword}||'%')
+    </if>
+</select>
+
+</mapper>

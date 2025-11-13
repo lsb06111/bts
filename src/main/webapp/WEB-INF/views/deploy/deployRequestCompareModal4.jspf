@@ -1,0 +1,430 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
+<style>
+/* ===== 비교 모달 전체 스타일 ===== */
+#deployRequestCompareModal .modal-dialog.modal-almost-fullscreen {
+	max-width: 1200px;
+}
+
+#deployRequestCompareModal .modal-content {
+	border-radius: 18px;
+	border: none;
+	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+	overflow: hidden;
+}
+#deployRequestCompareModal .btn-close {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+}
+
+
+/* 헤더 */
+#deployRequestCompareModal .modal-header {
+	background: linear-gradient(90deg, #f5f6ff, #f9fafb);
+	border-bottom: 1px solid #e5e7eb;
+	padding: 0.85rem 1.25rem;
+}
+
+#deployRequestCompareModal .modal-title {
+	font-size: 0.95rem;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+#deployRequestCompareModal .modal-title .title-label {
+	font-weight: 700;
+	font-size: 0.9rem;
+	color: #4b5563;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	background-color: #e5e7ff;
+	border-radius: 999px;
+	padding: 4px 10px;
+}
+
+#deployRequestCompareModal .modal-title .fileName {
+	font-weight: 500;
+	color: #111827;
+	font-size: 0.9rem;
+}
+
+/* 바디 배경 */
+#deployRequestCompareModal .modal-body {
+	background-color: #f3f4f8;
+}
+
+/* 각 코드 카드 */
+#deployRequestCompareModal .compare-pane-card {
+	border: none;
+	border-radius: 14px;
+	box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+	background-color: #ffffff;
+}
+
+#deployRequestCompareModal .compare-pane-card .card-body {
+	padding: 0.9rem 0.9rem 0.85rem 0.9rem;
+}
+
+/* BASE / HEAD 라벨 + 컨트롤 */
+#deployRequestCompareModal .pane-header-label {
+	font-size: 0.75rem;
+	font-weight: 700;
+	color: #4b5563;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	background-color: #eef2ff;
+	border-radius: 999px;
+	padding: 4px 8px;
+	text-align: center;
+}
+
+#deployRequestCompareModal #compareDropdown,
+#deployRequestCompareModal #selectedCommit {
+	font-size: 0.8rem;
+	height: 32px;
+}
+
+/* 코드 영역 공통 */
+#deployRequestCompareModal .compare-code-wrapper {
+	height: 500px;
+	overflow-y: auto;
+	border-radius: 10px;
+	border: 1px solid #e5e7f2;
+	background-color: #f9fafc;
+	padding: 8px 10px;
+	display: flex;
+	gap: 10px;
+	position: relative;
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+		"Courier New", monospace;
+	font-size: 0.8rem;
+}
+
+/* line-numbers / code-content 구조 기존 유지 */
+#deployRequestCompareModal .line-numbers {
+	min-width: 3.2rem;
+	text-align: right;
+	padding-right: 6px;
+	color: #9ca3af;
+	border-right: 1px solid #e5e7f2;
+	margin-right: 4px;
+}
+
+#deployRequestCompareModal .code-content {
+	flex: 1;
+	color: #111827;
+}
+
+/* 한 줄 단위 스타일 */
+#deployRequestCompareModal .code-content p,
+#deployRequestCompareModal .line-numbers p {
+	font-family: inherit;
+	font-size: inherit;
+	line-height: 1.4;
+	margin-bottom: 0;
+	white-space: pre;
+}
+
+/* diff 상태별 컬러 (기존 클래스 활용) */
+#deployRequestCompareModal .insertCode {
+	background-color: rgba(34, 197, 94, 0.08);
+	color: #166534;
+	border-radius: 3px;
+	border-left: 3px solid rgba(34, 197, 94, 0.65);
+	padding-left: 4px;
+}
+
+#deployRequestCompareModal .deleteCode {
+	background-color: rgba(239, 68, 68, 0.08);
+	color: #b91c1c;
+	border-radius: 3px;
+	border-left: 3px solid rgba(239, 68, 68, 0.65);
+	padding-left: 4px;
+}
+
+#deployRequestCompareModal .changeOriCode {
+	background-color: rgba(59, 130, 246, 0.06);
+	color: #1d4ed8;
+	border-radius: 3px;
+	border-left: 3px solid rgba(59, 130, 246, 0.55);
+	padding-left: 4px;
+}
+
+#deployRequestCompareModal .changeRevCode {
+	background-color: rgba(234, 179, 8, 0.09);
+	color: #92400e;
+	border-radius: 3px;
+	border-left: 3px solid rgba(234, 179, 8, 0.6);
+	padding-left: 4px;
+}
+
+/* 스크롤바 살짝 커스터마이즈 */
+#deployRequestCompareModal .compare-code-wrapper::-webkit-scrollbar {
+	width: 8px;
+}
+#deployRequestCompareModal .compare-code-wrapper::-webkit-scrollbar-thumb {
+	background-color: #cbd5f5;
+	border-radius: 999px;
+}
+#deployRequestCompareModal .compare-code-wrapper::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+</style>
+
+<div class="modal fade" id="deployRequestCompareModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-almost-fullscreen" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalFullTitle">
+					<span class="title-label">COMPARE</span>
+					<span class="fileName"></span>
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+
+			<div class="modal-body">
+				<div class="container-fluid py-2">
+					<div class="row g-3">
+
+						<!-- Base Column -->
+						<div class="col-md-6">
+							<div class="card compare-pane-card">
+								<div class="card-body">
+									<div class="mb-2 d-flex justify-content-between align-items-center">
+										<div class="pane-header-label me-2">
+											BASE
+										</div>
+										<select id="compareDropdown"
+											class="form-select form-select-sm"
+											onchange="chageCompareSHA()">
+										</select>
+									</div>
+									<div class="compare-code-wrapper">
+										
+										<div class="code-content mb-0" id="base-code"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Head Column -->
+						<div class="col-md-6">
+							<div class="card compare-pane-card">
+								<div class="card-body">
+									<div class="mb-2 d-flex justify-content-between align-items-center">
+										<div class="pane-header-label me-2">
+											HEAD
+										</div>
+										<input type="text" id="selectedCommit"
+											class="form-control form-control-sm bg-light border text-primary"
+											value="" readonly>
+									</div>
+
+									<div class="compare-code-wrapper">
+										<div class="code-content mb-0" id="head-code"></div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<!-- row -->
+				</div>
+				<!-- container-fluid -->
+			</div>
+			<!-- modal-body -->
+		</div>
+	</div>
+</div>
+
+
+<script>
+	const compareModal = $("#deployRequestCompareModal");
+	let devRepoId;
+	console.log(devRepoId);
+	compareModal.on("show.bs.modal", function(event){
+	/* deployRequest 비교 버튼 - 모달 데이터 받아오기 */
+		const button = event.relatedTarget;
+		const fileSha = button.getAttribute('data-sha');
+		const fileName = button.getAttribute('data-filename');
+		const commitSha = button.getAttribute('data-commitsha');
+		const repoId = button.getAttribute('data-repoId');
+		devRepoId = repoId;
+		
+		$(".fileName").text(fileName);
+		$("#selectedCommit").val(commitSha);
+
+		$("#head-code").text("");
+		$("#left-line-numbers").text("");
+		$("#base-code").text("");
+		$("#right-line-number").text("");
+		
+	/* 같은 파일의 커밋 목록(sha)가져오기 */
+		$.ajax({
+			url: "/bts/deployRequest/commit/queryCommit/fileName",
+			method: "GET",
+			data: {
+				"fileName" : fileName,
+				"repoId": repoId
+			},
+			dataType: "json",
+			success: function(res){
+				console.log('저 드롭 다운인데');
+				console.log(res);
+				$('#compareDropdown option').remove();
+				if(res.length==0){
+					$("#compareDropdown").append("<option>비교 커밋 없음</option>");
+				}else {		
+					for(let i=0; i<res.length; i++){
+						if(res[i] == $('#selectedCommit').val()) {continue;}
+						else if(i==1) {$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+						else{$("#compareDropdown").append("<option>" + res[i] + "</option>");}
+					}
+					chageCompareSHA();
+				}
+			},
+			error: function(e){
+				alert("같은 파일 목록 못가져옴");
+			}
+		});	
+	});
+	
+/* 스크롤 동시 움직이기  */	
+	$('#head-code').parent().on('scroll', function(){
+		const leftScrollVal = $(this).scrollTop();	
+		$('#base-code').parent().scrollTop(leftScrollVal);
+	});
+	
+	$("#base-code").parent().on('scroll', function(){
+		const rightScrollVal = $(this).scrollTop();
+		$('#head-code').parent().scrollTop(rightScrollVal);
+	});
+
+/* select 변경 : 같은 파일의 다른 SHA */
+ 	function chageCompareSHA(){
+		const compareSha = $("#compareDropdown").val();
+		const fileName = document.querySelector('.fileName').textContent;
+		const sha = document.querySelector('#selectedCommit').value;
+
+		$.ajax({
+			url:"/bts/deployRequest/commit/compare/basehead4",   // java-diff-utils 사용
+			method: "GET",
+			data: {
+				fileName: fileName,
+				sha : sha,
+				compareSha: compareSha,
+				repoId: devRepoId
+			},
+		   dataType: "json",
+			success: function(res){
+				console.log(res);
+				$("#head-code").text("");
+				$("#left-line-numbers").text("");
+				$("#base-code").text("");
+				$("#right-line-number").text("");
+				
+				$('#head-code').parent().scrollTop(0);
+					
+				let baseCount = 0;
+				let headCount = 0;
+				const baseIndex = res.originalCode.length;
+				const headIndex = res.revisedCode.length;
+				
+				console.log(headIndex);
+				console.log(baseIndex);
+				//-----------------------------------------
+				let baseHtml = "";
+				let headHtml = "";
+
+				const original= res.originalCode;
+				const revised = res.revisedCode;
+				console.log(original[0]);
+				let o=0;
+				let r=0;
+				try {
+					
+				for(let i=0; i<res.delta.length; i++){
+					let d = res.delta[i];
+					while(o<d.baseStartNum){
+						baseHtml += `<p class="mb-0">\${o+1}<span class="">\${String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;	
+						headHtml += `<p class="mb-0">\${r+1}<span class="">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;		
+						o++;
+						r++;
+					}
+					
+					switch(d.type){
+						case "INSERT":
+							for(let j=0; j<d.headLines.length; j++){
+								baseHtml += `<p class="mb-0">&nbsp;</p>`;	
+								headHtml += `<p class="mb-0">\${r+1}<span class="insertCode">\${String(d.headLines[j] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`
+								r++;
+							}
+							break;
+						case "DELETE":
+							for(let j=0; j<d.baseLines.length; j++) {
+								baseHtml += `<p class="mb-0">\${o+1}<span class="deleteCode">\${String(d.baseLines[j] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;
+								headHtml += `<p class="mb-0">&nbsp;</p>`;	
+								o++;
+							}
+							break;
+						case "CHANGE":
+							if(d.headLines.length == d.baseLines.length){
+								baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;	
+								headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;		
+								o++;
+								r++;
+							}else if(d.headLines.length < d.baseLines.length){
+								for(let j=0; j<d.headLines.length; j++) {
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;	
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;		
+									o++;
+									r++;
+								}
+								for(let j=d.headLines.length; j<d.baseLines.length; j++) {
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${String(original[j] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;
+									headHtml += `<p class="mb-0">&nbsp;</p>`;
+									o++;
+								}
+							} else if(d.headLines.length > d.baseLines.length) {
+								for(let j=0; j< d.baseLines.length; j++) {
+									baseHtml += `<p class="mb-0">\${o+1}<span class="changeOriCode">\${String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;	
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`;
+									o++;
+									r++;
+								}
+								for(let j=d.baseLines.length; j<d.headLines.length; j++) {
+									baseHtml += `<p class="mb-0">&nbsp;</p>`;	
+									headHtml += `<p class="mb-0">\${r+1}<span class="changeRevCode">\${String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt")}</span></p>`
+									r++;
+								}
+							}
+							break;
+					}
+				}
+				
+				while(r<revised.length){
+					headHtml += `<p class="mb-0">\${r+1}<span class="">\${revised[r]}</span></p>`;		
+					r++;
+				}
+				while(o<original.length){
+					baseHtml += `<p class="mb-0">\${o+1}<span class="">\${original[o]}</span></p>`;	
+					o++;
+				}
+				
+				} catch (e) {
+					console.error(e)
+				}
+				
+				$("#head-code").html(headHtml);
+				$("#base-code").html(baseHtml);
+			},
+			error: function(e){
+				alert("파일비교 안됨;;;;")
+			}
+		}); 
+	} 
+</script>

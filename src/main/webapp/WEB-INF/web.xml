@@ -19,6 +19,7 @@
 			<param-value>classpath:spring/dispatcher/*.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 		<multipart-config>
 			<location>C:/Temp</location>
 			<max-file-size>20971520</max-file-size>
@@ -35,6 +36,7 @@
 	<filter>
 		<filter-name>characterEncodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<async-supported>true</async-supported>
 		<init-param>
 			<param-name>encoding</param-name>
 			<param-value>UTF-8</param-value>

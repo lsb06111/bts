@@ -33,3 +33,46 @@
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     
+    <script>
+    function updateInfo(userId) {
+    	const gitHubDom = document.querySelector('#github_username');
+  	    let gitHubId = '';
+  	    if(gitHubDom != undefined)
+  	    	gitHubId = gitHubDom.value;
+  		const password = document.querySelector('#password').value;
+  		const passwordCheck = document.querySelector('#password_check').value;
+  		const phoneNumber = document.querySelector('#phone_number').value;
+  		
+  		if(gitHubId.length == 0 && password.length == 0 && phoneNumber.length == 0){
+  			alert('수정할 정보가 없습니다.')
+  			return;
+  		}
+  			
+  		
+  		if(password.length != 0){
+  			if(password != passwordCheck){
+  				alert('비밀번호가 불일치 합니다.');
+  				return;
+  			}
+  		}
+  		$.ajax({
+  		    url: '/bts/auth/updateInfo',
+  		    type: 'POST',
+  		    data: {
+  		    	id : userId,
+  		    	githubUsername : gitHubId,
+  		    	password : password,
+  		    	phone : phoneNumber
+  		    }, 
+  		    xhrFields: { withCredentials: true },
+  		    success: function() {
+  		      alert('정보가 수정되었습니다.');
+  		    },
+  		    error: function(xhr, status, error) {
+  		      console.error('Error:', error);
+  		      alert('정보 수정에 실패하였습니다.');
+  		    }
+  		  });
+  	  }
+    </script>
+    

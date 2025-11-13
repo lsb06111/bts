@@ -222,7 +222,31 @@
 			<version>0.11.5</version>
 			<scope>runtime</scope>
 		</dependency>
-
+		
+		<!-- Github API -->
+		<dependency>
+		  <groupId>org.kohsuke</groupId>
+		  <artifactId>github-api</artifactId>
+		  <version>1.313</version>
+		  <!-- <version>2.0-rc.5</version> java11 이상 -->
+		</dependency>
+		
+		<!-- 텍스트 비교  -->
+		<!-- https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils -->
+		<dependency>
+		    <groupId>io.github.java-diff-utils</groupId>
+		    <artifactId>java-diff-utils</artifactId>
+		    <version>4.12</version>
+		</dependency>
+		
+		<!-- jenkins -->
+		<dependency>
+		    <groupId>com.offbytwo.jenkins</groupId>
+		    <artifactId>jenkins-client</artifactId>
+		    <version>0.3.8</version>
+		</dependency>
+		
+		
 	</dependencies>
 
 	<build>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.example.bts.dao.JenkinsDAO">
+
+<select id="getCommitList" resultType="JCommitDTO">
+	select sha, file_name from commit_file order by id desc fetch first 2 rows only
+</select>
+
+<select id="getCommitListByReqId" parameterType="long" resultType="JCommitDTO">
+	select sha, file_name from commit_file where req_id = #{reqId}
+</select>
+
+<select id="getAwaitedReqIds" resultType="long">
+	select req_id from deploy_result where result = 'await'
+</select>
+
+<insert id="addDeployResult" parameterType="DeployResultDTO">
+	insert into deploy_result (req_id, result, response) values(#{reqId}, #{result}, #{response})
+</insert>
+
+<insert id="addResult">
+	insert into deploy_result (req_id, result) values(#{reqId}, #{resultType})
+</insert>
+
+<update id="updateResult">
+	update deploy_result set result=#{resultType} , build_at = #{buildAt}
+	where req_id = #{reqId}
+	
+</update>
+
+</mapper>

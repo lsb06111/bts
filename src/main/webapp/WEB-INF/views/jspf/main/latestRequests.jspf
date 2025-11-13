@@ -1,0 +1,56 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<div class="card shadow-sm my-3" style="border:none; border-radius:15px;">
+      <div class="card-body">
+        <h5 style="font-weight:600; margin-bottom:15px; color:black;">${loginUser.dept.deptno != 3?'조치가 필요한 배포 신청 목록' : '최신 질문게시판 목록'}</h5>
+        <table class="table align-middle" style="font-size:1rem;">
+          <thead>
+            <tr style="background-color:#f2f2f7;text-align:center">
+            	<c:choose>
+            		<c:when test="${loginUser.dept.deptno != 3}">
+            			<th>신청번호</th><th>프로젝트명</th><th>배포 신청명</th><th>상태</th><th>신청인</th><th>신청날짜</th><th>동작</th>
+            		</c:when>
+            		<c:otherwise>
+            			<th>번호</th><th>제목</th><th>작성자</th><th>날짜</th>
+            		</c:otherwise>
+            	</c:choose>
+            </tr>
+          </thead>
+          <tbody>
+          <c:choose>
+            <c:when test="${loginUser.dept.deptno != 3}">
+	          	<c:forEach var="latestReq" items="${latestRequests }" varStatus="status">
+		          	<tr style="text-align:center">
+		              <td>${latestReq.id }</td><td>${latestReq.devRepo.projectName }</td><td>${latestReq.title }</td>
+		              
+		              <td><span class="badge rounded-pill bg-${statusT[status.index] == '반려'? 'danger' : 'warning'}">${statusT[status.index]}</span></td>
+		              
+		              <td>${userDetails[status.index].ename }</td><td>${latestReq.createdAt }</td>
+		              <td><button class="btn btn-sm btn-outline-secondary"
+		              onclick="location.href='/bts/deployRequestView?requestId=${latestReq.id}&userId=${userDetails[status.index].id}&latests=${statusT[status.index]}'">자세히 보기</button></td>
+		            </tr>
+	          	</c:forEach>
+          	</c:when>
+          	<c:otherwise>
+          		<c:forEach var="qna" items="${qnaList}" varStatus="status">
+		            <tr style="border-bottom:1px solid #f1f1f1;text-align:center">
+		              <td style="color:#666;">${qna.id}</td>
+		              <td class="text-start" style="padding-left:20px;text-align:center !important;">
+		                <a href="/bts/qna/view?id=${qna.id}"
+		                   style="text-decoration:none; color:#222; font-weight:500;">
+		                  ${qna.title}
+		                </a>
+		              </td>
+		              <td style="color:#4a5eff; font-weight:600;">${qna.ename}</td>
+		              <td style="color:#777;">${qna.createdAt}</td>
+		            </tr>
+	          </c:forEach>
+          	</c:otherwise>
+         </c:choose>
+            
+            
+          </tbody>
+        </table>
+      </div>
+    </div>

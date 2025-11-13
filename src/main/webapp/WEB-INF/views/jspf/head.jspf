@@ -29,7 +29,7 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Dashboard - Analytics | Sneat - Bootstrap 5 HTML Admin Template - Pro</title>
+    <title>BTS - 배포관리시스템</title>
 
     <meta name="description" content="" />
 
@@ -61,7 +61,102 @@
 
     <!-- Helpers -->
     <script src="/bts/resources/assets/vendor/js/helpers.js"></script>
-
+<script src="/bts/resources/assets/vendor/libs/jquery/jquery.js"></script>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="/bts/resources/assets/js/config.js"></script>
+    
+    <!-- suneditor -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" />
+    
+    
+    
+	<style>
+	#chat3 .form-control {
+		border-color: transparent;
+		}
+		
+		#chat3 .form-control:focus {
+		border-color: transparent;
+		box-shadow: inset 0px 0px 0px 1px transparent;
+		}
+		
+		.badge-dot {
+		border-radius: 50%;
+		height: 10px;
+		width: 10px;
+		margin-left: 2.9rem;
+		margin-top: -.75rem;
+		}
+	
+	
+	.bts-expand {
+  display: inline-flex;
+  gap: 3px;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #4a5eff;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 기본 상태: BTS만 보이도록 */
+.bts-letter {
+  position: relative;
+  display: inline-block;
+  text-transform: uppercase; /* B, T, S는 대문자 */
+}
+
+.bts-letter .rest {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  display: inline-block;
+  transform: translateX(-5px);
+  transition:
+    opacity 0.4s ease,
+    max-width 0.4s ease,
+    transform 0.4s ease;
+
+  /* rest 전용 스타일 */
+  font-size: 0.5em;        /* BTS보다 작게 */
+  font-weight: 400;        /* 얇게 */
+  text-transform: lowercase; /* 소문자 강제 */
+  vertical-align: baseline; 
+}
+
+/* hover 시: 부드럽게 확장 */
+.bts-expand:hover .rest {
+  opacity: 1;
+  max-width: 200px;
+  transform: translateX(0);
+}
+
+/* 전체 hover 시 살짝 spacing 변화 */
+.bts-expand:hover {
+  
+  transition: letter-spacing 0.3s ease;
+}
+
+/* 종모양 깜빡임 효과 */
+@keyframes bellBlink {
+  0%, 100% {
+    box-shadow: 0 0 0px rgba(255, 0, 0, 0);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 12px 4px rgba(255, 0, 0, 0.7);
+    transform: scale(1.1);
+  }
+}
+
+/* 깜빡임 효과 (무한 반복) */
+.bell-blink {
+  animation: bellBlink 1.2s ease-in-out infinite;
+}
+
+figure > img {
+	width: 100%;
+}
+</style>
+	

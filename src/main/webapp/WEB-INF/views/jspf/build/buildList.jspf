@@ -1,0 +1,363 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<div class="container my-3">
+
+	<!-- 전체 카드 박스 -->
+	<div
+		style="background-color: #fff; border-radius: 16px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08); padding: 30px 30px; width: 100%;">
+
+		<!-- 헤더 -->
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h3 style="font-weight: 700; color: #222;">지금 빌드</h3>
+				<p style="color: #777; font-size: 0.9rem; margin: 0;">최종 승인한 신청의
+					배포를 진행하세요.</p>
+			</div>
+
+			<button class="btn" onclick="buildSelected()"
+				style="background-color: #4a5eff; border: none; border-radius: 8px; font-weight: 500; color: #fff; padding: 8px 20px;">
+				<i class="bx bx-play me-1"></i>빌드 하기
+			</button>
+		</div>
+
+		<!-- 구분선 -->
+		<hr
+			style="border: none; border-top: 2px solid #4a5eff; opacity: 0.9; margin-bottom: 30px;">
+
+		<!-- 필터 -->
+		<div
+			class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+			<div class="d-flex align-items-center gap-2">
+				<select name="buildStatus" class="form-select form-select-sm selection-buildStatus"
+					style="width: auto; border-radius: 8px; height: 38px;"
+					onchange="filterSelection()">
+					<option value="">빌드 상태</option>
+					<option value="ready" <c:if test="${param.buildStatus == 'ready'}">selected</c:if>>빌드 전</option>
+			    	<option value="await" <c:if test="${param.buildStatus == 'await'}">selected</c:if>>빌드 대기</option>
+					<option value="process" <c:if test="${param.buildStatus == 'process'}">selected</c:if>>빌드 진행중</option>
+			    	<option value="success" <c:if test="${param.buildStatus == 'success'}">selected</c:if>>빌드 성공</option>
+					<option value="fail" <c:if test="${param.buildStatus == 'fail'}">selected</c:if>>빌드 실패</option>
+				
+				</select>
+
+
+			</div>
+
+			<div style="display: flex; align-items: center; width: 260px;">
+  
+			  <select name="filter"
+			          class="form-select form-select-sm filter-select"
+			          style="width:90px; border-radius:8px 0 0 8px; font-size:0.9rem; height:38px; border-right:none;">
+			    <option value="title" <c:if test="${param.filter == 'title'}">selected</c:if>>제목</option>
+			    <option value="content" <c:if test="${param.filter == 'content'}">selected</c:if>>내용</option>
+			    <option value="title%2Bcontent" <c:if test="${param.filter == 'title+content'}">selected</c:if>>제목+내용</option>
+			    <option value="created_at" <c:if test="${param.filter == 'created_at'}">selected</c:if>>신청날짜</option>
+			    <option value="ename" <c:if test="${param.filter == 'ename'}">selected</c:if>>신청인</option>
+			    <option value="project_name" <c:if test="${param.filter == 'project_name'}">selected</c:if>>프로젝트명</option>
+			    <option value="build_at" <c:if test="${param.filter == 'build_at'}">selected</c:if>>배포날짜</option>
+			    
+			    </select>
+			
+			  <div style="position: relative; flex:1;">
+			    <input type="text"
+			           name="keyword"
+			           class="form-control form-control-sm search-keyword"
+			           placeholder="검색..."
+			           value="${param.keyword}"
+			           style="border-radius:0 8px 8px 0; font-size:0.9rem; padding-left:35px; height:38px;">
+			    <i class="bi bi-search"
+			       style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+			  </div>
+			
+			</div>
+		</div>
+
+		<!-- 테이블 -->
+		<div class="table-responsive">
+			<table class="table align-middle text-center mb-0"
+				style="font-size: 0.95rem;">
+				<thead style="background-color: #f8f9fc;">
+					<tr style="color: #555; font-weight: 600;">
+						<th><input type="checkbox" id="selectAll" /></th>
+						<th>신청번호</th>
+						<th>프로젝트명</th>
+						<th>배포 신청명</th>
+						<th>신청인</th>
+						<th>신청날짜</th>
+						<th>배포날짜</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="request" items="${requests}" varStatus="status">
+						<tr style="border-bottom: 1px solid #f1f1f1;" onclick="makeRebuild(${request.result == 'fail'},  ${request.id })">
+							<td>
+							<c:choose>
+								<c:when test="${request.result == 'ready' }">
+									<input type="checkbox" class="row-check" value="${request.id}" />
+								</c:when>
+								<c:when test="${request.result == 'await' }">
+								<div style="display:flex; align-items:center; justify-content:center;">
+							      <div class="spinner-border text-warning" role="status" 
+							           style="width:1.2rem; height:1.2rem;">
+							        <span class="visually-hidden">빌드 대기</span>
+							      </div>
+							    </div>
+								</c:when>
+								<c:when test="${request.result == 'process' }">
+								<div style="display:flex; align-items:center; justify-content:center;">
+							      <div class="spinner-border text-primary" role="status" 
+							           style="width:1.2rem; height:1.2rem;">
+							        <span class="visually-hidden">빌드 중</span>
+							      </div>
+							    </div>
+								</c:when>
+								<c:when test="${request.result == 'success' }">
+								<div style="text-align:center;">
+							      <i class="bi bi-check-circle-fill" 
+							         style="color:#28a745; font-size:1.3rem;"></i>
+							    </div>
+								</c:when>
+								<c:when test="${request.result == 'fail' }">
+								<div style="text-align:center;">
+							      <i class="bi bi-exclamation-triangle-fill"
+							         style="color:#dc3545; font-size:1.3rem;"></i>
+    							</div>
+								</c:when>
+							</c:choose>
+							
+							
+							</td>
+							<td style="color: #666;">${request.id}</td>
+							<td style="color: #222;">${request.devRepo.projectName}</td>
+							<td style="font-weight: 500;">${request.title}</td>
+							<td style="color: #4a5eff; font-weight: 600;">${request.ename}</td>
+							<td style="color: #777;">${request.createdAt}</td>
+							<td>
+								${request.buildAt}
+							</td>
+						</tr>
+					</c:forEach>
+
+					<c:if test="${empty requests}">
+						<tr>
+							<td colspan="7" style="padding: 40px 0; color: #aaa;">등록된 배포
+								신청 내역이 없습니다.</td>
+						</tr>
+					</c:if>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- 페이지네이션 -->
+		<nav aria-label="Page navigation" class="mt-4">
+			<ul class="pagination justify-content-center mb-0">
+				<%
+					int pageN = (int) request.getAttribute("page");
+					int totalPage = (int) request.getAttribute("totalPage");
+					int startPage = ((pageN - 1) / 5) * 5 + 1;
+					int endPage = Math.min(startPage + 4, totalPage);
+				%>
+
+				<li class="page-item <%=(pageN == 1) ? "disabled" : ""%>"><a
+					class="page-link" href="/bts/build?buildStatus=${param.buildStatus }&page=<%=pageN - 1%>&keyword=${param.keyword}&filter=${param.filter}"
+					style="color: #4a5eff;">&lt;</a></li>
+
+				<%
+					for (int i = startPage; i <= endPage; i++) {
+				%>
+				<li class="page-item <%=(i == pageN) ? "active" : ""%>"><a
+					class="page-link" href="/bts/build?buildStatus=${param.buildStatus }&page=<%=i%>&keyword=${param.keyword}&filter=${param.filter}"
+					style="<%=(i == pageN) ? "background-color:#4a5eff; border:none;" : "color:#4a5eff;"%>">
+						<%=i%>
+				</a></li>
+				<%
+					}
+				%>
+
+				<li class="page-item <%=(pageN == totalPage || totalPage == 0) ? "disabled" : ""%>">
+					<a class="page-link" href="/bts/build?buildStatus=${param.buildStatus }&page=<%=pageN + 1%>&keyword=${param.keyword}&filter=${param.filter}"
+					style="color: #4a5eff;">&gt;</a>
+				</li>
+			</ul>
+		</nav>
+
+	</div>
+	<!-- // 메인 박스 끝 -->
+
+	<%@ include file="/WEB-INF/views/jspf/build/buildModal.jspf"%>
+</div>
+
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+	rel="stylesheet">
+<script>
+let buildModal;
+let modalDom;
+//빌드 모달 바디 부분 로딩 때 표시할 메시지
+function renderLoading(text = '빌드 요청 전송 중…'){
+  const body = document.getElementById('buildModalBody');
+  body.innerHTML = `
+    <div class="build-loading-state">
+      <div class="build-loading-spinner">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="build-loading-text">
+        <div class="title">\${text}</div>
+        <div class="subtitle">콘솔 연결 후 실시간 빌드 로그가 표시됩니다.</div>
+      </div>
+      <div class="build-loading-progress">
+        <div class="bar"></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSuccess(message = '빌드가 성공적으로 시작되었습니다.'){
+  const body = document.getElementById('buildModalBody');
+  body.innerHTML = `
+    <div class="text-center py-3">
+      <i class="bi bi-check-circle" style="font-size:3rem;"></i>
+      <h5 class="mt-3 mb-1">빌드 성공</h5>
+      <div class="text-muted">\${message}</div>
+    </div>
+  `;
+}
+
+function renderFailure(message = '빌드 요청에 실패했습니다.'){
+  const body = document.getElementById('buildModalBody');
+  body.innerHTML = `
+    <div class="text-center py-3">
+      <i class="bi bi-x-circle" style="font-size:3rem;"></i>
+      <h5 class="mt-3 mb-1">빌드 실패</h5>
+      <div class="text-muted">\${message}</div>
+    </div>
+  `;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+	  modalDom = document.getElementById('buildModal');
+	  if(window.bootstrap){
+	    buildModal = new bootstrap.Modal(modalDom, { backdrop: 'static', keyboard: true });
+	  }
+	});
+
+function filterSelection(){
+  const bValue = document.querySelector('.selection-buildStatus').value;
+  const kValue = document.querySelector('.search-keyword').value;
+  const fValue = document.querySelector('.filter-select').value;
+  location.href = '/bts/build?buildStatus=' + bValue+'&page=1&keyword=' + kValue +'&filter='+fValue;
+}
+document.querySelector(".search-keyword").onkeydown = function(event) {
+	  if (event.key === "Enter") {
+		  filterSelection();
+	  }
+	};
+	
+document.addEventListener("DOMContentLoaded", function() {
+	const selectAll = document.getElementById("selectAll");
+	const checks = document.querySelectorAll(".row-check");
+	  
+	selectAll.addEventListener("change", function() {
+	  checks.forEach(ch => ch.checked = selectAll.checked);
+	});
+	
+	checks.forEach(ch => {
+		ch.addEventListener("change", function() {
+			const allChecked = Array.from(checks).every(c => c.checked);
+			selectAll.checked = allChecked;
+	    });
+	});
+});
+function makeRebuild(isFail, reqId){
+	if(isFail){
+		if(confirm(reqId+"번 신청을 빌드 전 상태로 되돌리시겠습니까?")){
+		const bValue = document.querySelector('.selection-buildStatus').value;
+		const kValue = document.querySelector('.search-keyword').value;
+		const fValue = document.querySelector('.filter-select').value;
+		const page = '${param.page}';
+		$.get('/bts/build/makeRebuild?reqId='+reqId,
+				function(data, status){
+					if(status == 'success'){
+						location.href = '/bts/build?buildStatus=' + bValue+'&page='+page+'&keyword=' + kValue +'&filter='+fValue;
+
+					}else
+						alert('서버와 연결을 실패하였습니다.\n나중에 다시 시도해주세요.');
+				});
+		}
+	}
+	else
+		return;
+		
+}
+function removeUseless(s){
+	  // ConsoleNote
+	  s = s.replace(/\u001b\[8m[\s\S]*?\u001b\[0m/g, '');
+	  // ANSI CSI
+	  s = s.replace(/\u001b\[[0-9;?]*[ -/]*[@-~]/g, '');
+	  return s;
+	}
+
+function buildSelected(){
+	const selected = Array.from(document.querySelectorAll(".row-check:checked")).map(ch => ch.value);
+	if(selected.length == 0){
+		alert('선택된 항목이 없습니다.')
+		return;
+	}
+	if(buildModal)
+		buildModal.show();
+	renderLoading('빌드 요청중...');
+	
+	console.log(selected);
+	$.ajax({
+		  url: '/bts/build/doBuild',
+		  type: 'POST',
+		  data: { reqIds: selected }, 
+		  traditional: true,          
+		  success: function(data){ 
+			  console.log(data.buildNum);
+			  const buildModalBody = document.querySelector('#buildModalBody');
+			  const sseUrl = '/bts/build/getBuildLog?projectName=&buildNum='+data.buildNum+'&reqIds='+selected;
+			  
+			  const eventSource = new EventSource(sseUrl);
+			  let isFail = false;
+			  eventSource.onopen = (e) => {
+				  //console.log('sse opened!!!!');
+				  buildModalBody.innerHTML = '';
+			  }
+			  //수신
+			  eventSource.addEventListener("log", (event) => {
+				  //console.log(event.data);
+				  const cleaned = removeUseless(event.data);
+				  
+				  buildModalBody.append(cleaned+"\n");
+				    
+				 //자동 스크롤
+				  buildModalBody.scrollTop = buildModalBody.scrollHeight;
+				});
+
+				// 빌드완료시 
+				eventSource.addEventListener("complete", (event) => {
+					buildModalBody.append("\n--- " + event.data + " ---");
+					
+					
+				    eventSource.close(); // 연결 종료
+				});
+
+				// 오류 
+				eventSource.onerror = (err) => {
+				    console.error("EventSource failed:", err);
+				    if (eventSource.readyState === EventSource.CLOSED) {
+				         console.log("에미터에서 전달 오류");
+				    }
+				    eventSource.close();
+				};
+		  }
+		})
+		.fail(function(xhr){
+			renderFailure('빌드를 실패했습니다.');
+		})
+}
+</script>
