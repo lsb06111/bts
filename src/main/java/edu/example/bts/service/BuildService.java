@@ -26,7 +26,7 @@ public class BuildService {
 	JenkinsDAO jenkinsDAO;
 	
 	//add 이 부분을 바꿔야함 
-	public boolean addDeployResult(List<Long> reqIds) {
+	public boolean addDeployResults(List<Long> reqIds) {
 		for(Long reqId : reqIds) {
 			if(!jenkinsDAO.updateResult(reqId, "await", null))
 				return false;
@@ -35,21 +35,21 @@ public class BuildService {
 		return true;
 	}
 	
+	public boolean addDeployResult(Long reqId) {
+		return jenkinsDAO.addResult(reqId, "ready");
+	}
+	
 	public boolean updateDeployResult(Long reqId, String resultType, LocalDateTime now) {
 		return jenkinsDAO.updateResult(reqId, resultType, now);
 	}
 	
-	public int getRequestsSizeForBuild(UserDTO user, String buildStatus, String keyword, String filter) {
-		
-		
-		return historyDAO.getRequestsSizeForBuild(user.getId(), buildStatus, keyword, filter);
+	public int getRequestsSizeForBuild(UserDTO user, String buildStatus, String keyword, String filter, boolean isCombined) {
+		return historyDAO.getRequestsSizeForBuild(user.getId(), buildStatus, keyword, filter, isCombined);
 	
 	}
 	
-	public List<RequestsDTO> getRequestsForBuild(UserDTO user, int page, String buildStatus, String keyword, String filter){
-		
-		
-		return historyDAO.getRequestsForBuildByPage(user.getId(), page, buildStatus, keyword, filter);
+	public List<RequestsDTO> getRequestsForBuild(UserDTO user, int page, String buildStatus, String keyword, String filter, boolean isCombined){
+		return historyDAO.getRequestsForBuildByPage(user.getId(), page, buildStatus, keyword, filter, isCombined);
 	}
 	
 	public int getTotalStep(List<ApprovalHistoryDTO> approvals) {

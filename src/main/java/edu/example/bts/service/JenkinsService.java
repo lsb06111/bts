@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -182,7 +183,7 @@ public class JenkinsService {
 	}
 	
 	@Async
-	public void streamLogs(String projectName, Integer buildNum, SseEmitter emitter) {
+	public void streamLogs(String projectName, Integer buildNum, SseEmitter emitter, List<Long> reqIds) {
         
 		String jobName = "test1";
         long pos = 0;
@@ -212,10 +213,24 @@ public class JenkinsService {
                 }
 
                 //logchunck 읽기
+                boolean buildResult = false; // no change why?
+                
                 StringBuilder logChunkBuilder = new StringBuilder();
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
                     String line;
                     while ((line = br.readLine()) != null) {
+                    	//
+                    	if(!buildResult && line.contains("BUILD FAILURE")) { // fail
+                    		LocalDateTime now = LocalDateTime.now();
+                    		for(Long reqId : reqIds)
+                    			jenkinsDAO.updateResult(reqId, "fail", now);
+                    		buildResult = true;
+                    	}if(!buildResult && line.contains("BUILD SUCCESS")) {
+                    		LocalDateTime now = LocalDateTime.now();
+                    		for(Long reqId : reqIds)
+                    			jenkinsDAO.updateResult(reqId, "success", now);
+                    		buildResult = true;
+                    	}
                     	
                         logChunkBuilder.append(line).append("\n\n"); //
                     }
@@ -237,7 +252,7 @@ public class JenkinsService {
                 // 종료 헤더 읽기
                 String moreData = conn.getHeaderField("X-More-Data");
                 if (moreData == null || !"true".equals(moreData)) {
-                    
+                	
                     buildIsRunning = false; 
                 }
                 

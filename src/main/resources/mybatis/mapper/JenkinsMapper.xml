@@ -18,8 +18,12 @@
 	insert into deploy_result (req_id, result, response) values(#{reqId}, #{result}, #{response})
 </insert>
 
+<insert id="addResult">
+	insert into deploy_result (req_id, result) values(#{reqId}, #{resultType})
+</insert>
+
 <update id="updateResult">
-	update deploy_result set result=#{resultType} <if test="buildAt != null">, build_at = #{buildAt}</if>
+	update deploy_result set result=#{resultType} , build_at = #{buildAt}
 	where req_id = #{reqId}
 	
 </update>

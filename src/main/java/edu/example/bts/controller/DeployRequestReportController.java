@@ -21,8 +21,8 @@ import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.deployRequest.RequestCommitFileDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
 import edu.example.bts.domain.history.NotificationDTO;
-import edu.example.bts.domain.history.RequestsDTO;
 import edu.example.bts.domain.user.UserDTO;
+import edu.example.bts.service.BuildService;
 import edu.example.bts.service.DeployFormService;
 import edu.example.bts.service.DeployRequestHistoryService;
 import edu.example.bts.service.DeployRequestReportService;
@@ -42,6 +42,9 @@ public class DeployRequestReportController {
 	
 	@Autowired
 	NotifyService notifyService;
+	
+	@Autowired
+	BuildService buildService;
 	
 	@GetMapping("/deployRequestView")
 	public String deployRequestView(@RequestAttribute("loginUser") UserDTO user, @RequestParam Long requestId, @RequestParam Long userId,@RequestParam String latests, Model model) {
@@ -108,6 +111,9 @@ public class DeployRequestReportController {
 		}else if(actionType.equals("반려")) {
 			statusId=3;
 		}
+		
+		if(statusId == 2 && user.getDept().getDeptno() == 2)
+			buildService.addDeployResult(reportId);
 		System.out.println("결재 승인/반려 userEMPno : "+ user.getEmpno());
 		System.out.println("결재 승인/반려 userid : "+ user.getId());
 		

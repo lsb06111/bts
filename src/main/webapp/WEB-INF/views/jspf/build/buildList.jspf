@@ -52,7 +52,7 @@
 			          style="width:90px; border-radius:8px 0 0 8px; font-size:0.9rem; height:38px; border-right:none;">
 			    <option value="title" <c:if test="${param.filter == 'title'}">selected</c:if>>제목</option>
 			    <option value="content" <c:if test="${param.filter == 'content'}">selected</c:if>>내용</option>
-			    <option value="title+content" <c:if test="${param.filter == 'title+content'}">selected</c:if>>제목+내용</option>
+			    <option value="title%2Bcontent" <c:if test="${param.filter == 'title+content'}">selected</c:if>>제목+내용</option>
 			    <option value="created_at" <c:if test="${param.filter == 'created_at'}">selected</c:if>>신청날짜</option>
 			    <option value="ename" <c:if test="${param.filter == 'ename'}">selected</c:if>>신청인</option>
 			    <option value="project_name" <c:if test="${param.filter == 'project_name'}">selected</c:if>>프로젝트명</option>
@@ -91,7 +91,7 @@
 				</thead>
 				<tbody>
 					<c:forEach var="request" items="${requests}" varStatus="status">
-						<tr style="border-bottom: 1px solid #f1f1f1;">
+						<tr style="border-bottom: 1px solid #f1f1f1;" onclick="makeRebuild(${request.result == 'fail'},  ${request.id })">
 							<td>
 							<c:choose>
 								<c:when test="${request.result == 'ready' }">
@@ -269,7 +269,27 @@ document.addEventListener("DOMContentLoaded", function() {
 	    });
 	});
 });
+function makeRebuild(isFail, reqId){
+	if(isFail){
+		if(confirm(reqId+"번 신청을 빌드 전 상태로 되돌리시겠습니까?")){
+		const bValue = document.querySelector('.selection-buildStatus').value;
+		const kValue = document.querySelector('.search-keyword').value;
+		const fValue = document.querySelector('.filter-select').value;
+		const page = '${param.page}';
+		$.get('/bts/build/makeRebuild?reqId='+reqId,
+				function(data, status){
+					if(status == 'success'){
+						location.href = '/bts/build?buildStatus=' + bValue+'&page='+page+'&keyword=' + kValue +'&filter='+fValue;
 
+					}else
+						alert('서버와 연결을 실패하였습니다.\n나중에 다시 시도해주세요.');
+				});
+		}
+	}
+	else
+		return;
+		
+}
 function removeUseless(s){
 	  // ConsoleNote
 	  s = s.replace(/\u001b\[8m[\s\S]*?\u001b\[0m/g, '');
@@ -297,7 +317,7 @@ function buildSelected(){
 		  success: function(data){ 
 			  console.log(data.buildNum);
 			  const buildModalBody = document.querySelector('#buildModalBody');
-			  const sseUrl = '/bts/build/getBuildLog?projectName=&buildNum='+data.buildNum;
+			  const sseUrl = '/bts/build/getBuildLog?projectName=&buildNum='+data.buildNum+'&reqIds='+selected;
 			  
 			  const eventSource = new EventSource(sseUrl);
 			  let isFail = false;
@@ -309,19 +329,7 @@ function buildSelected(){
 			  eventSource.addEventListener("log", (event) => {
 				  //console.log(event.data);
 				  const cleaned = removeUseless(event.data);
-				  if(cleaned.includes('ERROR: script returned')){
-					  isFail = true;
-					  
-					  $.ajax({
-						  url: '/bts/build/updateBuildResult',
-						  type: 'GET',
-						  data: { reqIds: selected, resultType: 'fail' },
-						  traditional: true, 
-						  success: function(data, status){
-						    if (status === 'success') console.log('result update');
-						  }
-						});
-				  }
+				  
 				  buildModalBody.append(cleaned+"\n");
 				    
 				 //자동 스크롤
@@ -331,18 +339,7 @@ function buildSelected(){
 				// 빌드완료시 
 				eventSource.addEventListener("complete", (event) => {
 					buildModalBody.append("\n--- " + event.data + " ---");
-					if(!isFail){
-						$.ajax({
-							  url: '/bts/build/updateBuildResult',
-							  type: 'GET',
-							  data: { reqIds: selected, resultType: 'success' },
-							  traditional: true, 
-							  success: function(data, status){
-							    if (status === 'success') 
-							    	console.log('result update');
-							  }
-							});
-					}
+					
 					
 				    eventSource.close(); // 연결 종료
 				});
