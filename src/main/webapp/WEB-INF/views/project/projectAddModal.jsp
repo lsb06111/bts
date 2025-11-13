@@ -75,9 +75,7 @@
 				</div>
 
 				<!-- 본문 -->
-				<!-- <div class="modal-body" style="padding: 0 32px 32px; max-height: 75vh; overflow-y: hidden;"> -->
-				<div class="modal-body" style="padding: 0 32px 32px;">
-
+				<div class="modal-body" style="padding: 0 32px 32px; min-height: 650px; max-height: 70vh; overflow-y: auto;">
 					<!-- form 유지하면서 flex 적용 -->
 					<form id="projectAddForm" action="/bts/project/add" method="post"
 						style="display: flex; gap: 32px; flex-wrap: wrap;">

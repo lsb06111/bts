@@ -29,19 +29,52 @@
 	</resultMap>
 
 	<!-- 프로젝트 전체 조회 -->
-	<select id="findPageProject" resultType="DevRepoDTO">
-		SELECT d.project_name AS
-		projectName,
-		d.repo_name AS repoName,
+	<!-- <select id="findPageProject" resultType="DevRepoDTO"> SELECT d.id, 
+		d.project_name AS projectName, d.repo_name AS repoName, d.owner_username 
+		AS ownerUsername, LISTAGG(e.ename, ', ') AS memberNames, d.current_stage 
+		AS currentStage FROM dev_repo d JOIN project_member p ON d.id = p.dev_repo_id 
+		JOIN users u ON p.user_id = u.id JOIN emp e ON u.empno = e.empno GROUP BY 
+		d.id, d.project_name, d.repo_name, d.owner_username, d.current_stage OFFSET 
+		#{offset} ROWS FETCH NEXT 10 ROWS ONLY </select> -->
+
+	<select id="findPageProject" resultType="DevRepoDTO"
+		useCache="false">
+		SELECT
+		d.id,
+		d.project_name AS projectName,
+		d.repo_name AS
+		repoName,
 		d.owner_username AS ownerUsername,
-		LISTAGG(e.ename, ', ') AS memberNames,
-		d.current_stage AS currentStage
-		FROM dev_repo d JOIN project_member p ON d.id = p.dev_repo_id
-		join
-		users u ON p.user_id = u.id
-		JOIN emp e ON u.empno = e.empno
+		d.repo_token AS repoToken,
+		LISTAGG(e.ename, ', ')
+		WITHIN GROUP
+		(ORDER BY e.ename) AS memberNames,
+		a_ename.ename AS approverName,
+		d.current_stage AS
+		currentStage
+		FROM
+		dev_repo d
+		JOIN project_member p ON d.id =
+		p.dev_repo_id
+		JOIN users u ON
+		p.user_id = u.id
+		JOIN emp e ON u.empno =
+		e.empno
+		LEFT JOIN approval_line
+		al
+		ON d.id = al.dev_repo_id
+		AND al.approval_order = 2
+		LEFT JOIN emp a_ename
+		ON al.empno = a_ename.empno
 		GROUP BY
-		d.project_name, d.repo_name, d.owner_username, d.current_stage
+		d.id,
+		d.project_name,
+		d.repo_name,
+		d.owner_username,
+		d.repo_token,
+		d.current_stage,
+		a_ename.ename
+		ORDER BY d.id DESC
 		OFFSET
 		#{offset} ROWS FETCH NEXT 10
 		ROWS ONLY
@@ -108,7 +141,8 @@
 		FROM emp e
 		WHERE e.empno NOT IN (
 		SELECT e2.empno
-		FROM emp e2
+		FROM emp
+		e2
 		WHERE (e2.deptno = 1 AND e2.jobno = 3)
 		OR (e2.deptno = 3)
 		)
@@ -116,7 +150,6 @@
 			AND e.ename LIKE '%' || #{ename} || '%'
 		</if>
 	</select>
-
 
 	<!-- 프로젝트 생성(dev_repo) -->
 	<insert id="insertProject" parameterType="DevRepoDTO"
@@ -140,7 +173,6 @@
 		approval_order, empno)
 		VALUES(#{projectId}, #{order},
 		#{approverUserId})
-
 	</insert>
 
 	<select id="findUserByEmpno" parameterType="Long"
@@ -149,4 +181,39 @@
 		WHERE e.empno = #{empno}
 	</select>
 
+	<update id="updateProject" parameterType="DevRepoDTO">
+		UPDATE dev_repo
+		SET
+		PROJECT_NAME = #{projectName},
+		REPO_NAME = #{repoName},
+		OWNER_USERNAME =
+		#{ownerUsername},
+		REPO_TOKEN = #{repoToken}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateProjectMember">
+		UPDATE project_member
+		SET
+		USER_ID = #{userId}
+		WHERE
+		dev_repo_id = #{projectId}
+		AND id = #{memberId}
+	</update>
+
+	<update id="updateApproval">
+		UPDATE
+		approval_line
+		SET empno = #{approverEmpno}
+		WHERE
+		dev_repo_id = #{projectId}
+		AND
+		approval_order = 2
+	</update>
+
+	<!-- 기존 멤버 전부 삭제 -->
+	<delete id="deleteProjectMembers" parameterType="long">
+		DELETE FROM
+		project_member WHERE dev_repo_id = #{projectId}
+	</delete>
 </mapper>

@@ -71,16 +71,6 @@ public class ProjectController {
 		return "/project/projectList";
 	}
 
-	/*
-	 * // AJAX 모달에서 사원 불러오기
-	 * 
-	 * @GetMapping("/employee")
-	 * 
-	 * @ResponseBody public List<EmpDTO> findAllUser(@RequestParam(value = "page",
-	 * defaultValue = "1") int page) { int pageSize = 6; int offset = (page-1) *
-	 * pageSize; return projectService.findAllUserInModal(offset); }
-	 */
-
 	@GetMapping("/employee")
 	@ResponseBody
 	public Map<String, Object> findAllUser(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "ename", required = false) String ename) {
@@ -160,5 +150,40 @@ public class ProjectController {
 		}*/
 
 		return "redirect:/project/list";
+	}
+	
+	@PostMapping("/update")
+	public String updateProject(
+	        @ModelAttribute DevRepoDTO project,
+	        @RequestParam(value = "memberIds", required = false) List<Long> memberIds,
+	        @RequestParam(value = "memberEmpnos", required = false) List<Long> memberEmpnos,
+	        @RequestParam(value = "approverEmpno", required = false) Long approverEmpno,
+	        @RequestAttribute("loginUser") UserDTO loginUser,
+	        RedirectAttributes ra) {
+
+	    System.out.println("==== UpdateProject Debug ====");
+	    System.out.println("projectName = " + project.getProjectName());
+	    System.out.println("repoName = " + project.getRepoName());
+	    System.out.println("ownerUsername = " + project.getOwnerUsername());
+	    System.out.println("repoToken = " + project.getRepoToken());
+	    System.out.println("memberEmpnos = " + memberEmpnos);
+	    System.out.println("approverEmpno = " + approverEmpno);
+	    System.out.println("=============================");
+
+	    if (memberEmpnos == null) memberEmpnos = new ArrayList<>();
+	    if (memberIds == null) memberIds = new ArrayList<>();
+
+	    // empno → user_id 변환
+	    List<Long> memberUserIds = new ArrayList<>();
+	    for (Long empno : memberEmpnos) {
+	        Long userId = projectService.findUserByEmpno(empno);
+	        if (userId != null) memberUserIds.add(userId);
+	    }
+
+	    projectService.updateProject(project, memberIds, memberUserIds, approverEmpno);
+
+	    ra.addFlashAttribute("msg", "프로젝트 정보가 수정되었습니다.");
+	    return "redirect:/project/list";
+
 	}
 }

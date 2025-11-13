@@ -22,4 +22,5 @@ public class DevRepoDTO {
 	private String currentStage;
 	private Long prodRepoId;
 	private String memberNames; 	// LISTAGG(e.ename, ', ') AS memberNames 매핑용
+	private String approverName;
 }

@@ -99,4 +99,29 @@ public class ProjectService {
 	public Long findUserByEmpno(Long empno) {
 		return projectDAO.findUserByEmpno(empno);
 	}
+	
+	@Transactional
+    public void updateProject(DevRepoDTO project, List<Long> memberIds, List<Long> userIds, Long approverEmpno) {
+
+        projectDAO.updateProject(project);
+        Long projectId = project.getId();
+
+        // 멤버 업데이트 (각 멤버의 id를 알고 있다는 전제)
+        /*for (int i = 0; i < memberIds.size(); i++) {
+            projectDAO.updateProjectMember(projectId, memberIds.get(i), userIds.get(i));
+        }*/
+        
+        // 기존 멤버 싹 삭제 후 다시 삽입
+        projectDAO.deleteProjectMembers(projectId);
+        if (userIds != null && !userIds.isEmpty()) {
+            for (Long userId : userIds) {
+                projectDAO.insertProjectMember(projectId, userId);
+            }
+        }
+
+        // 결재자 교체
+        if (approverEmpno != null) {
+            projectDAO.updateApproval(projectId, approverEmpno);
+        }
+    }
 }
