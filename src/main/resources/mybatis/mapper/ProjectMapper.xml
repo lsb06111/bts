@@ -181,6 +181,9 @@
 		WHERE e.empno = #{empno}
 	</select>
 
+
+
+<!-- 업데이트 -->
 	<update id="updateProject" parameterType="DevRepoDTO">
 		UPDATE dev_repo
 		SET
