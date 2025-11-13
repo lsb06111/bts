@@ -1,75 +1,246 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
-	<div class="modal fade" id="deployRequestCompareModal" tabindex="-1" aria-hidden="true">
-		<div class="modal-dialog modal-almost-fullscreen" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="modalFullTitle">
-						<span class="fw-semibold text-secondary mb-0">Compare</span> 
-					    <span class="text-dark fw-normal fileName"></span>
-				    </h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
+<style>
+/* ===== 비교 모달 전체 스타일 ===== */
+#deployRequestCompareModal .modal-dialog.modal-almost-fullscreen {
+	max-width: 1200px;
+}
+
+#deployRequestCompareModal .modal-content {
+	border-radius: 18px;
+	border: none;
+	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+	overflow: hidden;
+}
+#deployRequestCompareModal .btn-close {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+}
 
 
-				<div class="modal-body">
-					<div class="container-fluid py-2">
-						<div class="row g-3">
+/* 헤더 */
+#deployRequestCompareModal .modal-header {
+	background: linear-gradient(90deg, #f5f6ff, #f9fafb);
+	border-bottom: 1px solid #e5e7eb;
+	padding: 0.85rem 1.25rem;
+}
 
-							<!-- Base Column -->
-							<div class="col-md-6">
-								<div class="card border-light shadow-sm">
-									<div class="card-body">
-										<div class="mb-2 d-flex justify-content-between align-items-center">
-											<label for="compareDropdown" class="form-label me-2 mb-0 fw-semibold text-secondary" style="min-width: 50px;">
-												BASE
-											</label>
-											<select id="compareDropdown"
-												class="form-select form-select-sm" onchange="chageCompareSHA()">
-											</select>
-										</div>
-										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
-											<div class="line-numbers" id="right-line-numbers"></div>
-											<div class="code-content mb-0" id="base-code"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-							
-							<!-- Head Column -->
-							<div class="col-md-6">
-								<div class="card border-light shadow-sm">
-									<div class="card-body">
-										<div class="mb-2 d-flex justify-content-between align-items-center">
-											<label for="selectedCommit" class="form-label me-2 mb-0 fw-semibold text-secondary" style="min-width: 50px;">
-												HEAD
-											</label>
-											<input type="text" id="selectedCommit" class="form-control form-control-sm bg-light border text-primary"
-											  value="" readonly>
-										</div>
+#deployRequestCompareModal .modal-title {
+	font-size: 0.95rem;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
 
-										<div class="border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
-											<div class="line-numbers" id="left-line-numbers"></div>
-											<div class="code-content mb-0" id="head-code"></div>
-										</div>
-										
-									</div>
-								</div>
-							</div>
+#deployRequestCompareModal .modal-title .title-label {
+	font-weight: 700;
+	font-size: 0.9rem;
+	color: #4b5563;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	background-color: #e5e7ff;
+	border-radius: 999px;
+	padding: 4px 10px;
+}
 
+#deployRequestCompareModal .modal-title .fileName {
+	font-weight: 500;
+	color: #111827;
+	font-size: 0.9rem;
+}
 
-						</div>
-						<!-- row -->
-					</div>
-					<!-- container-fluid -->
-				</div>
-				<!-- modal-body -->
+/* 바디 배경 */
+#deployRequestCompareModal .modal-body {
+	background-color: #f3f4f8;
+}
+
+/* 각 코드 카드 */
+#deployRequestCompareModal .compare-pane-card {
+	border: none;
+	border-radius: 14px;
+	box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+	background-color: #ffffff;
+}
+
+#deployRequestCompareModal .compare-pane-card .card-body {
+	padding: 0.9rem 0.9rem 0.85rem 0.9rem;
+}
+
+/* BASE / HEAD 라벨 + 컨트롤 */
+#deployRequestCompareModal .pane-header-label {
+	font-size: 0.75rem;
+	font-weight: 700;
+	color: #4b5563;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	background-color: #eef2ff;
+	border-radius: 999px;
+	padding: 4px 8px;
+	text-align: center;
+}
+
+#deployRequestCompareModal #compareDropdown,
+#deployRequestCompareModal #selectedCommit {
+	font-size: 0.8rem;
+	height: 32px;
+}
+
+/* 코드 영역 공통 */
+#deployRequestCompareModal .compare-code-wrapper {
+	height: 500px;
+	overflow-y: auto;
+	border-radius: 10px;
+	border: 1px solid #e5e7f2;
+	background-color: #f9fafc;
+	padding: 8px 10px;
+	display: flex;
+	gap: 10px;
+	position: relative;
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+		"Courier New", monospace;
+	font-size: 0.8rem;
+}
+
+/* line-numbers / code-content 구조 기존 유지 */
+#deployRequestCompareModal .line-numbers {
+	min-width: 3.2rem;
+	text-align: right;
+	padding-right: 6px;
+	color: #9ca3af;
+	border-right: 1px solid #e5e7f2;
+	margin-right: 4px;
+}
+
+#deployRequestCompareModal .code-content {
+	flex: 1;
+	color: #111827;
+}
+
+/* 한 줄 단위 스타일 */
+#deployRequestCompareModal .code-content p,
+#deployRequestCompareModal .line-numbers p {
+	font-family: inherit;
+	font-size: inherit;
+	line-height: 1.4;
+	margin-bottom: 0;
+	white-space: pre;
+}
+
+/* diff 상태별 컬러 (기존 클래스 활용) */
+#deployRequestCompareModal .insertCode {
+	background-color: rgba(34, 197, 94, 0.08);
+	color: #166534;
+	border-radius: 3px;
+	border-left: 3px solid rgba(34, 197, 94, 0.65);
+	padding-left: 4px;
+}
+
+#deployRequestCompareModal .deleteCode {
+	background-color: rgba(239, 68, 68, 0.08);
+	color: #b91c1c;
+	border-radius: 3px;
+	border-left: 3px solid rgba(239, 68, 68, 0.65);
+	padding-left: 4px;
+}
+
+#deployRequestCompareModal .changeOriCode {
+	background-color: rgba(59, 130, 246, 0.06);
+	color: #1d4ed8;
+	border-radius: 3px;
+	border-left: 3px solid rgba(59, 130, 246, 0.55);
+	padding-left: 4px;
+}
+
+#deployRequestCompareModal .changeRevCode {
+	background-color: rgba(234, 179, 8, 0.09);
+	color: #92400e;
+	border-radius: 3px;
+	border-left: 3px solid rgba(234, 179, 8, 0.6);
+	padding-left: 4px;
+}
+
+/* 스크롤바 살짝 커스터마이즈 */
+#deployRequestCompareModal .compare-code-wrapper::-webkit-scrollbar {
+	width: 8px;
+}
+#deployRequestCompareModal .compare-code-wrapper::-webkit-scrollbar-thumb {
+	background-color: #cbd5f5;
+	border-radius: 999px;
+}
+#deployRequestCompareModal .compare-code-wrapper::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+</style>
+
+<div class="modal fade" id="deployRequestCompareModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-almost-fullscreen" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalFullTitle">
+					<span class="title-label">COMPARE</span>
+					<span class="fileName"></span>
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
+
+			<div class="modal-body">
+				<div class="container-fluid py-2">
+					<div class="row g-3">
+
+						<!-- Base Column -->
+						<div class="col-md-6">
+							<div class="card compare-pane-card">
+								<div class="card-body">
+									<div class="mb-2 d-flex justify-content-between align-items-center">
+										<div class="pane-header-label me-2">
+											BASE
+										</div>
+										<select id="compareDropdown"
+											class="form-select form-select-sm"
+											onchange="chageCompareSHA()">
+										</select>
+									</div>
+									<div class="compare-code-wrapper">
+										
+										<div class="code-content mb-0" id="base-code"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Head Column -->
+						<div class="col-md-6">
+							<div class="card compare-pane-card">
+								<div class="card-body">
+									<div class="mb-2 d-flex justify-content-between align-items-center">
+										<div class="pane-header-label me-2">
+											HEAD
+										</div>
+										<input type="text" id="selectedCommit"
+											class="form-control form-control-sm bg-light border text-primary"
+											value="" readonly>
+									</div>
+
+									<div class="compare-code-wrapper">
+										<div class="code-content mb-0" id="head-code"></div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<!-- row -->
+				</div>
+				<!-- container-fluid -->
+			</div>
+			<!-- modal-body -->
 		</div>
 	</div>
-	
-	
+</div>
+
 
 <script>
 	const compareModal = $("#deployRequestCompareModal");
@@ -84,16 +255,10 @@
 		const repoId = button.getAttribute('data-repoId');
 		devRepoId = repoId;
 		
-		//const patch = patchMap.get(fileSha);
-		//console.log("모달의 path입니다" + patch);
-
-		//displayCodeWithLineNumbers(patch, "head-code", "left-line-numbers", "base-code", "right-line-number");
-
-		
 		$(".fileName").text(fileName);
 		$("#selectedCommit").val(commitSha);
 
-		$("#head-code").text("");    // JS : document.getElementById("head-code").textContent = "";
+		$("#head-code").text("");
 		$("#left-line-numbers").text("");
 		$("#base-code").text("");
 		$("#right-line-number").text("");
@@ -110,9 +275,6 @@
 			success: function(res){
 				console.log('저 드롭 다운인데');
 				console.log(res);
-				 /* for(let queryPathCommitSha of res) {
-					$("#compareDropdown").append("<option>" + queryPathCommitSha + "</option>");
-				}  */
 				$('#compareDropdown option').remove();
 				if(res.length==0){
 					$("#compareDropdown").append("<option>비교 커밋 없음</option>");
@@ -155,17 +317,17 @@
 				fileName: fileName,
 				sha : sha,
 				compareSha: compareSha,
-				repoId: devRepoId    // 레포아이디가 나옴 문제임
+				repoId: devRepoId
 			},
 		   dataType: "json",
 			success: function(res){
 				console.log(res);
-				$("#head-code").text("");    // JS : document.getElementById("head-code").textContent = "";
+				$("#head-code").text("");
 				$("#left-line-numbers").text("");
 				$("#base-code").text("");
 				$("#right-line-number").text("");
 				
-				$('#head-code').parent().scrollTop(0)   // 스크롤 상단으로 고정 
+				$('#head-code').parent().scrollTop(0);
 					
 				let baseCount = 0;
 				let headCount = 0;
@@ -178,13 +340,6 @@
 				let baseHtml = "";
 				let headHtml = "";
 
-				//const original = String(res.originalCode[baseCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
-				//const revised = String(res.revisedCode[headCount] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
-				
-				//const original = String(original[o] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
-				//const revised = String(revised[r] ?? "").replaceAll("<","&lt").replaceAll(">", "&gt");
-		
-				
 				const original= res.originalCode;
 				const revised = res.revisedCode;
 				console.log(original[0]);
@@ -251,7 +406,6 @@
 					}
 				}
 				
-					
 				while(r<revised.length){
 					headHtml += `<p class="mb-0">\${r+1}<span class="">\${revised[r]}</span></p>`;		
 					r++;
@@ -265,29 +419,12 @@
 					console.error(e)
 				}
 				
-				
-					
-				//baseHtml += `<p class="mb-0">\${baseCount+1}<span class="changeOriCode">\${baseLine}</span></p>`;	
-				//headHtml += `<p class="mb-0">\${headCount+1}<span class="changeRevCode">\${headLine}</span></p>`;		
-				
-				
-			
-				
-				
-				
-				
-				
-				//------------------------------------------
 				$("#head-code").html(headHtml);
 				$("#base-code").html(baseHtml);
-				 
-				
 			},
 			error: function(e){
 				alert("파일비교 안됨;;;;")
 			}
 		}); 
 	} 
-
-
 </script>
