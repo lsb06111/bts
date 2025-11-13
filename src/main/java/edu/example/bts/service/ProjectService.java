@@ -49,30 +49,6 @@ public class ProjectService {
 		System.out.println(project.getRepoToken());
 		System.out.println(memberUserIds);
 		System.out.println(approverUserId);
-		/*		
-		// 프로젝트 기본정보 저장
-		projectDAO.insertProject(project);
-		Long projectId = project.getId();
-
-		// 프로젝트 멤버 저장
-		if (memberEmpnos != null) {
-			for (Long empno : memberEmpnos) {
-				projectDAO.insertProjectMember(projectId, empno);
-			}
-		}
-
-		// 결재자 등록
-		projectDAO.updateProjectApprover(projectId, approverEmpno);
-
-		// 결재라인 등록
-		// 로그인한 사람(팀장) → 1단계
-		projectDAO.insertApprovalLine(1, loginEmpno, projectId);
-
-		// 운영팀 결재자 → 2단계
-		if (approverEmpno != null) {
-			projectDAO.insertApprovalLine(2, approverEmpno, projectId);
-		}
-		*/
 		
 		//프로젝트 등록
 		projectDAO.insertProject(project);
@@ -105,11 +81,6 @@ public class ProjectService {
 
         projectDAO.updateProject(project);
         Long projectId = project.getId();
-
-        // 멤버 업데이트 (각 멤버의 id를 알고 있다는 전제)
-        /*for (int i = 0; i < memberIds.size(); i++) {
-            projectDAO.updateProjectMember(projectId, memberIds.get(i), userIds.get(i));
-        }*/
         
         // 기존 멤버 싹 삭제 후 다시 삽입
         projectDAO.deleteProjectMembers(projectId);

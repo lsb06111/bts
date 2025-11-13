@@ -56,7 +56,9 @@
 								data-owner="${project.ownerUsername}"
 								data-token="${project.repoToken}"
 								data-members="${project.memberNames}"
-								data-approver="${project.approverName}">
+								data-approver="${project.approverName}"
+								data-empnos="${project.memberEmpnos}"
+								data-deptnos="${project.memberDeptnos }">
 								<td>${project.projectName}</td>
 								<td>${project.repoName}</td>
 								<td>${project.ownerUsername}</td>
@@ -155,7 +157,9 @@
 					ownerUsername : $(this).data("owner"),
 					repoToken : $(this).data("token"),
 					memberNames : $(this).data("members"),
-					approverName : $(this).data("approver")
+					approverName : $(this).data("approver"),
+					memberEmpnos : $(this).data("empnos"),
+					memberDeptnos : $(this).data("deptnos")
 				};
 
 				console.log("선택된 프로젝트:", project);

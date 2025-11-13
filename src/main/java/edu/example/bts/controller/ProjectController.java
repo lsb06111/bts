@@ -136,19 +136,6 @@ public class ProjectController {
 		
 		projectService.createProject(project, memberUserIds, approverUserId, loginEmpno);
 
-		/*if (loginUser.getEmp() != null && loginUser.getEmp().getJob().getJobno() == 3 && loginUser.getDept().getDeptno() == 1)
-			projectService.createProject(project, memberUserIds, approverUserId, loginEmpno);
-
-		// 예: 팀장 권한 확인
-		if (loginUser.getEmp() != null && loginUser.getEmp().getJob().getJobno() == 3
-				&& loginUser.getEmp().getDept().getDeptno() == 1) {
-
-			projectService.createProject(project, memberEmpnos, approverEmpno, empno);
-			ra.addFlashAttribute("msg", "프로젝트가 등록되었습니다.");
-		} else {
-			ra.addFlashAttribute("msg", "프로젝트 등록 권한이 없습니다.");
-		}*/
-
 		return "redirect:/project/list";
 	}
 	
@@ -158,10 +145,11 @@ public class ProjectController {
 	        @RequestParam(value = "memberIds", required = false) List<Long> memberIds,
 	        @RequestParam(value = "memberEmpnos", required = false) List<Long> memberEmpnos,
 	        @RequestParam(value = "approverEmpno", required = false) Long approverEmpno,
-	        @RequestAttribute("loginUser") UserDTO loginUser,
+	        /*@RequestAttribute("loginUser") UserDTO loginUser,*/
 	        RedirectAttributes ra) {
 
 	    System.out.println("==== UpdateProject Debug ====");
+	    System.out.println("projectId = " + project.getId());
 	    System.out.println("projectName = " + project.getProjectName());
 	    System.out.println("repoName = " + project.getRepoName());
 	    System.out.println("ownerUsername = " + project.getOwnerUsername());
@@ -170,14 +158,14 @@ public class ProjectController {
 	    System.out.println("approverEmpno = " + approverEmpno);
 	    System.out.println("=============================");
 
-	    if (memberEmpnos == null) memberEmpnos = new ArrayList<>();
-	    if (memberIds == null) memberIds = new ArrayList<>();
 
 	    // empno → user_id 변환
 	    List<Long> memberUserIds = new ArrayList<>();
-	    for (Long empno : memberEmpnos) {
-	        Long userId = projectService.findUserByEmpno(empno);
-	        if (userId != null) memberUserIds.add(userId);
+	    if (memberEmpnos != null) {
+	        for (Long empno : memberEmpnos) {
+	            Long userId = projectService.findUserByEmpno(empno);
+	            if (userId != null) memberUserIds.add(userId);
+	        }
 	    }
 
 	    projectService.updateProject(project, memberIds, memberUserIds, approverEmpno);

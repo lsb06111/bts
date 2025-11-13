@@ -164,10 +164,12 @@
 	</div>
 
 	<script>
+	// 모달 열 때
 function openUpdateModal(project) {
 	console.log("전달 데이터 :"+project);
 	console.log("프로젝트이름 :"+project.projectName);
 	console.log("프로젝트 멤버들 :"+project.memberNames);
+	console.log("프로젝트 멤버들 empnos :"+project.memberEmpnos);
 	console.log("결재자 :"+project.approverName);
 	
     $("#updateProjectId").val(project.id);
@@ -175,17 +177,24 @@ function openUpdateModal(project) {
     $("#updateRepoName").val(project.repoName);
     $("#updateOwnerUsername").val(project.ownerUsername);
     $("#updateRepoToken").val(project.repoToken);    
-    $('#memberTagsUpdate').empty();
+    $('#memberTagsUpdate').find('.tag').remove();
     $('#approverTagsUpdate').empty();
     
     // 멤버들 출력 (LISTAGG 결과를 쉼표로 split)
     if (project.memberNames) {
   const members = project.memberNames.split(',').map(n => n.trim());
+  
+  const empnos = typeof project.memberEmpnos == 'number' ? [project.memberEmpnos] : project.memberEmpnos.split(',').map(n => n.trim());
+  const deptnos = project.memberDeptnos.split(',').map(n => n.trim());
+  console.log(deptnos);
+  let index = 0;
   members.forEach(name => {
-    const $tag = $('<div>').addClass('tag').text(name);
+    const $tag = $('<div>').addClass('tag').attr('data-empno', empnos[index]).text(name+" ("+deptnos[index]+")");
     const $remove = $('<span>').addClass('remove-tag').html('&times;');
     $tag.append(' ').append($remove);
     $('#memberTagsUpdate').append($tag);
+    index++;
+    
   });
 }
 
@@ -289,12 +298,14 @@ function searchEmployeeUpdate(pageNum = 1) {
 }
 
 $(document).on("click", ".memberBtnUpdate", function() {
+	console.log("clcickckckckdkckdckdkckkd")
     const tr = $(this).closest("tr");
     const empno = tr.find("td:eq(0)").text();
     const empName = tr.find("td:eq(1)").text();
     const deptName = tr.find("td:eq(2)").text();
     if ($("#memberTagsUpdate .tag[data-empno='"+empno+"']").length > 0) return;
 
+    console.log(empno, empName, deptName);
     const tag = "<div class='tag' data-empno='"+empno+"'>"+empName+" ("+deptName+") <span class='remove-tag'>&times;</span></div>";
     $("#memberTagsUpdate input").before(tag);
 });
