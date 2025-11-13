@@ -13,4 +13,8 @@ public class NotificationDTO {
 	private String slug;
 	private boolean isRead;
 	private Long userId;
+	private Long fromUserId;
+	private String createdAt;
+	private String ename;
+	private String message;
 }

@@ -1,9 +1,11 @@
 package edu.example.bts.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,55 +25,31 @@ public class BuildService {
 	@Autowired
 	JenkinsDAO jenkinsDAO;
 	
+	//add 이 부분을 바꿔야함 
 	public boolean addDeployResult(List<Long> reqIds) {
 		for(Long reqId : reqIds) {
-			DeployResultDTO drDTO = new DeployResultDTO();
-			drDTO.setReqId(reqId);
-			drDTO.setResult("await");
-			if(!jenkinsDAO.addDeployResult(drDTO))
+			if(!jenkinsDAO.updateResult(reqId, "await", null))
 				return false;
 		}
 		
 		return true;
 	}
 	
-	public int getRequestsSizeForBuild(UserDTO user, int page, String projectName, String keyword) {
+	public boolean updateDeployResult(Long reqId, String resultType, LocalDateTime now) {
+		return jenkinsDAO.updateResult(reqId, resultType, now);
+	}
+	
+	public int getRequestsSizeForBuild(UserDTO user, String buildStatus, String keyword, String filter) {
 		
-		List<RequestsDTO> allReq = historyDAO.getAllRequestsForBuild(user.getId(), projectName, keyword);
-		int count = 0;
-		for(RequestsDTO req : allReq) {
-			
-			List<ApprovalHistoryDTO> approvals = historyDAO.getApprovalHistoryForT(req.getId());
-			int totalStep = getTotalStep(approvals);
-			System.out.println(req.getId()+"의 토탈스텝: "+totalStep);
-			if(totalStep == 3) { // 승인인 것만
-				count++;
-			}
 		
-		}
-		return count;
+		return historyDAO.getRequestsSizeForBuild(user.getId(), buildStatus, keyword, filter);
 	
 	}
 	
-	public List<RequestsDTO> getRequestsForBuild(UserDTO user, int page, String projectName, String keyword){
-		List<RequestsDTO> results = new ArrayList<>();
-		List<RequestsDTO> allReq = historyDAO.getAllRequestsForBuild(user.getId(), projectName, keyword);
-		int count = 0;
-		for(RequestsDTO req : allReq) {
-			if(results.size() == 10)
-				break;
-			
-			List<ApprovalHistoryDTO> approvals = historyDAO.getApprovalHistoryForT(req.getId());
-			int totalStep = getTotalStep(approvals);
-			System.out.println(req.getId()+"의 토탈스텝: "+totalStep);
-			if(totalStep == 3) { // 승인인 것만
-				if(++count > page*10)
-					results.add(req);
-			}
+	public List<RequestsDTO> getRequestsForBuild(UserDTO user, int page, String buildStatus, String keyword, String filter){
 		
-		}
 		
-		return results;
+		return historyDAO.getRequestsForBuildByPage(user.getId(), page, buildStatus, keyword, filter);
 	}
 	
 	public int getTotalStep(List<ApprovalHistoryDTO> approvals) {

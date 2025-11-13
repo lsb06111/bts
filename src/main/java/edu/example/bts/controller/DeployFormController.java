@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import edu.example.bts.domain.deployRequest.DeployFormDevRepoDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
+import edu.example.bts.domain.history.NotificationDTO;
 import edu.example.bts.domain.user.UserDTO;
 import edu.example.bts.service.DeployFormService;
 import edu.example.bts.service.DeployRequestHistoryService;
@@ -73,12 +74,20 @@ public class DeployFormController {
 		Map<String, Object> notiPayload = new HashMap<>();
 		String title = deployRequestFormDTO.getTitle();
 		Long reqId = deployRequestsDTO.getId();
-		notiPayload.put("title", title);
-		notiPayload.put("reqId", reqId);
-		Long userId = notifyService.getNextApprovalLine(deployRequestFormDTO.getDevRepoId(), user.getId(), deployRequestFormDTO.getUserId());
 		
+		Long userId = notifyService.getNextApprovalLine(deployRequestFormDTO.getDevRepoId(), user.getId(), deployRequestFormDTO.getUserId());
+		String slug = "/bts/deployRequestView?requestId="+reqId+"&userId="+deployRequestsDTO.getUserId()+"&latests=승인요망";
+		
+		NotificationDTO notificationDTO = new NotificationDTO();
+		notificationDTO.setTitle(title);
+		notificationDTO.setSlug(slug);
+		notificationDTO.setUserId(userId);
+		notificationDTO.setFromUserId(user.getId());
+		notificationDTO.setMessage(slug.split("latests")[1].substring(1));
+		historyService.addNotification(notificationDTO);
+		notiPayload.put("notification", notificationDTO);
 		notifyService.notifyUser(userId, notiPayload);
-		historyService.addNotification(title, ""+reqId, userId);
+		
 		
 		// git저장한 세션 제거?
 		//session.removeAttribute("ownerName");

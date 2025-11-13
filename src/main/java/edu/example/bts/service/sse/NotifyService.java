@@ -41,14 +41,9 @@ public class NotifyService {
 
     /** 단일 사용자에게 알림 푸시 */
     public boolean notifyUser(Long userId, Object payload) {
-        return Optional.ofNullable(emitters.get(userId))
+        return userId != -1 ? Optional.ofNullable(emitters.get(userId))
                 .map(emitter -> {
                     try {
-                    	/*
-                    	String title = (String) payloadMap.get("title");
-                    	String slug = (String) payloadMap.get("reqId");
-                    	historyDAO.addNotification(title, slug, userId);
-                    	*/
                         emitter.send(SseEmitter.event()
                                 .name("REQUEST_CREATED")
                                 .data(payload));
@@ -58,14 +53,14 @@ public class NotifyService {
                         return false;
                     }
                 })
-                .orElse(false);
+                .orElse(false) : false;
     }
     
     public Long getNextApprovalLine(Long devRepoId, Long userId, Long reqUserId) {
     	List<ApprovalLineDTO> approvalLines = historyDAO.getApprovalLines(devRepoId);
-    	Long result = approvalLines.get(0).getUserId();
+    	Long result = -1L; //approvalLines.get(0).getUserId();
     	boolean found = false;
-    	//수정하셈
+    	
     	for(ApprovalLineDTO appLine : approvalLines) {
     		if(found) {
     			result = appLine.getUserId();
@@ -73,6 +68,9 @@ public class NotifyService {
     		}
     		if(appLine.getUserId() == userId)
     			found = true;
+    	}
+    	if(!found) { // found but 운영
+    		result = approvalLines.get(0).getUserId();
     	}
     	
     		

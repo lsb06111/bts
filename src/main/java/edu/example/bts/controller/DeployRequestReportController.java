@@ -20,6 +20,7 @@ import edu.example.bts.domain.deployRequest.DeployRequestFormDTO;
 import edu.example.bts.domain.deployRequest.DeployRequestsDTO;
 import edu.example.bts.domain.deployRequest.RequestCommitFileDTO;
 import edu.example.bts.domain.history.ApprovalHistoryDTO;
+import edu.example.bts.domain.history.NotificationDTO;
 import edu.example.bts.domain.history.RequestsDTO;
 import edu.example.bts.domain.user.UserDTO;
 import edu.example.bts.service.DeployFormService;
@@ -117,15 +118,27 @@ public class DeployRequestReportController {
 		String title = deployRequestsDTO.getTitle();
 		Long reqId = deployRequestsDTO.getId();
 		notiPayload.put("title", title);
-		notiPayload.put("reqId", reqId);
-		Long userId;
-		if(statusId == 3)
-			userId = notifyService.getPreviousApprovalLine(deployRequestsDTO.getDevRepoId(), user.getId(), deployRequestsDTO.getUserId());
-		else
-			userId = notifyService.getNextApprovalLine(deployRequestsDTO.getDevRepoId(), user.getId(), deployRequestsDTO.getUserId());
 		
+		Long userId;
+		String slug;
+		if(statusId == 3) {
+			userId = notifyService.getPreviousApprovalLine(deployRequestsDTO.getDevRepoId(), user.getId(), deployRequestsDTO.getUserId());
+			slug = "/bts/deployRequestView?requestId="+reportId+"&userId="+deployRequestsDTO.getUserId()+"&latests=반려";
+		}else {
+			userId = notifyService.getNextApprovalLine(deployRequestsDTO.getDevRepoId(), user.getId(), deployRequestsDTO.getUserId());
+			slug = "/bts/deployRequestView?requestId="+reportId+"&userId="+deployRequestsDTO.getUserId()+"&latests=승인요망";
+		}
+		notiPayload.put("slug", slug);
+		NotificationDTO notificationDTO = new NotificationDTO();
+		notificationDTO.setTitle(title);
+		notificationDTO.setSlug(slug);
+		notificationDTO.setUserId(userId);
+		notificationDTO.setFromUserId(userId);
+		notificationDTO.setMessage(slug.split("latests")[1].substring(1));
+		deployRequestHistoryService.addNotification(notificationDTO);
+		notiPayload.put("notification", notificationDTO);
 		notifyService.notifyUser(userId, notiPayload);
-		deployRequestHistoryService.addNotification(title, ""+reqId, userId);
+		
 		
 		
 		return "redirect:/history?project=&status=&page=1";
@@ -175,11 +188,20 @@ public class DeployRequestReportController {
 		String title = deployRequestFormDTO.getTitle();
 		Long reqId = deployRequestFormDTO.getReqId();
 		notiPayload.put("title", title);
-		notiPayload.put("reqId", reqId);
-		Long userId = notifyService.getNextApprovalLine(deployRequestFormDTO.getDevRepoId(), user.getId(), deployRequestFormDTO.getUserId());
 		
+		Long userId = notifyService.getNextApprovalLine(deployRequestFormDTO.getDevRepoId(), user.getId(), deployRequestFormDTO.getUserId());
+		String slug = "/bts/deployRequestView?requestId="+deployRequestFormDTO.getReqId()+"&userId="+deployRequestFormDTO.getUserId()+"&latests=승인요망";
+		notiPayload.put("slug", slug);
+		NotificationDTO notificationDTO = new NotificationDTO();
+		notificationDTO.setTitle(title);
+		notificationDTO.setSlug(slug);
+		notificationDTO.setUserId(userId);
+		notificationDTO.setFromUserId(user.getId());
+		notificationDTO.setMessage(slug.split("latests")[1].substring(1));
+		deployRequestHistoryService.addNotification(notificationDTO);
+		notiPayload.put("notification", notificationDTO);
 		notifyService.notifyUser(userId, notiPayload);
-		deployRequestHistoryService.addNotification(title, ""+reqId, userId);
+		
 		
 		return "redirect:/";
 	}

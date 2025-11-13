@@ -79,4 +79,20 @@ public class MainController {
 	public List<NotificationDTO> getNotifications(Long userId){
 		return historyService.getNotificationsByUserId(userId);
 	}
+	
+	@ResponseBody
+	@GetMapping("readNotification")
+	public ResponseEntity<String> readNotification(Long id){
+		if(historyService.readNotification(id))
+			return new ResponseEntity<>("알림 읽음처리 성공", HttpStatus.OK);
+		return new ResponseEntity<>("알림 읽음처리 실패", HttpStatus.CONFLICT);
+	}
+	
+	@ResponseBody
+	@GetMapping("readAllNotifications")
+	public ResponseEntity<String> readAllNotifications(Long userId){
+		if(historyService.readAllNotifications(userId))
+			return new ResponseEntity<>("알림 모두읽음처리 성공", HttpStatus.OK);
+		return new ResponseEntity<>("알림 모두읽음처리 실패", HttpStatus.CONFLICT);
+	}
 }

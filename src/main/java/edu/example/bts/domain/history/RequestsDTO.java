@@ -16,5 +16,8 @@ public class RequestsDTO {
 	private boolean isDraft;
 	private boolean delYn;
 	private Long userId;
+	private String ename;
 	private DevRepoDTO devRepo;
+	private String result;
+	private String buildAt;
 }

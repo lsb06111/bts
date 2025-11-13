@@ -1,5 +1,6 @@
 package edu.example.bts.controller;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,22 +42,24 @@ public class BuildController {
 
 	@RequestMapping("")
 	public String goBuild(@RequestAttribute("loginUser") UserDTO user,
-						  @RequestParam(value="project", required=false) String projectName,
+						  @RequestParam(value="buildStatus", required=false) String buildStatus,
 						  @RequestParam(value="page", required=false) Integer page,
 						  @RequestParam(value="keyword", required=false) String keyword,
+						  @RequestParam(value="filter", required=false) String filter,
 						  Model model) {
 		
-		List<RequestsDTO> requests = buildService.getRequestsForBuild(user, page-1, projectName, keyword);
-		int totalCount = buildService.getRequestsSizeForBuild(user, page-1, projectName, keyword);
+
+		System.out.println("build build filter: "+filter);
+		System.out.println("build build filter: "+keyword);
+		List<RequestsDTO> requests = buildService.getRequestsForBuild(user, page-1, buildStatus, keyword, filter);
+		int totalCount = buildService.getRequestsSizeForBuild(user, buildStatus, keyword, filter);
 		
 		int totalPage = (int) Math.ceil((double) totalCount / 10);
 		
-		List<DevRepoDTO> projectList = historyService.getAllProjectForS(user.getId());
+		
 		model.addAttribute("page", page);
 		model.addAttribute("requests", requests);
 		model.addAttribute("totalPage", totalPage);
-		model.addAttribute("userDetails", historyService.getUsersByReq(requests));
-		model.addAttribute("projectList", projectList);
 		return "build/buildList";
 	}
 	
@@ -89,6 +94,18 @@ public class BuildController {
 		
 		return emitter;
 	}
+	
+	@ResponseBody
+	@GetMapping("updateBuildResult")
+	public ResponseEntity<String> updateBuildResult(@RequestParam List<Long> reqIds, @RequestParam String resultType){
+		LocalDateTime now = LocalDateTime.now();
+		for(Long reqId : reqIds) {
+			if(!buildService.updateDeployResult(reqId, resultType, now))
+				return new ResponseEntity<>("업데이트 실패", HttpStatus.CONFLICT);
+		}
+		return new ResponseEntity<>("업데이트 성공", HttpStatus.OK);
+	}
+	
 	
 	
 }
