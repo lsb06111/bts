@@ -1,8 +1,10 @@
 package edu.example.bts.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import edu.example.bts.domain.jenkins.DeployResultDTO;
 import edu.example.bts.domain.jenkins.JCommitDTO;
@@ -18,5 +20,7 @@ public interface JenkinsDAO {
 	
 	public boolean addDeployResult(DeployResultDTO drDTO);
 	
-	public boolean updateResult(Long reqId);
+	public boolean updateResult(@Param("reqId") Long reqId, 
+			@Param("resultType") String resultType,
+			@Param("buildAt") LocalDateTime now);
 }

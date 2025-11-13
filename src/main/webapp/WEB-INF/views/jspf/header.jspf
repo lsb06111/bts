@@ -117,6 +117,13 @@
 
             <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
               <!-- Search -->
+              <div class="nav-item d-flex align-items-center ms-3 px-3 py-1 rounded-pill shadow-sm"
+     style="background-color:#f8f9fa; border:1px solid #e3e6ed;">
+  <i class="bx bx-smile text-primary" style="font-size:1.4rem;"></i>
+  <span class="fw-semibold ms-2" style="font-size:0.95rem; color:#333;">
+     ${loginUser.ename}님, 반가워요 👋
+  </span>
+</div>
               <div class="navbar-nav align-items-center">
                 <div class="nav-item d-flex align-items-center">
                   <!-- <i class="bx bx-search fs-4 lh-0"></i>
@@ -131,29 +138,46 @@
               <!-- /Search -->
 
               <ul class="navbar-nav flex-row align-items-center ms-auto">
-                <!-- Place this tag where you want the button to render. -->
-                <li class="nav-item navbar-dropdown dropdown-user dropdown">
-				  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-				    <div style="position:relative; display:inline-block; cursor:pointer;">
-				      <i class="bx bx-bell me-2" style="font-size:1.6rem; color:#333;"></i>
-				      <span class="badge rounded-pill bg-danger"
-				            style="
-				              position:absolute;
-				              top:2px;
-				              right:8px;
-				              transform: translate(40%, -40%);
-				              font-size:0.7rem;
-				              width:20px;
-				              height:20px;
-				              display:flex;
-				              align-items:center;
-				              justify-content:center;
-				            ">
-				        4
-				      </span>
-				    </div>
-				  </a>
-				</li>
+                <li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle hide-arrow" href="#" id="notifDropdown"
+     role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <div style="position:relative; display:inline-block; cursor:pointer;">
+      <i class="bx bx-bell me-2" style="font-size:1.6rem; color:#333;"></i>
+      <!-- 뱃지: 숫자는 JS로 갱신 예정 -->
+      <span id="notifBadge" class="badge rounded-pill bg-danger"
+            style="
+              position:absolute; top:2px; right:8px; transform: translate(40%,-40%);
+              font-size:0.7rem; width:20px; height:20px; display:flex; align-items:center; justify-content:center;
+            ">
+        
+      </span>
+    </div>
+  </a>
+
+	  <!-- 드롭다운: 리스트 영역만 비워둠 -->
+	  <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notifDropdown"
+	      style="width: 360px; max-height: 420px; overflow: hidden; border-radius: 12px;">
+	    <!-- 헤더 -->
+	    <li class="px-3 py-2 d-flex justify-content-between align-items-center"
+	        style="border-bottom: 1px solid #f1f1f1;">
+	      <span class="fw-semibold" style="color:#333;">알림</span>
+	      <div class="d-flex gap-2">
+	        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnMarkAllRead" onclick="readAllNotis(${loginUser.id})">모두 읽음</button>
+	      </div>
+	    </li>
+	
+	    <!-- 스크롤 가능한 리스트 컨테이너 -->
+	    <li>
+	      <div id="notifList"
+	           style="max-height: 340px; overflow-y: auto; padding: 8px 0;">
+	        
+	      </div>
+	    </li>
+	
+	    
+	  </ul>
+	</li>
+                
 
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -257,20 +281,99 @@
 		<!-- / chat -->
 <script>
 
-const userId = '${loginUser.id}';
-const es = new EventSource('/bts/sse/subscribe?userId=' + userId);
+(function () {
+	  // 서버에서 내려주는 로그인 유저 id
+	  var userId = '${loginUser.id}';
+	  if (!userId) return;
 
-es.addEventListener('INIT', (e) => console.log('SSE connected:', e.data));
-es.addEventListener('REQUEST_CREATED', (e) => {
-  const data = JSON.parse(e.data);
-  console.log('신규 신청 알림:', data);
+	  // 이미 열린 SSE가 있으면 재생성 금지(중복 연결 방지)
+	  if (window.__btsSSE && window.__btsSSE.readyState === 1 /* OPEN */) return;
 
-});
+	  // 이전 인스턴스가 남아있다면 안전하게 닫기
+	  if (window.__btsSSE) {
+	    try { window.__btsSSE.close(); } catch (e) {}
+	  }
 
-es.onerror = (e) => console.warn('SSE error (auto-retry):', e);
+	  var es = new EventSource('/bts/sse/subscribe?userId=' + encodeURIComponent(userId));
+	  window.__btsSSE = es; // 전역에 저장해서 다른 페이지에서 재중복 생성 방지
 
+	  es.addEventListener('INIT', function (e) {
+	    // 연결 성공 로그 필요 없으면 비워둬도 됨
+	    // console.log('SSE connected:', e.data);
+	  });
+
+	  es.addEventListener('REQUEST_CREATED', function (e) {
+	    try {
+	      var data = JSON.parse(e.data);
+	      var badge = document.getElementById('notifBadge');
+	      var list  = document.getElementById('notifList');
+	      if (!badge || !list) return;
+
+	      var count = parseInt(badge.textContent || '0', 10) || 0;
+	      if (count === 0) list.innerHTML = '';
+	      badge.textContent = count + 1;
+
+	      var htmlDom =
+	        '<a class="dropdown-item py-2 px-3 d-flex align-items-start" ' +
+	          'href="' + data.notification.slug + '" ' +
+	          'onclick="handleNotiClick(' + data.notification.id + ',\'' + data.notification.slug + '\')">' +
+	          '<div class="flex-grow-1">' +
+	            '<div class="fw-semibold text-truncate">[' + data.notification.title + '] ' +
+	              (data.notification.message === '반려' ? '결재가 반려되었습니다.' : '결재 요청이 도착했습니다.') +
+	            '</div>' +
+	            '<small class="text-muted">방금 전</small>' +
+	          '</div>' +
+	        '</a>';
+
+	      //list.insertAdjacentHTML('beforeend', html);
+			list.innerHTML += htmlDom;
+	      var bellIcon = document.querySelector('.bx-bell');
+	      if (bellIcon && !bellIcon.classList.contains('bell-blink')) {
+	        bellIcon.classList.add('bell-blink');
+	      }
+	    } catch (err) {}
+	  });
+
+	  es.onerror = function () {
+	    // EventSource는 자동 재연결됨. 콘솔 스팸 방지용으로 비워둠
+	  };
+
+	  // 전체 페이지 이탈/새로고침 시 커넥션 명시 종료
+	  window.addEventListener('beforeunload', function () {
+	    try { es.close(); } catch (e) {}
+	  });
+	})();
 
 document.addEventListener('DOMContentLoaded', function() {
+	const userId = '${loginUser.id}';
+	$.get('/bts/getNotifications?userId='+userId,
+			function(data, status){
+				if(status == 'success'){
+					document.querySelector('#notifBadge').textContent = data.length;
+					const notiListDom = document.querySelector('#notifList');
+					for(let noti of data){
+						const notiDom = `<a class="dropdown-item py-2 px-3 d-flex align-items-start" href="\${noti.slug}" onclick="handleNotiClick(\${noti.id},'\${noti.slug}')">
+					          
+				          <div class="flex-grow-1">
+				            <div class="fw-semibold text-truncate">[\${noti.title}] \${noti.message == '반려' ? '결재가 반려되었습니다.' : '결재 요청이 도착했습니다.'}</div>
+				            <small class="text-muted">[\${noti.createdAt.substring(0, noti.createdAt.length - 4)}]</small>
+				          </div>
+				        </a>`;
+						notiListDom.innerHTML = notiListDom.innerHTML+ notiDom;
+					}
+					// if no length
+					if(data.length == 0){
+						const nothingDom = `<div class="text-center py-4 text-muted">
+							  <i class="bx bx-bell" style="font-size:2rem;"></i>
+							  <div class="mt-1 small">알림이 없습니다.</div>
+							</div>`;
+						notiListDom.innerHTML = nothingDom;
+					}
+				}
+			});
+	
+	
+	
   const currentPath = window.location.pathname; // 쿼리 제외한 경로만 비교
 	console.log(currentPath);
   document.querySelectorAll('.menu-link').forEach(link => {
@@ -302,6 +405,33 @@ document.addEventListener('DOMContentLoaded', function() {
   
 });
 
+function handleNotiClick(notiId, slug){
+	$.get('/bts/readNotification?id='+notiId,
+			function(data, status){
+				if(status == 'success'){
+					location.href = slug;
+				}
+			});
+}
+
+function readAllNotis(userId){
+	$.get('/bts/readAllNotifications?userId='+userId,
+			function(data, status){
+				if(status == 'success'){
+					document.querySelector('#notifBadge').textContent = 0;
+					const notiListDom = document.querySelector('#notifList');
+					notiListDom.innerHTML = `<div class="text-center py-4 text-muted">
+						  <i class="bx bx-bell" style="font-size:2rem;"></i>
+						  <div class="mt-1 small">새 알림이 없습니다</div>
+						</div>`;
+						
+					const bellIcon = document.querySelector('.bx-bell');
+					  if (bellIcon && bellIcon.classList.contains('bell-blink')) {
+					    bellIcon.classList.remove('bell-blink');
+					}
+				}
+			});
+}
 
 
 </script>    

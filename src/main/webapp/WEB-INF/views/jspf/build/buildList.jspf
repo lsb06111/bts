@@ -30,27 +30,47 @@
 		<div
 			class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
 			<div class="d-flex align-items-center gap-2">
-				<select class="form-select form-select-sm selection-project"
+				<select name="buildStatus" class="form-select form-select-sm selection-buildStatus"
 					style="width: auto; border-radius: 8px; height: 38px;"
 					onchange="filterSelection()">
-					<option value="">프로젝트</option>
-					<c:forEach var="project" items="${projectList}">
-						<option value="${project.projectName}"
-							<c:if test="${param.project == project.projectName}">selected</c:if>>
-							${project.projectName}</option>
-					</c:forEach>
+					<option value="">빌드 상태</option>
+					<option value="ready" <c:if test="${param.buildStatus == 'ready'}">selected</c:if>>빌드 전</option>
+			    	<option value="await" <c:if test="${param.buildStatus == 'await'}">selected</c:if>>빌드 대기</option>
+					<option value="process" <c:if test="${param.buildStatus == 'process'}">selected</c:if>>빌드 진행중</option>
+			    	<option value="success" <c:if test="${param.buildStatus == 'success'}">selected</c:if>>빌드 성공</option>
+					<option value="fail" <c:if test="${param.buildStatus == 'fail'}">selected</c:if>>빌드 실패</option>
+				
 				</select>
 
 
 			</div>
 
-			<div style="position: relative; width: 220px;">
-				<input type="text"
-					class="form-control form-control-sm search-keyword"
-					placeholder="검색..." value="${param.keyword }"
-					style="border-radius: 8px; font-size: 0.9rem; padding-left: 35px; height: 38px;">
-				<i class="bi bi-search"
-					style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+			<div style="display: flex; align-items: center; width: 260px;">
+  
+			  <select name="filter"
+			          class="form-select form-select-sm filter-select"
+			          style="width:90px; border-radius:8px 0 0 8px; font-size:0.9rem; height:38px; border-right:none;">
+			    <option value="title" <c:if test="${param.filter == 'title'}">selected</c:if>>제목</option>
+			    <option value="content" <c:if test="${param.filter == 'content'}">selected</c:if>>내용</option>
+			    <option value="title+content" <c:if test="${param.filter == 'title+content'}">selected</c:if>>제목+내용</option>
+			    <option value="created_at" <c:if test="${param.filter == 'created_at'}">selected</c:if>>신청날짜</option>
+			    <option value="ename" <c:if test="${param.filter == 'ename'}">selected</c:if>>신청인</option>
+			    <option value="project_name" <c:if test="${param.filter == 'project_name'}">selected</c:if>>프로젝트명</option>
+			    <option value="build_at" <c:if test="${param.filter == 'build_at'}">selected</c:if>>배포날짜</option>
+			    
+			    </select>
+			
+			  <div style="position: relative; flex:1;">
+			    <input type="text"
+			           name="keyword"
+			           class="form-control form-control-sm search-keyword"
+			           placeholder="검색..."
+			           value="${param.keyword}"
+			           style="border-radius:0 8px 8px 0; font-size:0.9rem; padding-left:35px; height:38px;">
+			    <i class="bi bi-search"
+			       style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+			  </div>
+			
 			</div>
 		</div>
 
@@ -66,24 +86,56 @@
 						<th>배포 신청명</th>
 						<th>신청인</th>
 						<th>신청날짜</th>
-						<th>동작</th>
+						<th>배포날짜</th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach var="request" items="${requests}" varStatus="status">
 						<tr style="border-bottom: 1px solid #f1f1f1;">
-							<td><input type="checkbox" class="row-check"
-								value="${request.id}" /></td>
+							<td>
+							<c:choose>
+								<c:when test="${request.result == 'ready' }">
+									<input type="checkbox" class="row-check" value="${request.id}" />
+								</c:when>
+								<c:when test="${request.result == 'await' }">
+								<div style="display:flex; align-items:center; justify-content:center;">
+							      <div class="spinner-border text-warning" role="status" 
+							           style="width:1.2rem; height:1.2rem;">
+							        <span class="visually-hidden">빌드 대기</span>
+							      </div>
+							    </div>
+								</c:when>
+								<c:when test="${request.result == 'process' }">
+								<div style="display:flex; align-items:center; justify-content:center;">
+							      <div class="spinner-border text-primary" role="status" 
+							           style="width:1.2rem; height:1.2rem;">
+							        <span class="visually-hidden">빌드 중</span>
+							      </div>
+							    </div>
+								</c:when>
+								<c:when test="${request.result == 'success' }">
+								<div style="text-align:center;">
+							      <i class="bi bi-check-circle-fill" 
+							         style="color:#28a745; font-size:1.3rem;"></i>
+							    </div>
+								</c:when>
+								<c:when test="${request.result == 'fail' }">
+								<div style="text-align:center;">
+							      <i class="bi bi-exclamation-triangle-fill"
+							         style="color:#dc3545; font-size:1.3rem;"></i>
+    							</div>
+								</c:when>
+							</c:choose>
+							
+							
+							</td>
 							<td style="color: #666;">${request.id}</td>
 							<td style="color: #222;">${request.devRepo.projectName}</td>
 							<td style="font-weight: 500;">${request.title}</td>
-
-							<td style="color: #4a5eff; font-weight: 600;">${userDetails[status.index].ename}</td>
+							<td style="color: #4a5eff; font-weight: 600;">${request.ename}</td>
 							<td style="color: #777;">${request.createdAt}</td>
 							<td>
-								<button class="btn btn-sm btn-outline-secondary"
-									style="border-radius: 6px; font-size: 0.85rem;">자세히 보기
-								</button>
+								${request.buildAt}
 							</td>
 						</tr>
 					</c:forEach>
@@ -109,14 +161,14 @@
 				%>
 
 				<li class="page-item <%=(pageN == 1) ? "disabled" : ""%>"><a
-					class="page-link" href="/bts/build?page=<%=pageN - 1%>"
+					class="page-link" href="/bts/build?buildStatus=${param.buildStatus }&page=<%=pageN - 1%>&keyword=${param.keyword}&filter=${param.filter}"
 					style="color: #4a5eff;">&lt;</a></li>
 
 				<%
 					for (int i = startPage; i <= endPage; i++) {
 				%>
 				<li class="page-item <%=(i == pageN) ? "active" : ""%>"><a
-					class="page-link" href="/bts/build?page=<%=i%>"
+					class="page-link" href="/bts/build?buildStatus=${param.buildStatus }&page=<%=i%>&keyword=${param.keyword}&filter=${param.filter}"
 					style="<%=(i == pageN) ? "background-color:#4a5eff; border:none;" : "color:#4a5eff;"%>">
 						<%=i%>
 				</a></li>
@@ -124,8 +176,8 @@
 					}
 				%>
 
-				<li class="page-item <%=(pageN == totalPage) ? "disabled" : ""%>">
-					<a class="page-link" href="/bts/build?page=<%=pageN + 1%>"
+				<li class="page-item <%=(pageN == totalPage || totalPage == 0) ? "disabled" : ""%>">
+					<a class="page-link" href="/bts/build?buildStatus=${param.buildStatus }&page=<%=pageN + 1%>&keyword=${param.keyword}&filter=${param.filter}"
 					style="color: #4a5eff;">&gt;</a>
 				</li>
 			</ul>
@@ -191,9 +243,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 function filterSelection(){
-  const pValue = document.querySelector('.selection-project').value;
+  const bValue = document.querySelector('.selection-buildStatus').value;
   const kValue = document.querySelector('.search-keyword').value;
-  location.href = '/bts/build?project=' + pValue+'&page=1&keyword=' + kValue;
+  const fValue = document.querySelector('.filter-select').value;
+  location.href = '/bts/build?buildStatus=' + bValue+'&page=1&keyword=' + kValue +'&filter='+fValue;
 }
 document.querySelector(".search-keyword").onkeydown = function(event) {
 	  if (event.key === "Enter") {
@@ -247,15 +300,28 @@ function buildSelected(){
 			  const sseUrl = '/bts/build/getBuildLog?projectName=&buildNum='+data.buildNum;
 			  
 			  const eventSource = new EventSource(sseUrl);
-			  
+			  let isFail = false;
 			  eventSource.onopen = (e) => {
-				  console.log('sse opened!!!!');
+				  //console.log('sse opened!!!!');
 				  buildModalBody.innerHTML = '';
 			  }
 			  //수신
 			  eventSource.addEventListener("log", (event) => {
-				  console.log(event.data);
+				  //console.log(event.data);
 				  const cleaned = removeUseless(event.data);
+				  if(cleaned.includes('ERROR: script returned')){
+					  isFail = true;
+					  
+					  $.ajax({
+						  url: '/bts/build/updateBuildResult',
+						  type: 'GET',
+						  data: { reqIds: selected, resultType: 'fail' },
+						  traditional: true, 
+						  success: function(data, status){
+						    if (status === 'success') console.log('result update');
+						  }
+						});
+				  }
 				  buildModalBody.append(cleaned+"\n");
 				    
 				 //자동 스크롤
@@ -265,6 +331,19 @@ function buildSelected(){
 				// 빌드완료시 
 				eventSource.addEventListener("complete", (event) => {
 					buildModalBody.append("\n--- " + event.data + " ---");
+					if(!isFail){
+						$.ajax({
+							  url: '/bts/build/updateBuildResult',
+							  type: 'GET',
+							  data: { reqIds: selected, resultType: 'success' },
+							  traditional: true, 
+							  success: function(data, status){
+							    if (status === 'success') 
+							    	console.log('result update');
+							  }
+							});
+					}
+					
 				    eventSource.close(); // 연결 종료
 				});
 

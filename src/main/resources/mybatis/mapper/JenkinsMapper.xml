@@ -18,8 +18,10 @@
 	insert into deploy_result (req_id, result, response) values(#{reqId}, #{result}, #{response})
 </insert>
 
-<update id="updateResult" parameterType="long">
-	update deploy_result set result='process' where req_id = #{reqId}
+<update id="updateResult">
+	update deploy_result set result=#{resultType} <if test="buildAt != null">, build_at = #{buildAt}</if>
+	where req_id = #{reqId}
+	
 </update>
 
 </mapper>
