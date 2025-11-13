@@ -21,9 +21,9 @@
 					<form action="/bts/project/list" method="get" class="input-group"
 						style="width: 240px;">
 						<input type="text" class="form-control" name="projectName"
-							value="${projectName}" placeholder="검색..."
+							value="${param.projectName}" placeholder="검색..."
 							style="font-size: 13px; border-right: 0; background-color: #fafafa;">
-						<button class="btn btn-outline-light" type="button"
+						<button class="btn btn-outline-light" type="submit"
 							style="border-left: 0; border-color: #ddd; background-color: #fff;">
 							<i class="bi bi-search" style="color: #777;"></i>
 						</button>
@@ -50,7 +50,13 @@
 					</thead>
 					<tbody style="text-align: center; color: #333;">
 						<c:forEach var="project" items="${projects}">
-							<tr class="project-row">
+							<tr class="project-row" data-id="${project.id}"
+								data-name="${project.projectName}"
+								data-repo="${project.repoName}"
+								data-owner="${project.ownerUsername}"
+								data-token="${project.repoToken}"
+								data-members="${project.memberNames}"
+								data-approver="${project.approverName}">
 								<td>${project.projectName}</td>
 								<td>${project.repoName}</td>
 								<td>${project.ownerUsername}</td>
@@ -103,27 +109,60 @@
 			</nav>
 
 			<!-- 하단 버튼 -->
-				<div
-					style="display: flex; justify-content: flex-end; margin-top: 25px;">
-			<c:if test="${loginUser.job.jobno == 3 && loginUser.dept.deptno == 1}">
+			<div
+				style="display: flex; justify-content: flex-end; margin-top: 25px;">
+				<c:if
+					test="${loginUser.job.jobno == 3 && loginUser.dept.deptno == 1}">
 					<button type="button" class="btn"
 						style="background-color: #4f46e5; color: #fff; font-weight: 500; padding: 10px 24px; border-radius: 8px; font-size: 14px;"
 						data-bs-toggle="modal" data-bs-target="#projectAddModal">
 						프로젝트 추가</button>
-			</c:if>
-				</div>
+				</c:if>
+			</div>
 		</div>
 	</div>
 
 
 	<%@ include file="/WEB-INF/views/project/projectAddModal.jsp"%>
+	<%@ include file="/WEB-INF/views/project/projectUpdateModal.jsp"%>
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
 	<script>
-	const loginDeptno = "${loginUser.dept.deptno}"
-	const loginJobno = "${loginUser.job.jobno}"
-	console.log('loginDeptno = ' + loginDeptno);
-	console.log('loginJobno = ' + loginJobno);
+		const loginDeptno = "${loginUser.dept.deptno}";
+		const loginJobno = "${loginUser.job.jobno}";
+		console.log("loginDeptno = " + loginDeptno);
+		console.log("loginJobno = " + loginJobno);
+
+		$(document).ready(function() {
+
+			// 로그인한 사용자 정보 (서버에서 전달받음)
+			const loginDeptno = "${loginUser.dept.deptno}";
+			const loginJobno = "${loginUser.job.jobno}";
+
+			console.log("로그인 부서:", loginDeptno, " / 직급:", loginJobno);
+
+			// 프로젝트 행 클릭 시 수정 모달 표시
+			$(document).on("click", ".project-row", function() {
+				if (loginDeptno !== "1" || loginJobno !== "3") {
+					console.log("권한 없음 , 수정 모달 비활성화");
+					return;
+				}
+
+				const project = {
+					id : $(this).data("id"),
+					projectName : $(this).data("name"),
+					repoName : $(this).data("repo"),
+					ownerUsername : $(this).data("owner"),
+					repoToken : $(this).data("token"),
+					memberNames : $(this).data("members"),
+					approverName : $(this).data("approver")
+				};
+
+				console.log("선택된 프로젝트:", project);
+				openUpdateModal(project);
+			});
+
+		});
 	</script>
 </body>
 </html>
