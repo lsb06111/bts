@@ -358,8 +358,11 @@ where
 	    	where result = #{buildStatus}
 	    </if>
     )
-    <if test="keyword != null and keyword != ''">
+    <if test="keyword != null and keyword != '' and !isCombined">
     	and ${filter} like '%'||#{keyword}||'%'
+    </if>
+    <if test="isCombined">
+    	and (title like '%'||#{keyword}||'%' or content like '%'||#{keyword}||'%')
     </if>
     order by r.id desc
     offset #{page} * 10 rows fetch next 10 rows only
@@ -403,8 +406,11 @@ where
 	    	where result = #{buildStatus}
 	    </if>
     )
-    <if test="keyword != null and keyword != ''">
+    <if test="keyword != null and keyword != '' and !isCombined">
     	and ${filter} like '%'||#{keyword}||'%'
+    </if>
+    <if test="isCombined">
+    	and (title like '%'||#{keyword}||'%' or content like '%'||#{keyword}||'%')
     </if>
 </select>
 

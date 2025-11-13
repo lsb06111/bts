@@ -27,7 +27,8 @@
 		              <td><span class="badge rounded-pill bg-${statusT[status.index] == '반려'? 'danger' : 'warning'}">${statusT[status.index]}</span></td>
 		              
 		              <td>${userDetails[status.index].ename }</td><td>${latestReq.createdAt }</td>
-		              <td><button class="btn btn-sm btn-outline-secondary">자세히 보기</button></td>
+		              <td><button class="btn btn-sm btn-outline-secondary"
+		              onclick="location.href='/bts/deployRequestView?requestId=${latestReq.id}&userId=${userDetails[status.index].id}&latests=${statusT[status.index]}'">자세히 보기</button></td>
 		            </tr>
 	          	</c:forEach>
           	</c:when>

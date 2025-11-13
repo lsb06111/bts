@@ -51,8 +51,12 @@ public class BuildController {
 
 		System.out.println("build build filter: "+filter);
 		System.out.println("build build filter: "+keyword);
-		List<RequestsDTO> requests = buildService.getRequestsForBuild(user, page-1, buildStatus, keyword, filter);
-		int totalCount = buildService.getRequestsSizeForBuild(user, buildStatus, keyword, filter);
+		boolean isCombined = false;
+		if(filter != null)
+			isCombined = filter.contains("+");
+		
+		List<RequestsDTO> requests = buildService.getRequestsForBuild(user, page-1, buildStatus, keyword, filter, isCombined);
+		int totalCount = buildService.getRequestsSizeForBuild(user, buildStatus, keyword, filter, isCombined);
 		
 		int totalPage = (int) Math.ceil((double) totalCount / 10);
 		
@@ -69,7 +73,7 @@ public class BuildController {
 
 		System.out.println("hehehehhehehhe");
 		Map<String, Object> map = new HashMap<>();
-		if(buildService.addDeployResult(reqIds)){
+		if(buildService.addDeployResults(reqIds)){
 			//String buildResult = jenkinsService.triggerBuildNow("test1");
 			//System.out.println(buildResult);
 			// add buildNum
@@ -84,13 +88,14 @@ public class BuildController {
 	@GetMapping(value="getBuildLog", produces="text/event-stream; charset=UTF-8")
 	public SseEmitter getBuildLog(@RequestParam String projectName,
 								  @RequestParam Integer buildNum,
+								  @RequestParam List<Long> reqIds,
 								  HttpServletResponse res){
 		res.setCharacterEncoding("UTF-8");
 		res.setHeader("Content-Type", "text/event-stream; charset=UTF-8");
 		res.setHeader("Cache-Control", "no-cache");
 		SseEmitter emitter = new SseEmitter(1800000L);
 		
-		jenkinsService.streamLogs(projectName, buildNum, emitter);
+		jenkinsService.streamLogs(projectName, buildNum, emitter, reqIds);
 		
 		return emitter;
 	}
@@ -104,6 +109,14 @@ public class BuildController {
 				return new ResponseEntity<>("업데이트 실패", HttpStatus.CONFLICT);
 		}
 		return new ResponseEntity<>("업데이트 성공", HttpStatus.OK);
+	}
+	
+	@ResponseBody
+	@GetMapping("makeRebuild")
+	public ResponseEntity<String> makeRebuild(@RequestParam Long reqId){
+		if(buildService.updateDeployResult(reqId, "ready", null))
+			return new ResponseEntity<>("업데이트 성공", HttpStatus.OK);
+		return new ResponseEntity<>("업데이트 실패", HttpStatus.CONFLICT);
 	}
 	
 	
