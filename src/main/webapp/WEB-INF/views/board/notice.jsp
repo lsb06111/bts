@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ include file="/WEB-INF/views/jspf/head.jspf" %> <!-- 헤드부분 고정 -->
+
 </head>
 
 <body>

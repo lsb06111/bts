@@ -513,7 +513,7 @@ body {
 			<div class="card mb-0 card-approval-history">
 				<div class="card-header pb-0">
 					<h5 class="section-title mb-1">승인 / 반려 사유</h5>
-					<p class="section-subtitle mb-2">각 결재자의 의견과 처리 결과를 확인할 수 있습니다.</p>
+					
 				</div>
 				<div class="card-body pt-3">
 					<c:forEach var="approvalHistory" items="${approvalHistory}">

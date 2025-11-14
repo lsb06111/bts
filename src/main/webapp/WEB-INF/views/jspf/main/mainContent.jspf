@@ -21,9 +21,32 @@
         <div class="card shadow-sm h-100" style="border:none; border-radius:15px;">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
-              <h5 style="font-weight:600; color:#333;">프로젝트1 배포 상태</h5>
+              <h5 style="font-weight:600; color:#333; display:flex; align-items:center; gap:6px;">
+
+  <span style="
+      background:#e8ecff;
+      color:#4a5eff;
+      padding:3px 10px;
+      border-radius:8px;
+      font-weight:700;
+      font-size:0.9rem;
+      line-height:1;
+      display:inline-flex;
+      align-items:center;">
+    OTIEXA
+  </span>
+
+  <span style="
+      font-size:0.9rem;
+      line-height:1;
+      display:inline-flex;
+      align-items:center;">
+    프로젝트 배포 상태
+  </span>
+
+</h5>
               <select class="form-select form-select-sm" style="width:auto; border-radius:8px;">
-                <option>프로젝트1</option>
+                <option>OTIEXA</option>
               </select>
             </div>
             <p class="text-muted" style="font-size:0.9rem;">마지막 배포 빌드 상태</p>

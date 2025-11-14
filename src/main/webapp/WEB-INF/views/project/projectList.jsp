@@ -32,7 +32,7 @@
 			<!-- 구분선 (history 동일) -->
 			<hr style="border:none; border-top:2px solid #4a5eff; opacity:0.9; margin-bottom:30px;">
 
-			<!-- 🔵 필터 + 검색 (history와 동일한 라인 구조) -->
+			
 			<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
 
 				<!-- 왼쪽: 프로젝트 상태 드롭다운 -->
@@ -110,10 +110,9 @@
 								<td style="color:#555;">${project.memberNames}</td>
 								<td style="color:#4a5eff; font-weight:600;">${project.currentStage}</td>
 								<td>
-									<button class="btn btn-sm btn-outline-secondary"
-									        style="border-radius:6px; font-size:0.85rem; padding:4px 8px; background-color:#fff;">
-										<i class="bi bi-trash" style="font-size:1rem; color:#808080;"></i>
-									</button>
+								<c:if test="${loginUser.dept.deptno == 1 && loginUser.job.jobno == 3}">
+									<button style="background:none;border:none;"><i class="bx bx-trash"></i></button>
+								</c:if>
 								</td>
 							</tr>
 						</c:forEach>
