@@ -165,7 +165,7 @@ public class DeployRequestHistoryService {
 		List<RequestsDTO> results = new ArrayList<>();
 		List<RequestsDTO> requests = historyDAO.getRequestsForS(userId);
 		for(RequestsDTO req : requests) {
-			if(results.size()==3)
+			if(results.size()==5)
 				break;
 			List<ApprovalHistoryDTO> approvals = historyDAO.getApprovalHistoryForT(req.getId());
 			String totalStep = getTotalStep(approvals);
@@ -179,7 +179,7 @@ public class DeployRequestHistoryService {
 		List<RequestsDTO> results = new ArrayList<>();
 		List<RequestsDTO> requests = historyDAO.getRequestsForT(userId);
 		for(RequestsDTO req : requests) {
-			if(results.size()==3)
+			if(results.size()==5)
 				break;
 			List<ApprovalHistoryDTO> approvals = historyDAO.getApprovalHistoryForT(req.getId());
 			int totalStep = Integer.parseInt(getTotalStep(approvals).charAt(0)+"");
