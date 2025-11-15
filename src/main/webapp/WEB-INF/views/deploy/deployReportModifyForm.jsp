@@ -6,209 +6,430 @@
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/assets/css/compareModal3.css">
+
 <style>
+/* ===== 모달 공통 ===== */
 .modal-almost-fullscreen {
-	width: calc(100% - 60px); /* 좌우 30px 여백 */
+	width: calc(100% - 60px);
 	max-width: none;
-	height: calc(100% - 60px); /* 상하 30px 여백 */
+	height: calc(100% - 60px);
 	margin: 30px auto;
 }
-
 .modal-almost-fullscreen .modal-content {
 	height: 100%;
 }
-
 .modal-almost-fullscreen .modal-body {
 	overflow-y: auto;
 }
 .custom-tooltip .tooltip-inner {
 	background-color: #e4d4fc !important;
-	color: #333333; 
+	color: #333333;
 }
 
+/* ===== 페이지 공통 레이아웃 ===== */
+body {
+	background-color:#f7f7fb;
+}
 
+/* 메인 카드 */
+.deploy-main-card {
+	background-color:#fff;
+	border-radius:16px;
+	box-shadow:0 4px 18px rgba(15,23,42,0.06);
+	padding:30px 30px 26px 30px;
+	width:100%;
+}
+
+/* 제목/설명 */
+.deploy-title {
+	font-weight:700;
+	color:#222;
+	margin-bottom:4px;
+}
+.deploy-subtitle {
+	color:#777;
+	font-size:0.9rem;
+	margin:0;
+}
+
+/* 상단 버튼 */
+.deploy-top-btn {
+	background-color:#4a5eff;
+	border:none;
+	border-radius:8px;
+	font-weight:500;
+	color:#fff;
+	padding:8px 18px;
+	font-size:0.9rem;
+}
+.deploy-top-btn:disabled,
+.deploy-top-btn[disabled] {
+	opacity:0.6;
+}
+.deploy-top-btn:hover {
+	filter:brightness(0.97);
+}
+
+/* 섹션 카드 */
+.card-form {
+	border:none;
+	border-radius:12px;
+	box-shadow:0 2px 10px rgba(15,23,42,0.04);
+}
+.card-form + .card-form {
+	margin-top:18px;
+}
+.section-title {
+	font-weight:600;
+	color:#333;
+	font-size:1rem;
+}
+.section-subtitle {
+	font-size:0.85rem;
+	color:#9a9fb5;
+	margin-bottom:0.4rem;
+}
+
+/* 프로젝트 셀렉트 */
+#rquestTBdevRepoId {
+	border-radius:10px;
+	border:1px solid #dde1ee;
+	font-size:0.95rem;
+}
+#rquestTBdevRepoId:focus {
+	box-shadow:0 0 0 0.15rem rgba(74,94,255,0.15);
+	border-color:#4a5eff;
+}
+
+/* 제목/본문 */
+#rquestTBtitle {
+	border-radius:10px;
+	border:1px solid #dde1ee;
+	font-size:0.95rem;
+}
+#rquestTBtitle::placeholder {
+	color:#b6b9c7;
+}
+#rquestTBtitle:focus {
+	box-shadow:0 0 0 0.15rem rgba(74,94,255,0.15);
+	border-color:#4a5eff;
+}
+
+/* SunEditor 래퍼 */
+#editor {
+	border-radius:10px;
+	overflow:hidden;
+}
+
+/* 커밋/파일 영역 */
+#commit-list-group,
+.file-item {
+	border:1px solid #eef0f7;
+	border-radius:10px;
+	background-color:#fafbff;
+}
+
+/* 리스트 아이템 공통 */
+#commit-list-group .list-group-item,
+.file-item .list-group-item {
+	border:none;
+	border-bottom:1px solid #edf0f6;
+	font-size:0.9rem;
+}
+#commit-list-group .list-group-item:last-child,
+.file-item .list-group-item:last-child {
+	border-bottom:none;
+}
+#commit-list-group .list-group-item {
+	cursor:pointer;
+}
+#commit-list-group .list-group-item.active,
+#commit-list-group .list-group-item:hover {
+	background-color:#eef2ff;
+	color:#222;
+}
+
+/* 파일 검색 */
+#fileSearch {
+	border-radius:8px;
+	border:1px solid #dde1ee;
+	font-size:0.85rem;
+}
+#fileSearch::placeholder {
+	color:#b6b9c7;
+}
+#fileSearch:focus {
+	box-shadow:0 0 0 0.15rem rgba(74,94,255,0.15);
+	border-color:#4a5eff;
+}
+
+/* 파일 추가 버튼 */
+.file-item-btn {
+	border-radius:999px;
+	font-size:0.8rem;
+	padding:4px 12px;
+	background-color:#4a5eff;
+	border:none;
+}
+.file-item-btn[disabled] {
+	background-color:#c4c8f7;
+	border:none;
+}
+
+/* 선택된 파일 테이블 */
+.table-selected {
+	font-size:0.9rem;
+}
+.table-selected thead {
+	background-color:#f8f9fc;
+}
+.table-selected th {
+	font-weight:600;
+	color:#555;
+}
+.table-selected td {
+	vertical-align:middle;
+}
+.table-selected input.form-control-plaintext {
+	padding:0;
+	font-size:0.86rem;
+}
+
+/* 비교/삭제 버튼 */
+.file-comapare-btn {
+	font-size:0.8rem;
+	border-radius:999px;
+	padding:4px 10px;
+}
+
+/* 페이지네이션 */
+.pagination .page-link {
+	font-size:0.85rem;
+}
+.pagination .page-link i {
+	font-size:1rem;
+}
+
+/* 스피너 */
+.demo-inline-spacing {
+	display:flex;
+	align-items:center;
+	gap:8px;
+}
 </style>
-
 
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-
-
-
 </head>
 
 <body>
 	<%@ include file="/WEB-INF/views/jspf/header.jspf"%>
 	<!-- 헤더 네비부분 고정 -->
 
+	<div class="container my-3">
 
+		<!-- 메인 카드 -->
+		<div class="deploy-main-card">
 
-	<div class="content-wrapper">
-		<div class="container-xxl felx-grow-1 container-p-y">
-			<div class="row">
-				<div class="col-md-12">
-
-					<div class="d-flex justify-content-between align-item-center mt-4">
-						<h3 class="mb-0">배포수정</h3>
-						<div>
-							<button id="prevBtn" type="button" class="btn btn-primary" style="display: none;" onclick="prevDeployForm()">이전</button>
-							<button id="nextBtn" type="button" class="btn btn-primary" onclick="nextDeployForm()">다음</button>
-						</div>
-					</div>
-					<hr>
-
-					<form id="modifyRequestForm" method="post" name="modifyRequestForm"
-						action="/bts/deployForm/sumbmitmodifyRequestForm">
-
-						<div id="prevDeployForm" style="display: block;">
-							<div class="card mb-4">
-								<div class="card-body">
-									<input type="hidden" name="reqId"  value="${requestsDTO.id}">
-									<div>
-										<h5 class="mb-2">프로젝트명</h5>
-										<select id="rquestTBdevRepoId" name="devRepoId"
-											class="form-select form-select-lg">
-											<c:forEach var="devrepoList" items="${devRepoByUserIdList}">
-												<option value="${devrepoList.id }"
-													<c:if test="${ devrepoList.id == requestsDTO.devRepoId}">selected</c:if>>
-												${devrepoList.projectName }</option>
-											</c:forEach>
-										</select>
-									</div>
-								</div>
-							</div>
-
-							<div class="card mb-4">
-								<div>
-									<div class="card-body">
-										<div class="mb-4">
-											<h5 class="mb-2">보고서 제목</h5>
-											<input type="text" id="rquestTBtitle" name="title"
-												class="form-control" value="${requestsDTO.title}">
-										</div>
-										<div class="mb-3">
-											<h5 class="mb-2">보고서 내용</h5>
-											<textarea id="editor_content" name="content" style="display:none" >${fn:escapeXml(requestsDTO.content)}</textarea>
-											 <textarea id="editor" ></textarea>
-											
-											<!-- <textarea class="form-control" id="rquestTBcontent" name="content"
-												rows="14"></textarea> -->
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- 프로젝트명, 제목, 내용 -->
-
-						<div id="nextDeployForm" style="display: none;">
-							<div class="card mb-4">
-								<div class="card-body">
-									<div class="row">
-										<!-- 커밋목록 -->
-										<div class="col-md-6 mb-3">
-											<div class="d-flex justify-content-between">
-												<h5 class="mb-3">커밋목록</h5>
-												<nav aria-label="Page navigation" class="ml-1">
-						                          <ul id="commitPagination" class="pagination pagination-sm">
-						                            <li class="page-item prev">
-						                              <a class="page-link" href="javascript:void(0);"
-						                                ><i class="tf-icon bx bx-chevrons-left"></i
-						                              ></a>
-						                            </li>
-						                            <!-- 
-						                            <li class="page-item page-num">
-						                              <a class="page-link" href="javascript:void(0);">1</a>
-						                            </li>						                            
-						                             -->
-						                            <li class="page-item next">
-						                              <a class="page-link" href="javascript:void(0);"
-						                                ><i class="tf-icon bx bx-chevrons-right"></i
-						                              ></a>
-						                            </li>
-						                          </ul>
-						                        </nav>
-					                        </div>
-											<div id="commit-list-group" class="list-group"
-												style="max-height: 300px; overflow-y: auto;">
-											</div>
-											<!-- 스피너 -->
-											<div class="demo-inline-spacing">
-						                        <div class="spinner-border spinner-border-lg text-primary" role="status">
-						                          <span class="visually-hidden">Loading...</span>
-						                        </div>
-					                        </div>
-										</div>
-
-										<!-- 파일 목록 -->
-										<div class="col-md-6">
-											<div class="d-flex justify-content-between align-items-center ">
-												<h5 class="mb-3">파일목록</h5>
-												<input type="text" id="fileSearch" class="form-control mb-2" style="width:300px;" placeholder="파일명 검색..">
-											</div>
-											<div class="list-group file-item"
-												style="max-height: 300px; overflow-y: auto;"></div>
-										</div>
-
-									</div>
-								</div>
-							</div>
-
-
-							<div class="card mb-4">
-								<div class="card-body">
-									<h5 class="mb-3">선택된 배포 항목</h5>
-									<div class="table-responsive">
-										<table class="table table-bordered align-middle">
-											<thead>
-												<tr>
-													<th style="display: none;">파일 해시</th>
-													<th>커밋 해시</th>
-													<th>파일명</th>
-													<th>동작</th>
-												</tr>
-											</thead>
-											<tbody>
-												<c:if test="${not empty commitFilesList}">
-													<c:forEach var="commitFile" items="${commitFilesList }">
-														<tr>
-															<td style="display:none;"><input id="fileSha" name="" type="text" class="form-control-plaintext" value="${commitFile.fileSha}"/></td>
-															<td><input id="sha" name="" type="text" class="form-control-plaintext" value="${commitFile.sha}" /></td>
-															<td><input id="fileName" name="" tyep="text" class="form-control-plaintext" value="${commitFile.fileName}" /></td>
-															<td>
-																<button id="compareFileItemBtn" class="btn btn-sm btn-outline-primary file-comapare-btn"
-																	data-sha="${commitFile.fileSha}" data-filename="${commitFile.fileName}" data-commitsha="${commitFile.sha}"
-																	data-repoId="${requestsDTO.devRepoId}"
-																	data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
-																<button id="removeFileItemBtn" class="btn btn-sm btn-outline-secondary file-comapare-btn"
-																	data-sha="${commitFile.fileSha}" data-filename="${commitFile.fileName}" data-commitsha="${commitFile.sha}">
-																	<i class="tf-icons bi bi-trash3-fill"></i></button>
-															</td>
-														</tr>
-													</c:forEach>
-												</c:if>
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- 커밋/배포할 파일 선택 -->
-
-					</form>
-
-
+			<!-- 상단 헤더 -->
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div>
+					<h3 class="deploy-title">배포 수정</h3>
+					<p class="deploy-subtitle">
+						기존 배포 보고서 내용을 수정하고, 배포에 포함될 커밋과 파일을 다시 선택할 수 있습니다.
+					</p>
+				</div>
+				<div class="d-flex gap-2">
+					<button id="prevBtn" type="button"
+					        class="btn deploy-top-btn"
+					        style="display:none;"
+					        onclick="prevDeployForm()">
+						이전
+					</button>
+					<button id="nextBtn" type="button"
+					        class="btn deploy-top-btn"
+					        onclick="nextDeployForm()">
+						다음
+					</button>
 				</div>
 			</div>
-		</div>
-	</div>
 
+			<!-- 구분선 -->
+			<hr style="border:none; border-top:2px solid #4a5eff; opacity:0.9; margin-bottom:24px;">
 
-<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/ko.js"></script>
-<script src="${pageContext.request.contextPath}/resources/assets/js/deploy/deployPagination.js"></script>
+			<!-- 폼 전체 -->
+			<form id="modifyRequestForm" method="post" name="modifyRequestForm"
+				action="/bts/deployForm/sumbmitmodifyRequestForm">
+
+				<!-- STEP 1: 프로젝트 / 제목 / 내용 -->
+				<div id="prevDeployForm" style="display:block;">
+
+					<!-- 프로젝트 선택 -->
+					<div class="card mb-4 card-form">
+						<div class="card-body">
+							<input type="hidden" name="reqId"  value="${requestsDTO.id}">
+							<h5 class="section-title mb-1">프로젝트명</h5>
+							<p class="section-subtitle">수정할 배포가 속한 프로젝트를 확인하거나 변경할 수 있습니다.</p>
+
+							<select id="rquestTBdevRepoId" name="devRepoId"
+								class="form-select form-select-lg mt-3">
+								<c:forEach var="devrepoList" items="${devRepoByUserIdList}">
+									<option value="${devrepoList.id }"
+										<c:if test="${ devrepoList.id == requestsDTO.devRepoId}">selected</c:if>>
+										${devrepoList.projectName }
+									</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+
+					<!-- 보고서 작성 -->
+					<div class="card card-form">
+						<div class="card-body">
+							<div class="mb-4">
+								<h5 class="section-title mb-1">보고서 제목</h5>
+								<p class="section-subtitle">필요시 기존 제목을 수정할 수 있습니다.</p>
+								<input type="text" id="rquestTBtitle" name="title"
+									class="form-control mt-2" value="${requestsDTO.title}">
+							</div>
+							<div class="mb-0">
+								<h5 class="section-title mb-1">보고서 내용</h5>
+								<p class="section-subtitle">
+									변경 사항, 영향 범위, 테스트 내역 등을 최신 상태로 업데이트해주세요.
+								</p>
+								<textarea id="editor_content" name="content" style="display:none">${fn:escapeXml(requestsDTO.content)}</textarea>
+								<textarea id="editor"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- // STEP 1 -->
+
+				<!-- STEP 2: 커밋 / 파일 선택 -->
+				<div id="nextDeployForm" style="display:none;">
+
+					<!-- 커밋 / 파일 선택 -->
+					<div class="card mb-4 card-form">
+						<div class="card-body">
+							<div class="row">
+
+								<!-- 커밋 목록 -->
+								<div class="col-md-6 mb-3">
+									<div class="d-flex justify-content-between align-items-center">
+										<div>
+											<h5 class="section-title mb-1">커밋 목록</h5>
+											<p class="section-subtitle">배포에 포함할 커밋을 다시 선택할 수 있습니다.</p>
+										</div>
+										<nav aria-label="Page navigation" class="ms-2">
+											<ul id="commitPagination" class="pagination pagination-sm mb-0">
+												<li class="page-item prev">
+													<a class="page-link" href="javascript:void(0);">
+														<i class="tf-icon bx bx-chevrons-left"></i>
+													</a>
+												</li>
+												<li class="page-item next">
+													<a class="page-link" href="javascript:void(0);">
+														<i class="tf-icon bx bx-chevrons-right"></i>
+													</a>
+												</li>
+											</ul>
+										</nav>
+									</div>
+
+									<div id="commit-list-group" class="list-group mt-2"
+										style="max-height:300px; overflow-y:auto;">
+									</div>
+
+									<!-- 스피너 -->
+									<div class="demo-inline-spacing mt-3">
+										<div class="spinner-border spinner-border-sm text-primary" role="status">
+											<span class="visually-hidden">Loading...</span>
+										</div>
+										<small class="text-muted" style="font-size:0.8rem;">커밋 정보를 불러오는 중입니다.</small>
+									</div>
+								</div>
+
+								<!-- 파일 목록 -->
+								<div class="col-md-6 mb-3">
+									<div class="d-flex justify-content-between align-items-center">
+										<div>
+											<h5 class="section-title mb-1">파일 목록</h5>
+											<p class="section-subtitle">커밋 파일을 추가 또는 교체하세요.</p>
+										</div>
+										<input type="text" id="fileSearch" class="form-control form-control-sm"
+										       style="width:260px;"
+										       placeholder="파일명 검색..">
+									</div>
+									<div class="list-group file-item mt-2"
+										style="max-height:300px; overflow-y:auto;"></div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+					<!-- 선택된 배포 항목 -->
+					<div class="card mb-0 card-form">
+						<div class="card-body">
+							<h5 class="section-title mb-2">선택된 배포 항목</h5>
+							<p class="section-subtitle mb-3">
+								기존에 선택된 파일 목록이 먼저 표시되며, 필요시 비교하거나 삭제할 수 있습니다.
+							</p>
+							<div class="table-responsive">
+								<table class="table table-bordered align-middle mb-0 table-selected">
+									<thead>
+										<tr>
+											<th style="display: none;">파일 해시</th>
+											<th>커밋 해시</th>
+											<th>파일명</th>
+											<th>동작</th>
+										</tr>
+									</thead>
+									<tbody>
+										<c:if test="${not empty commitFilesList}">
+											<c:forEach var="commitFile" items="${commitFilesList }">
+												<tr>
+													<td style="display:none;">
+														<input id="fileSha" name="" type="text" class="form-control-plaintext" value="${commitFile.fileSha}"/>
+													</td>
+													<td>
+														<input id="sha" name="" type="text" class="form-control-plaintext" value="${commitFile.sha}" />
+													</td>
+													<td>
+														<input id="fileName" name="" type="text" class="form-control-plaintext" value="${commitFile.fileName}" />
+													</td>
+													<td>
+														<button id="compareFileItemBtn" class="btn btn-sm btn-outline-primary file-comapare-btn"
+															data-sha="${commitFile.fileSha}" data-filename="${commitFile.fileName}" data-commitsha="${commitFile.sha}"
+															data-repoId="${requestsDTO.devRepoId}"
+															data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">비교</button>
+														<button id="removeFileItemBtn" class="btn btn-sm btn-outline-secondary file-comapare-btn"
+															data-sha="${commitFile.fileSha}" data-filename="${commitFile.fileName}" data-commitsha="${commitFile.sha}">
+															<i class="tf-icons bi bi-trash3-fill"></i></button>
+													</td>
+												</tr>
+											</c:forEach>
+										</c:if>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<!-- // STEP 2 -->
+
+			</form>
+
+		</div><!-- // deploy-main-card -->
+	</div><!-- // container -->
+
+	<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/ko.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/assets/js/deploy/deployPagination.js"></script>
+
 	<%@ include file="/WEB-INF/views/jspf/footer.jspf"%>
 	<!-- 푸터부분 고정 -->
-s
 
 	<%@ include
 		file="/WEB-INF/views/deploy/deployRequestCompareModal4.jspf"%>  <!-- 수정 2 또는 3 -->
@@ -230,10 +451,7 @@ s
 			    ['link', 'image', 'video'],
 			    ['removeFormat', 'showBlocks', 'codeView', 'fullScreen']
 			  ],
-			  // 이미지 업로드를 직접 처리하려면 다음 옵션 활용 (예시 비활성화) - 컨트롤러 구현 예정 - 11/04
-			  // callBackSave: (contents, isChanged) => { ... }
-			  // imageUploadUrl: '/your/upload/url', // 서버 업로드 엔드포인트
-			});
+		});
 
 	    // JSP에서 넘어온 content 불러오기
 	    const content = $("#editor_content").val();
@@ -242,93 +460,47 @@ s
 	    editor.setContents(content);	
 	});
 	
-	
-	
-	
-		function prevDeployForm(){
-			$("#prevDeployForm").show();
-			$("#nextDeployForm").css("display", "none"); // .show();
-			
-			$("#prevBtn").hide(); // display:none;
-			$("#nextBtn").text("다음");
-			$("#nextBtn").attr("onclick", "nextDeployForm()");
-		}	
-
-		function nextDeployForm(){
-			$("#prevDeployForm").hide();
-			$("#nextDeployForm").css("display", "block"); // .show();
-			
-			$("#prevBtn").show(); // display:none;
-			$("#nextBtn").text("제출");
-			$("#nextBtn").attr("onclick", "submmitDeployForm()");
-			
-			$("#commit-list-group").empty();
-			
-			loadCommit(1);
-			
-			/*
-			// 레포지토리커밋목록 가져오기
-			const repoId = $("#rquestTBdevRepoId").val();
-			console.log(repoId);
-			$.ajax({
-				url:"/bts/deployRequest",
-				method: "GET",
-				data: {
-					repoId: repoId
-				},
-				dataType: "json", 
-				success: function(commitList){
-					console.log(commitList);
-					
-					for(var i=0; i < commitList.length; i++ ){
-						console.log(commitList[i].sha);
-						
-						$("#commit-list-group").append(`
-								<a href="#" class="list-group-item list-group-item-action commit-item" data-sha="\${commitList[i].sha}">
-									<div class="fw-bold">\${commitList[i].commitMessage}</div> 
-									<small class="text-muted"> \${commitList[i].sha.substring(0,7)}· 
-									\${commitList[i].userName? commitList[i].userName : "알 수 없음"}
-									(\${commitList[i].authorName}) · 
-									\${commitList[i].authorDate}</small>
-								</a>
-						`);
-					}
-				},
-				error: function(){
-					alert("커밋목록 불러오기 실패")
-				}
-			});
-			
-			
-			*/
-			
-		}	
+	function prevDeployForm(){
+		$("#prevDeployForm").show();
+		$("#nextDeployForm").css("display", "none");
 		
-		function submmitDeployForm(){
-			/* 값 확인해서 통과시키기 */
-			const titleVal = $("#requestTBtitle").val();
-			const contentVal = editor.getContents();
-			
-			const selectedFileLength = $("tbody").children().length;
-			
-			console.log(titleVal);
-			console.log(contentVal);
-			console.log(selectedFileLength);
-			
-			if(titleVal == "" || contentVal=="" || selectedFileLength==0){
-				alert("필수항목을 채워주세요");
-			}else {
-				document.querySelector('#editor_content').value = contentVal;
-				$("#modifyRequestForm").submit();			
-			}
+		$("#prevBtn").hide();
+		$("#nextBtn").text("다음");
+		$("#nextBtn").attr("onclick", "nextDeployForm()");
+	}	
+
+	function nextDeployForm(){
+		$("#prevDeployForm").hide();
+		$("#nextDeployForm").css("display", "block");
+		
+		$("#prevBtn").show();
+		$("#nextBtn").text("제출");
+		$("#nextBtn").attr("onclick", "submmitDeployForm()");
+		
+		$("#commit-list-group").empty();
+		
+		loadCommit(1);
+	}	
+		
+	function submmitDeployForm(){
+		/* 값 확인해서 통과시키기 */
+		const titleVal = $("#rquestTBtitle").val();
+		const contentVal = editor.getContents();
+		
+		const selectedFileLength = $("tbody").children().length;
+		
+		console.log(titleVal);
+		console.log(contentVal);
+		console.log(selectedFileLength);
+		
+		if(titleVal == "" || contentVal=="" || selectedFileLength==0){
+			alert("필수항목을 채워주세요");
+		}else {
+			document.querySelector('#editor_content').value = contentVal;
+			$("#modifyRequestForm").submit();			
 		}
-		
-		
+	}
 	</script>
-
-
-<!--  -->
-
 
 	<script>
 	/* 전역 : 파일의 patch값을 저장해서 모달까지 넘기기 위해서  */
@@ -339,9 +511,9 @@ s
 	
 	$(document).ready(function(){	
 		reindexSelectedFiles();
-	/* 커밋목록 선택후, 해당 커밋으로 조회 */
-		$(".list-group").on("click", ".commit-item", function(e){  // 무한스크롤-이벤트위임
-			//alert($(this).data("sha"));   //alert(e.currentTarget.dataset.sha);
+
+		/* 커밋목록 선택후, 해당 커밋으로 조회 */
+		$(".list-group").on("click", ".commit-item", function(e){
 			$(".file-item").empty();
 			
 			const sha = $(this).data("sha");
@@ -363,10 +535,6 @@ s
 						const fileSha = file.fileSha;
 						const commitSha = file.commitSha;
 						patchMap.set(fileSha, file.patch);
-						//console.log(patchMap.get("patch"));
-						//console.log(fileName);
-						//console.log(fileSha);
-						
 						
 						if(!addFileSet.has(fileSha)){
 							$(".file-item").append(
@@ -396,16 +564,13 @@ s
 		});
 	
 	
-	
-	/*（파일 항목 -> 선택된 배포 항목) 파일 추가 */
+		/* (파일 항목 -> 선택된 배포 항목) 파일 추가 */
 		$(".file-item").on("click", ".file-item-btn" ,function(e){
 			e.preventDefault();
 			
 			const fileSha = $(this).attr("id");
-			//const fileShaShort = $(this).attr("id").slice(0,7);
 			const fileName = $(this).data("filename");
 			const commitSha = $(this).data("commitsha");
-			const commitShaShort = commitSha.slice(0,7);
 			
 			// 파일 중복 추가 X
 			$(this).prop("disabled", "true");
@@ -416,7 +581,7 @@ s
 					<tr>
 						<td style="display:none;"><input id="fileSha" name="" type="text" class="form-control-plaintext" value="\${fileSha}"/></td>
 						<td><input id="sha" name="" type="text" class="form-control-plaintext" value="\${commitSha}" /></td>
-						<td><input id="fileName" name="" tyep="text" class="form-control-plaintext" value="\${fileName}" /></td>
+						<td><input id="fileName" name="" type="text" class="form-control-plaintext" value="\${fileName}" /></td>
 						<td>
 							<button id="compareFileItemBtn" class="btn btn-sm btn-outline-primary file-comapare-btn"
 								data-sha="\${fileSha}" data-filename="\${fileName}" data-commitsha="\${commitSha}"
@@ -432,62 +597,54 @@ s
 			reindexSelectedFiles();
 		});
 
-	/* 긴 파일명 보이게하기 */
+		/* 긴 파일명 보이게하기 */
 		$(".file-item").on("mouseenter", "div", function(){
-			//console.log($(this).index());
 			$(this).find("span").removeClass("text-truncate");
 		});
 		$(".file-item").on("mouseleave", "div", function(){
-			//console.log($(this).index());
 			$(this).find("span").addClass("text-truncate");
 		});
 		
-	/* 파일 검색  */
+		/* 파일 검색  */
 		$('#fileSearch').on("keyup", function(){
 			const searchTerm = $(this).val().toLowerCase().trim();
 			
 			$(".file-item > div").each(function(){
 				const fileName = $(this).find("span").text().toLowerCase();
-				//console.log(fileName.indexOf(searchTerm));
 				const visible = searchTerm.length === 0 || fileName.indexOf(searchTerm) > -1	
 				$(this).toggleClass('d-none', !visible);
 			});		
 		});
-	
 	});
 	
-/* 비교 버튼 눌렀을 때 */
+	/* 비교 버튼 눌렀을 때 */
 	$("tbody").on("click", "#compareFileItemBtn", function(e){
 		e.preventDefault();
 	});
  
-/* 제거버튼 눌렀을 때 비교 항목 목록에서 제거  */	
+	/* 제거버튼 눌렀을 때 비교 항목 목록에서 제거  */	
 	$("tbody").on("click", "#removeFileItemBtn", function(e){
 		e.preventDefault();
 		$(this).closest("tr").remove();
 		
 		const fileSha = $(this).data("sha");
 		addFileSet.delete(fileSha);
-//		$(`.file-item-btn#\${fileSha}`).prop("disabled", false);
 		$(`button#\${fileSha}`).prop("disabled", false);
 		reindexSelectedFiles();
 	});
 	
-/* 선택항목의 데어터를 넘겨주기 위해서 name값의 인덱스 만들기(정렬) : innerClass DTO  */
+	/* 선택항목의 데어터를 넘겨주기 위해서 name값의 인덱스 만들기(정렬) : innerClass DTO  */
 	function reindexSelectedFiles(){
 		 $("tbody tr").each(function(index){
-			 console.log(Number(index));
 			 $(this).find("input#fileSha").attr("name", `selectedFiles[\${Number(index)}].fileSha`);
 			 $(this).find("input#sha").attr("name", `selectedFiles[\${Number(index)}].sha`);
 			 $(this).find("input#fileName").attr("name", `selectedFiles[\${Number(index)}].fileName`);
 		 });
 	}
-
-
 	</script>
 
 	<script>
-	// 수정할때 사용하는 것. 
+	// 수정할때 사용하는 것. (추가 확장용)
 	</script>
 </body>
 </html>

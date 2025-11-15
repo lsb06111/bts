@@ -200,15 +200,17 @@ let modalDom;
 function renderLoading(text = '빌드 요청 전송 중…'){
   const body = document.getElementById('buildModalBody');
   body.innerHTML = `
-    <div class="d-flex align-items-center gap-3">
-      <div class="spinner-border" role="status" aria-hidden="true"></div>
-      <div>
-        <div class="fw-semibold">\${text}</div>
-        <small class="text-muted">잠시만 기다려 주세요…</small>
+    <div class="build-loading-state">
+      <div class="build-loading-spinner">
+        <span></span><span></span><span></span>
       </div>
-    </div>
-    <div class="progress mt-3" role="progressbar" aria-label="build-loading" aria-valuemin="0" aria-valuemax="100">
-      <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+      <div class="build-loading-text">
+        <div class="title">\${text}</div>
+        <div class="subtitle">콘솔 연결 후 실시간 빌드 로그가 표시됩니다.</div>
+      </div>
+      <div class="build-loading-progress">
+        <div class="bar"></div>
+      </div>
     </div>
   `;
 }

@@ -60,6 +60,7 @@
               <td style="color:#777;">${notice.createdAt}</td>
               <c:if test="${loginUser.dept.dname == notice.dname }">
               	<td>
+              	
               	<button onclick="deleteNotice(${notice.id})" style="background:none;border:none;"><i class="bx bx-trash"></i></button>
               	</td>
               </c:if>
