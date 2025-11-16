@@ -58,4 +58,24 @@ public class JwtService {
 		Claims claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
 		return claims.getSubject();
 	}
+	
+	
+	
+	/*public Long getEmpnoFromToken(String token) {
+	    Claims claims = parse(token);
+	    return claims.get("empno", Long.class);
+	}
+
+	public String getRoleFromToken(String token) {
+	    Claims claims = parse(token);
+	    return claims.get("role", String.class);
+	}
+
+	private Claims parse(String token) {
+	    return Jwts.parserBuilder()
+	            .setSigningKey(SECRET_KEY)
+	            .build()
+	            .parseClaimsJws(token)
+	            .getBody();
+	}*/
 }

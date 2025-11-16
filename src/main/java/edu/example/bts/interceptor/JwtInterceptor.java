@@ -62,17 +62,17 @@ public class JwtInterceptor implements HandlerInterceptor {
 	}
 
 	// SecurityContext에 저장
-	/*
-	 * UserDetails userDetails = User.withUsername(email) .password("") // password는
-	 * 필요 없음 .authorities(Collections.emptyList()) .build();
-	 * 
-	 * UsernamePasswordAuthenticationToken authentication = new
-	 * UsernamePasswordAuthenticationToken(userDetails, null,
-	 * userDetails.getAuthorities());
-	 * SecurityContextHolder.getContext().setAuthentication(authentication);
-	 * 
-	 * System.out.println("Security 컨텍스트에 저장 체크: " + email);
-	 */
+	
+	  /*UserDetails userDetails = User.withUsername(email) .password("") // password는
+	  필요 없음 .authorities(Collections.emptyList()) .build();
+	  
+	  UsernamePasswordAuthenticationToken authentication = new
+	  UsernamePasswordAuthenticationToken(userDetails, null,
+	  userDetails.getAuthorities());
+	  SecurityContextHolder.getContext().setAuthentication(authentication);
+	  
+	  System.out.println("Security 컨텍스트에 저장 체크: " + email);*/
+	 
 
 	/** 쿠키에서 토큰 가져오기 */
 	private String getTokenFromCookies(HttpServletRequest req, String name) {

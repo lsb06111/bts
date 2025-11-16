@@ -34,24 +34,38 @@ public class ProjectController {
 
 	@GetMapping("/list")
 	public String projectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
-			@RequestParam(value = "projectName", required = false) String projectName, Model model) {
+			@RequestParam(value = "projectName", required = false) String projectName,
+			@RequestParam(value = "currentStage", required = false) String currentStage, Model model) {
 		if (page < 1) {
 			page = 1;
 		}
 		int pageSize = 10;
 		int offset = (page - 1) * pageSize;
-		List<DevRepoDTO> projectList = projectService.findPageProject(offset);
-		;
+		
+		boolean pName = (projectName != null && !projectName.isEmpty());
+	    boolean pStage = (currentStage != null && !currentStage.isEmpty());
+		
+		List<DevRepoDTO> projectList;
+		
 		int totalCount;
 		int totalPage;
-
-		if (projectName != null && !projectName.isEmpty()) { // 프로젝트명으로 검색
-			projectList = projectService.findProjectByProjectName(projectName);
-			totalCount = projectList.size();
-		} else {
-			projectList = projectService.findPageProject(offset); // 프로젝트 조회
-			totalCount = projectService.countAllProject();
+		
+		// 1) 상태 필터 검색
+		if (pStage) {
+		    totalCount = projectService.countProjectByStatus(currentStage);
+		    projectList = projectService.findPageProjectWithStatus(offset, currentStage);
 		}
+		// 2) 프로젝트명 검색
+		else if (pName) {
+		    totalCount = projectService.countProjectByName(projectName);
+		    projectList = projectService.findProjectByNamePaging(projectName, offset);
+		}
+		// 3) 전체 조회
+		else {
+		    totalCount = projectService.countAllProject();
+		    projectList = projectService.findPageProject(offset);
+		}
+		
 		totalPage = (int) Math.ceil((double) totalCount / pageSize);
 		if (totalPage == 0) {
 			totalPage = 1;
@@ -73,13 +87,14 @@ public class ProjectController {
 
 	@GetMapping("/employee")
 	@ResponseBody
-	public Map<String, Object> findAllUser(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "ename", required = false) String ename) {
+	public Map<String, Object> findAllUser(@RequestParam(value = "page", defaultValue = "1") int page,
+			@RequestParam(value = "ename", required = false) String ename) {
 		int pageSize = 8; // 페이지에 보여줄 데이터
 		int totalCount;
 		int offset = (page - 1) * pageSize;
-		
+
 		List<EmpDTO> list;
-		if(ename != null && !ename.isEmpty()) {
+		if (ename != null && !ename.isEmpty()) {
 			totalCount = projectService.countUserByEnameInModal(ename);
 			list = projectService.findAllUserInModal(offset, ename);
 		} else {
@@ -94,7 +109,7 @@ public class ProjectController {
 		result.put("page", page);
 		result.put("totalCount", totalCount);
 		result.put("totalPage", totalPage);
-		
+
 		System.out.println("ename = " + ename + ", totalCount = " + totalCount);
 
 		return result;
@@ -114,64 +129,74 @@ public class ProjectController {
 
 		System.out.println("memberEmpnos 체크 : " + memberEmpnos);
 		System.out.println("approverEmpnos 체크 : " + approverEmpno);
-		
-		
-		for(int i = 0; i < memberEmpnos.size(); i++) {
+
+		for (int i = 0; i < memberEmpnos.size(); i++) {
 			Long memberEmpno = memberEmpnos.get(i);
 			Long userId = projectService.findUserByEmpno(memberEmpno);
 			System.out.println("값 체크: " + userId);
-			if(userId != null) {
+			if (userId != null) {
 				memberUserIds.add(userId);
 			}
 		}
-	
+
 		System.out.println("Debug Test 멤버유저ID: " + memberUserIds);
-		
+
 		// 결재자 empno -> user_id 변환
 		Long approverUserId = null;
 		if (approverEmpno != null) {
 			approverUserId = projectService.findUserByEmpno(approverEmpno);
 		}
 		System.out.println("Debug Test 결재자ID : " + approverUserId);
-		
+
 		projectService.createProject(project, memberUserIds, approverUserId, loginEmpno);
 
 		return "redirect:/project/list";
 	}
-	
+
 	@PostMapping("/update")
-	public String updateProject(
-	        @ModelAttribute DevRepoDTO project,
-	        @RequestParam(value = "memberIds", required = false) List<Long> memberIds,
-	        @RequestParam(value = "memberEmpnos", required = false) List<Long> memberEmpnos,
-	        @RequestParam(value = "approverEmpno", required = false) Long approverEmpno,
-	        /*@RequestAttribute("loginUser") UserDTO loginUser,*/
-	        RedirectAttributes ra) {
+	public String updateProject(@ModelAttribute DevRepoDTO project,
+			@RequestParam(value = "memberIds", required = false) List<Long> memberIds,
+			@RequestParam(value = "memberEmpnos", required = false) List<Long> memberEmpnos,
+			@RequestParam(value = "approverEmpno", required = false) Long approverEmpno,
+			/* @RequestAttribute("loginUser") UserDTO loginUser, */
+			RedirectAttributes ra) {
 
-	    System.out.println("==== UpdateProject Debug ====");
-	    System.out.println("projectId = " + project.getId());
-	    System.out.println("projectName = " + project.getProjectName());
-	    System.out.println("repoName = " + project.getRepoName());
-	    System.out.println("ownerUsername = " + project.getOwnerUsername());
-	    System.out.println("repoToken = " + project.getRepoToken());
-	    System.out.println("memberEmpnos = " + memberEmpnos);
-	    System.out.println("approverEmpno = " + approverEmpno);
-	    System.out.println("=============================");
+		System.out.println("==== UpdateProject Debug ====");
+		System.out.println("projectId = " + project.getId());
+		System.out.println("projectName = " + project.getProjectName());
+		System.out.println("repoName = " + project.getRepoName());
+		System.out.println("ownerUsername = " + project.getOwnerUsername());
+		System.out.println("repoToken = " + project.getRepoToken());
+		System.out.println("memberEmpnos = " + memberEmpnos);
+		System.out.println("approverEmpno = " + approverEmpno);
+		System.out.println("currentStage = " + project.getCurrentStage());
+		System.out.println("=============================");
 
+		// empno → user_id 변환
+		List<Long> memberUserIds = new ArrayList<>();
+		if (memberEmpnos != null) {
+			for (Long empno : memberEmpnos) {
+				Long userId = projectService.findUserByEmpno(empno);
+				if (userId != null)
+					memberUserIds.add(userId);
+			}
+		}
 
-	    // empno → user_id 변환
-	    List<Long> memberUserIds = new ArrayList<>();
-	    if (memberEmpnos != null) {
-	        for (Long empno : memberEmpnos) {
-	            Long userId = projectService.findUserByEmpno(empno);
-	            if (userId != null) memberUserIds.add(userId);
-	        }
-	    }
+		projectService.updateProject(project, memberIds, memberUserIds, approverEmpno);
 
-	    projectService.updateProject(project, memberIds, memberUserIds, approverEmpno);
+		ra.addFlashAttribute("msg", "프로젝트 정보가 수정되었습니다.");
+		return "redirect:/project/list";
 
-	    ra.addFlashAttribute("msg", "프로젝트 정보가 수정되었습니다.");
-	    return "redirect:/project/list";
+	}
+	
+	@PostMapping("/delete")
+	@ResponseBody
+	public Map<String, Object> deleteProject(@RequestParam("id") Long projectId) {
 
+	    projectService.softDeleteProject(projectId);
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("status", "success");
+	    return result;
 	}
 }

@@ -15,12 +15,31 @@ public interface ProjectDAO {
 
 	// 프로젝트 페이지네이션 카운팅
 	public int countAllProject();
+	
+	 // 추가
+    public int countProjectByName(@Param("projectName") String pName);
+
+    // 추가
+    public List<DevRepoDTO> findProjectByNamePaging(@Param("projectName") String pName,
+                                             @Param("offset") int offset);
 
 	// 프로젝트명으로 검색하기
 	public List<DevRepoDTO> findProjectByProjectName(String projectName);
 
 	// 모달에서 사원 리스트 페이지네이션으로 불러오기
 	public List<EmpDTO> findAllUserInModal(@Param("offset") int offset, @Param("ename") String ename);
+	
+	
+
+	public List<DevRepoDTO> findPageProjectWithStatus(@Param("offset") int offset,
+            @Param("currentStage") String currentStage);
+
+	public int countProjectByStatus(@Param("currentStage") String currentStage);
+	
+	public void deleteProject(@Param("projectId") Long projectId);
+	
+	
+	
 
 	// 모달에서 검색시에 결과 카운팅
 	public int countUserByEnameInModal(String ename);

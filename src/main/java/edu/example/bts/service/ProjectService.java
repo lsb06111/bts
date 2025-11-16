@@ -17,8 +17,27 @@ public class ProjectService {
 
 	// 프로젝트 페이지네이션 리스트
 	public List<DevRepoDTO> findPageProject(int offset) {
-		return projectDAO.findPageProject(offset);
+	    return projectDAO.findPageProject(offset);
 	}
+	public int countProjectByStatus(String currentStage) {
+	    return projectDAO.countProjectByStatus(currentStage);
+	}
+	
+	// 상태 검색
+    public List<DevRepoDTO> findPageProjectWithStatus(int offset, String currentStage) {
+        return projectDAO.findPageProjectWithStatus(offset, currentStage);
+    }
+	
+	// 프로젝트명 검색 (카운트)
+    public int countProjectByName(String Name) {
+        return projectDAO.countProjectByName(Name);
+    }
+
+    // 프로젝트명 검색 (페이징)
+    public List<DevRepoDTO> findProjectByNamePaging(String Name, int offset) {
+        return projectDAO.findProjectByNamePaging(Name, offset);
+    }
+	
 
 	// 프로젝트 페이지네이션 카운트
 	public int countAllProject() {
@@ -95,4 +114,9 @@ public class ProjectService {
             projectDAO.updateApproval(projectId, approverEmpno);
         }
     }
+	
+	@Transactional
+	public void softDeleteProject(Long projectId) {
+	    projectDAO.deleteProject(projectId);
+	}
 }

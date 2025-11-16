@@ -42,59 +42,126 @@
 		SELECT
 		d.id,
 		d.project_name AS projectName,
-		d.repo_name AS
-		repoName,
+		d.repo_name AS repoName,
 		d.owner_username AS ownerUsername,
 		d.repo_token AS repoToken,
-		LISTAGG(e.empno, ', ')
-		WITHIN GROUP
-		(ORDER BY e.ename) AS memberEmpnos,
-		LISTAGG(de.dname, ', ')
-		WITHIN GROUP
-		(ORDER BY e.ename) AS memberDeptnos,
-		LISTAGG(e.ename, ', ')
-		WITHIN GROUP
-		(ORDER BY e.ename) AS memberNames,
-		a_ename.ename AS approverName,
-		d.current_stage AS
-		currentStage
-		FROM
-		dev_repo d
-		JOIN project_member p ON d.id =
-		p.dev_repo_id
-		JOIN users u ON
-		p.user_id = u.id
-		JOIN emp e ON u.empno =
-		e.empno
-		JOIN dept de on de.deptno = e.deptno
-		LEFT JOIN approval_line
-		al
-		ON d.id = al.dev_repo_id
-		AND al.approval_order = 2
-		LEFT JOIN emp a_ename
-		ON al.empno = a_ename.empno
-		GROUP BY
-		d.id,
-		d.project_name,
-		d.repo_name,
-		d.owner_username,
-		d.repo_token,
-		d.current_stage,
-		a_ename.ename
+		LISTAGG(e.empno, ', ') WITHIN GROUP (ORDER BY e.ename) AS memberEmpnos,
+		LISTAGG(de.dname, ', ') WITHIN GROUP (ORDER BY e.ename) AS
+		memberDeptnos,
+		LISTAGG(e.ename, ', ') WITHIN GROUP (ORDER BY e.ename) AS memberNames,
+		a.ename AS approverName,
+		d.current_stage AS currentStage
+		FROM dev_repo d
+		JOIN project_member p ON d.id = p.dev_repo_id
+		JOIN users u ON p.user_id = u.id
+		JOIN emp e ON u.empno = e.empno
+		JOIN dept de ON e.deptno = de.deptno
+		LEFT JOIN approval_line al ON al.dev_repo_id = d.id AND al.approval_order
+		= 2
+		LEFT JOIN emp a ON a.empno = al.empno
+		WHERE d.del_yn = 0
+		GROUP BY d.id, d.project_name, d.repo_name, d.owner_username, d.repo_token,
+		d.current_stage, a.ename
 		ORDER BY d.id DESC
-		OFFSET
-		#{offset} ROWS FETCH NEXT 10
-		ROWS ONLY
+		OFFSET #{offset} ROWS FETCH NEXT 10 ROWS ONLY
 	</select>
+
+
+
+	<select id="findPageProjectWithStatus" resultType="DevRepoDTO">
+		SELECT
+		d.id,
+		d.project_name AS projectName,
+		d.repo_name AS repoName,
+		d.owner_username AS ownerUsername,
+		d.repo_token AS repoToken,
+		LISTAGG(e.empno, ', ') WITHIN GROUP (ORDER BY e.ename) AS memberEmpnos,
+		LISTAGG(de.dname, ', ') WITHIN GROUP (ORDER BY e.ename) AS
+		memberDeptnos,
+		LISTAGG(e.ename, ', ') WITHIN GROUP (ORDER BY e.ename) AS memberNames,
+		a.ename AS approverName,
+		d.current_stage AS currentStage
+		FROM dev_repo d
+		JOIN project_member p ON d.id = p.dev_repo_id
+		JOIN users u ON p.user_id = u.id
+		JOIN emp e ON u.empno = e.empno
+		JOIN dept de ON e.deptno = de.deptno
+		LEFT JOIN approval_line al ON al.dev_repo_id = d.id AND al.approval_order
+		= 2
+		LEFT JOIN emp a ON a.empno = al.empno
+		WHERE d.del_yn = 0
+		AND d.current_stage = #{currentStage}
+		GROUP BY d.id, d.project_name, d.repo_name, d.owner_username, d.repo_token,
+		d.current_stage, a.ename
+		ORDER BY d.id DESC
+		OFFSET #{offset} ROWS FETCH NEXT 10 ROWS ONLY
+	</select>
+
+	<select id="countProjectByStatus" resultType="int">
+		SELECT COUNT(*)
+		FROM dev_repo
+		WHERE del_yn = 0
+		<if test="currentStage != null and currentStage != ''">
+			AND current_stage = #{currentStage}
+		</if>
+	</select>
+
+	<update id="deleteProject">
+		UPDATE dev_repo
+		SET del_yn = 1
+		WHERE id = #{projectId}
+	</update>
+
+	<select id="countProjectByName" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		dev_repo
+		WHERE del_yn = 0
+		AND project_name LIKE '%' || #{projectName} ||
+		'%'
+	</select>
+
+	<select id="findProjectByNamePaging" resultType="DevRepoDTO">
+		SELECT
+		d.id,
+		d.project_name AS projectName,
+		d.repo_name AS repoName,
+		d.owner_username AS ownerUsername,
+		d.repo_token AS repoToken,
+		LISTAGG(e.ename, ', ') WITHIN GROUP (ORDER BY e.ename) AS memberNames,
+		LISTAGG(e.empno, ', ') WITHIN GROUP (ORDER BY e.ename) AS
+		memberEmpnos,
+		LISTAGG(de.dname, ', ') WITHIN GROUP (ORDER BY e.ename) AS memberDeptnos,
+		a.ename AS approverName,
+		d.current_stage AS currentStage
+		FROM dev_repo d
+		JOIN project_member p ON d.id = p.dev_repo_id
+		JOIN users u ON p.user_id = u.id
+		JOIN emp e ON u.empno = e.empno
+		JOIN dept de ON e.deptno = de.deptno
+		LEFT JOIN approval_line al ON al.dev_repo_id = d.id AND al.approval_order
+		= 2
+		LEFT JOIN emp a ON a.empno = al.empno
+		WHERE d.del_yn = 0
+		AND d.project_name LIKE '%' || #{projectName} || '%'
+		GROUP BY d.id, d.project_name, d.repo_name, d.owner_username, d.repo_token,
+		d.current_stage, a.ename
+		ORDER BY d.id DESC
+		OFFSET #{offset} ROWS FETCH NEXT 10 ROWS ONLY
+	</select>
+
+
 
 	<!-- 프로젝트 페이지네이션 전체 데이터 수 -->
 	<select id="countAllProject" resultType="int">
 		SELECT COUNT(DISTINCT
 		d.id)
 		FROM dev_repo d JOIN project_member p ON d.id = p.dev_repo_id
-		join users u
+		JOIN users u
 		ON p.user_id = u.id
 		JOIN emp e ON u.empno = e.empno
+		WHERE
+		d.del_yn = 0
 	</select>
 
 	<!-- ProjectName으로 조회하기(검색바) -->
@@ -112,8 +179,9 @@
 		users u ON p.user_id =
 		u.id
 		JOIN emp e ON u.empno = e.empno
-		WHERE d.project_name LIKE '%' ||
-		#{project_name} ||'%'
+		WHERE d.del_yn = 0
+		AND
+		d.project_name LIKE '%' || #{project_name} || '%'
 		GROUP BY
 		d.project_name, d.repo_name,
 		d.owner_username, d.current_stage
@@ -198,7 +266,9 @@
 		REPO_NAME = #{repoName},
 		OWNER_USERNAME =
 		#{ownerUsername},
-		REPO_TOKEN = #{repoToken}
+		REPO_TOKEN = #{repoToken},
+		CURRENT_STAGE =
+		#{currentStage}
 		WHERE id = #{id}
 	</update>
 

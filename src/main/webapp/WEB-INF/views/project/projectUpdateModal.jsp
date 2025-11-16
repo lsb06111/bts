@@ -94,6 +94,15 @@
 									class="form-control" style="font-size: 14px;">
 							</div>
 							<div>
+								<label class="form-label fw-semibold" style="font-weight: 600;">프로젝트
+									상태</label><select name="currentStage" id="updateCurrentStage"
+									class="form-select" style="font-size: 14px;">
+								<option value="진행중">진행중</option>
+								<option value="완료">완료</option>
+								<option value="중단">중단</option>
+								</select>
+							</div>
+							<div>
 								<label class="form-label fw-semibold">프로젝트 멤버</label>
 								<div class="tag-container" id="memberTagsUpdate">
 									<input type="hidden" id="updateProjectMembers"
@@ -176,7 +185,8 @@ function openUpdateModal(project) {
     $("#updateProjectName").val(project.projectName); 
     $("#updateRepoName").val(project.repoName);
     $("#updateOwnerUsername").val(project.ownerUsername);
-    $("#updateRepoToken").val(project.repoToken);    
+    $("#updateRepoToken").val(project.repoToken);  
+    $("#updateCurrentStage").val(project.currentStage);
     $('#memberTagsUpdate').find('.tag').remove();
     $('#approverTagsUpdate').empty();
     
@@ -337,7 +347,7 @@ $(document).on("click", "#projectUpdateModal .btn-save", function() {
         repoName: modal.find("input[name='repoName']").val().trim(),
         ownerUsername: modal.find("input[name='ownerUsername']").val().trim(),
         repoToken: modal.find("input[name='repoToken']").val().trim(),
-        currentStage: "진행중"
+        currentStage: modal.find("select[name='currentStage']").val()
     };
 
     const memberEmpnos = modal.find("#memberTagsUpdate .tag").map(function() {
@@ -359,6 +369,7 @@ $(document).on("click", "#projectUpdateModal .btn-save", function() {
             repoName: formData.repoName,
             ownerUsername: formData.ownerUsername,
             repoToken: formData.repoToken,
+            currentStage: formData.currentStage,
             memberEmpnos: memberEmpnos,
             approverEmpno: approverEmpno
         },
