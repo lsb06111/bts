@@ -49,6 +49,8 @@ public class BuildService {
 	}
 	
 	public List<RequestsDTO> getRequestsForBuild(UserDTO user, int page, String buildStatus, String keyword, String filter, boolean isCombined){
+		
+		
 		return historyDAO.getRequestsForBuildByPage(user.getId(), page, buildStatus, keyword, filter, isCombined);
 	}
 	

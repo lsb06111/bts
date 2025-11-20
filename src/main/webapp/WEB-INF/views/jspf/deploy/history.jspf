@@ -50,9 +50,9 @@
                 onchange="filterSelection()">
           <option value="">상태</option>
           <c:forEach var="status" items="${statusList}">
-            <option value="${status.id==1? '대기중' : status.description}"
-            <c:if test="${param.status == (status.id == 1 ? '대기중' : status.description)}">selected</c:if>>
-              ${status.id==1? '대기중' : status.description}
+            <option value="${status.id==1? '대기중' : (status.description == '승인' ? '완료' : status.description)}"
+            <c:if test="${param.status == (status.id == 1 ? '대기중' : (status.description == '승인' ? '완료' : status.description))}">selected</c:if>>
+              ${status.id==1? '대기중' : (status.description == '승인' ? '완료' : status.description)}
             </option>
           </c:forEach>
         </select>
@@ -93,7 +93,8 @@
                     (latests[status.index] == '대기중' ? 'primary' :
                     (latests[status.index] == '완료' ? 'success' : 'secondary')))}"
                     style="font-size:0.8rem; padding:6px 10px;">
-                  ${latests[status.index]}
+                    
+                  ${ latests[status.index]}
                 </span>
               </td>
               <td style="color:#4a5eff; font-weight:600;">${userDetails[status.index].ename}</td>

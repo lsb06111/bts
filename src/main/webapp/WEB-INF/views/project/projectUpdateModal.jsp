@@ -230,7 +230,7 @@ function loadEmployeePageUpdate(pageNum) {
 
             $.each(data.list, function(i, emp) {
                 let addBtn = "";
-                if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "사원") {
+                if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "팀원") {
                     addBtn = "<button type='button' class='btn btn-outline-primary btn-sm memberBtnUpdate'>멤버추가</button>";
                 } else if (emp.dept && emp.dept.dname == "운영팀") {
                     addBtn = "<button type='button' class='btn btn-outline-danger btn-sm approveBtnUpdate'>결재자추가</button>";
@@ -276,7 +276,7 @@ function searchEmployeeUpdate(pageNum = 1) {
             } else {
                 $.each(data.list, function(i, emp) {
                     let addBtn = "";
-                    if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "사원") {
+                    if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "팀원") {
                         addBtn = "<button type='button' class='btn btn-outline-primary btn-sm memberBtnUpdate'>멤버추가</button>";
                     } else if (emp.dept && emp.dept.dname == "운영팀") {
                         addBtn = "<button type='button' class='btn btn-outline-danger btn-sm approveBtnUpdate'>결재자추가</button>";

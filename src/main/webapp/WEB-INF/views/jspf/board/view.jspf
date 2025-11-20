@@ -48,9 +48,7 @@
       </h1>
       <div style="font-size:0.9rem; color:#888;">
         <span>작성일 ${notice.createdAt}</span>
-        <c:if test="${notice.modifiedAt ne null}">
-          <span style="margin-left:8px; color:#aaa;">(수정됨 ${notice.modifiedAt})</span>
-        </c:if>
+        
       </div>
     </div>
 

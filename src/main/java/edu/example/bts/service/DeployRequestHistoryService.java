@@ -140,8 +140,9 @@ public class DeployRequestHistoryService {
 			if(user.getDept().getDeptno().intValue() == 1 && user.getJob().getJobno().intValue() == 2) {
 				//System.out.println(req.getId()+": "+totalStep);
 				
-				if(totalStep.length()==2 && totalStepInt == 0)
+				if(user.getId() == req.getUserId() && totalStep.length()==2 && totalStepInt == 0)
 					re = "반려";
+				
 					
 			}//팀장이면
 			else if(user.getDept().getDeptno().intValue() == 1 && user.getJob().getJobno().intValue() == 3) {

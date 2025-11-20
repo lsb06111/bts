@@ -53,8 +53,9 @@ public class BuildController {
 		System.out.println("build build filter: "+keyword);
 		boolean isCombined = false;
 		if(filter != null)
-			isCombined = filter.contains("+");
+			isCombined = filter.equals("03");
 		
+		filter = changeToColumn(filter);
 		List<RequestsDTO> requests = buildService.getRequestsForBuild(user, page-1, buildStatus, keyword, filter, isCombined);
 		int totalCount = buildService.getRequestsSizeForBuild(user, buildStatus, keyword, filter, isCombined);
 		
@@ -65,6 +66,33 @@ public class BuildController {
 		model.addAttribute("requests", requests);
 		model.addAttribute("totalPage", totalPage);
 		return "build/buildList";
+	}
+	
+	public String changeToColumn(String filter) {
+		if(filter != null) {
+			switch(filter) {
+				case "01":
+					filter = "title";
+					break;
+				case "02":
+					filter = "content";
+					break;
+				case "04":
+					filter = "created_at";
+					break;
+				case "05":
+					filter = "ename";
+					break;
+				case "06":
+					filter = "project_name";
+					break;
+				case "07":
+					filter = "build_at";
+					break;
+			}
+		}
+		
+		return filter;
 	}
 	
 	@ResponseBody
