@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ include file="/WEB-INF/views/jspf/head.jspf"%>
 <!-- 헤드부분 고정 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body data-ctx="<%=request.getContextPath()%>" style="background-color:#f7f7fb;">
 	<%@ include file="/WEB-INF/views/jspf/header.jspf"%>
@@ -50,8 +51,8 @@
 							운영팀
 						</option>
 						<option value="인사팀"
-							<c:if test="${param.dept == '인사팀'}">selected</c:if>>
-							인사팀
+							<c:if test="${param.dept == '관리자'}">selected</c:if>>
+							관리자
 						</option>
 					</select>
 				</div>

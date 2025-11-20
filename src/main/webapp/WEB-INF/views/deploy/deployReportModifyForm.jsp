@@ -538,11 +538,27 @@ body {
 						
 						if(!addFileSet.has(fileSha)){
 							$(".file-item").append(
-								`<div class="d-flex justify-content-between align-items-center list-group-item">
-						          <span class="text-truncate" style="max-width: 80%;" title="\${fileName}">\${fileName}</span>
-						          <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn" 
-						          	data-filename="\${fileName}" data-commitsha="\${commitSha}">추가</button>
-						        </div>`
+									`<div class="d-flex justify-content-between align-items-center list-group-item">
+								      <span class="text-truncate" style="max-width:80%;" title="\${fileName}">
+								        \${fileName}
+								      </span>
+
+								      <!-- 버튼 2개 묶어서 오른쪽 끝으로 -->
+								      <div class="d-flex gap-2 btn-wrapper" style="margin-left:auto;">
+								        <button id="\${fileSha}" class="btn btn-sm btn-primary file-item-btn"
+								            data-filename="\${fileName}" data-commitsha="\${commitSha}">
+								            추가
+								        </button>
+
+								        <button type="button" id="compareFileItemBtn"
+								            class="btn btn-sm btn-outline-primary file-comapare-btn"
+								            data-sha="\${fileSha}" data-filename="\${fileName}"
+								            data-commitsha="\${commitSha}" data-repoId="\${repoId}"
+								            data-bs-toggle="modal" data-bs-target="#deployRequestCompareModal">
+								            비교
+								        </button>
+								      </div>
+								</div>`
 							);
 						} else {
 							$(".file-item").append(

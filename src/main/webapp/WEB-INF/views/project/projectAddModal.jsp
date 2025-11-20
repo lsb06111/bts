@@ -211,7 +211,7 @@
 	            $.each(data.list, function(i, emp) {
 	                var addBtn = "";
 
-	                if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "사원") {
+	                if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "팀원") {
 	                    addBtn = "<button type='button' class='btn btn-outline-primary btn-sm memberBtn' style='border-radius:6px;font-size:13px;'>멤버추가</button>";
 	                } else if (emp.dept && emp.dept.dname == "운영팀") {
 	                    addBtn = "<button type='button' class='btn btn-outline-danger btn-sm approveBtn' style='border-radius:6px;font-size:13px;'>결재자추가</button>";
@@ -287,7 +287,7 @@
 	                $.each(data.list, function(i, emp) {
 	                    var addBtn = "";
 
-	                    if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "사원") {
+	                    if (emp.dept && emp.dept.dname == "개발팀" && emp.job && emp.job.jname == "팀원") {
 	                        addBtn = "<button type='button' class='btn btn-outline-primary btn-sm memberBtn' style='border-radius:6px;font-size:13px;'>멤버추가</button>";
 	                    } else if (emp.dept && emp.dept.dname == "운영팀") {
 	                        addBtn = "<button type='button' class='btn btn-outline-danger btn-sm approveBtn' style='border-radius:6px;font-size:13px;'>결재자추가</button>";
