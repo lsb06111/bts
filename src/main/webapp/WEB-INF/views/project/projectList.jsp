@@ -80,7 +80,10 @@
 							<th style="width: 20%;">레포 소유자 ID</th>
 							<th style="width: 25%;">프로젝트 팀원</th>
 							<th style="width: 15%;">프로젝트 상태</th>
-							<th style="width: 10%;">삭제</th>
+							<c:if
+								test="${loginUser.dept.deptno == 1 && loginUser.job.jobno == 3}">
+								<th style="width: 10%;">삭제</th>
+							</c:if>
 						</tr>
 					</thead>
 					<tbody>
@@ -100,13 +103,15 @@
 								<td style="color: #555;">${project.ownerUsername}</td>
 								<td style="color: #555;">${project.memberNames}</td>
 								<td style="color: #4a5eff; font-weight: 600;">${project.currentStage}</td>
-								<td><c:if
-										test="${loginUser.dept.deptno == 1 && loginUser.job.jobno == 3}">
+								<c:if
+									test="${loginUser.dept.deptno == 1 && loginUser.job.jobno == 3}">
+									<td>
 										<button class="delete-btn" data-id="${project.id}"
 											style="background: none; border: none;">
 											<i class="bx bx-trash"></i>
 										</button>
-									</c:if></td>
+									</td>
+								</c:if>
 							</tr>
 						</c:forEach>
 
@@ -193,8 +198,12 @@
 
 							// 프로젝트 행 클릭 시 수정 모달
 							$(document).on("click", ".project-row", function() {
-								if (loginDeptno !== "1" || loginJobno !== "3") {
+								if (loginDeptno !== "1" && loginJobno !== "3") {
 									console.log("권한 없음 , 수정 모달 비활성화");
+									return;
+								}
+								
+								if(!confirm("해당 프로젝트 정보를 수정하겠습니까?")){
 									return;
 								}
 
@@ -214,7 +223,7 @@
 								openUpdateModal(project);
 							});
 						});
-		
+
 		$(document).on("click", ".delete-btn", function(event) {
 			event.stopPropagation(); // 수정 모달 뜨는거 방지
 

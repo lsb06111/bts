@@ -26,4 +26,5 @@ public class EmpDTO {
     private DeptDTO dept;
     private JobDTO job;
     private String company;
+    private String position;
 }

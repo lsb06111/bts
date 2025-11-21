@@ -78,10 +78,13 @@
 
 	<insert id="insertEmp" parameterType="EmpDTO"
 		useGeneratedKeys="true" keyProperty="empno" keyColumn="EMPNO">
-		INSERT INTO emp (
-		ename, ephone, email, phone, estate, deptno, jobno
-		) VALUES (
-		#{ename}, #{ephone}, #{email}, #{phone}, #{estate}, #{deptno}, #{jobno}
+		INSERT INTO emp
+		(
+		ename, ephone, email, phone, estate, deptno, jobno, position
+		) VALUES
+		(
+		#{ename}, #{ephone}, #{email}, #{phone}, #{estate}, #{deptno},
+		#{jobno}, #{position}
 		)
 	</insert>
 

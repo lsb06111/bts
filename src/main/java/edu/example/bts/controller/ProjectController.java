@@ -84,7 +84,8 @@ public class ProjectController {
 		System.out.println("totalPage" + totalPage);
 		return "/project/projectList";
 	}
-
+	
+	// 모달에서 프로젝트 조회하기
 	@GetMapping("/employee")
 	@ResponseBody
 	public Map<String, Object> findAllUser(@RequestParam(value = "page", defaultValue = "1") int page,
@@ -116,41 +117,37 @@ public class ProjectController {
 	}
 
 	@PostMapping("/add")
-	public String addProject(@ModelAttribute DevRepoDTO project, @RequestParam("memberEmpnos") List<Long> memberEmpnos,
-			@RequestParam("approverEmpno") Long approverEmpno, @RequestAttribute("loginUser") UserDTO loginUser,
-			RedirectAttributes ra) {
+	@ResponseBody
+	public Map<String, Object> addProject(
+	        @ModelAttribute DevRepoDTO project,
+	        @RequestParam("memberEmpnos") List<Long> memberEmpnos,
+	        @RequestParam("approverEmpno") Long approverEmpno,
+	        @RequestAttribute("loginUser") UserDTO loginUser) {
 
-		// 로그인한 팀장 사번(JWT에서 로그인 사용자 정보 사용)
-		Long loginEmpno = loginUser.getEmpno();
-		System.out.println("Debug Test 로그인 유저 empno = " + loginEmpno);
+	    Long loginEmpno = loginUser.getEmpno();
 
-		// 프로젝트 멤버들의 empno -> user_id 변환
-		List<Long> memberUserIds = new ArrayList<>();
+	    // 프로젝트 멤버 empno → userId 변환
+	    List<Long> memberUserIds = new ArrayList<Long>();
+	    for (Long memberEmpno : memberEmpnos) {
+	        Long userId = projectService.findUserByEmpno(memberEmpno);
+	        if (userId != null) {
+	            memberUserIds.add(userId);
+	        }
+	    }
 
-		System.out.println("memberEmpnos 체크 : " + memberEmpnos);
-		System.out.println("approverEmpnos 체크 : " + approverEmpno);
+	    // 결재자 empno → userId 변환
+	    Long approverUserId = null;
+	    if (approverEmpno != null) {
+	        approverUserId = projectService.findUserByEmpno(approverEmpno);
+	    }
 
-		for (int i = 0; i < memberEmpnos.size(); i++) {
-			Long memberEmpno = memberEmpnos.get(i);
-			Long userId = projectService.findUserByEmpno(memberEmpno);
-			System.out.println("값 체크: " + userId);
-			if (userId != null) {
-				memberUserIds.add(userId);
-			}
-		}
+	    // 프로젝트 생성
+	    projectService.createProject(project, memberUserIds, approverUserId, loginEmpno);
 
-		System.out.println("Debug Test 멤버유저ID: " + memberUserIds);
-
-		// 결재자 empno -> user_id 변환
-		Long approverUserId = null;
-		if (approverEmpno != null) {
-			approverUserId = projectService.findUserByEmpno(approverEmpno);
-		}
-		System.out.println("Debug Test 결재자ID : " + approverUserId);
-
-		projectService.createProject(project, memberUserIds, approverUserId, loginEmpno);
-
-		return "redirect:/project/list";
+	    // 🔥 여기! Java 1.8 이하 호환 JSON 응답
+	    Map<String, Object> result = new HashMap<String, Object>();
+	    result.put("status", "success");
+	    return result;
 	}
 
 	@PostMapping("/update")

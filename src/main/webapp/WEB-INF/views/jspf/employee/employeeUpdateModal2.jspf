@@ -11,9 +11,9 @@
 				style="border: none; padding: 24px 24px 10px;">
 				<div>
 					<h5 class="modal-title" id="employeeAddModalLabel"
-						style="font-weight: 700; color: #222;">사원 추가</h5>
+						style="font-weight: 700; color: #222;">사원 수정</h5>
 					<p style="font-size: 13px; color: #777; margin-top: 6px;">새로운
-						직원의 정보를 입력하여 목록에 추가합니다.</p>
+						직원의 정보를 입력하여 데이터를 수정합니다.</p>
 				</div>
 				<button type="button" class="btn-close" data-bs-dismiss="modal"
 					aria-label="Close"></button>
@@ -63,17 +63,29 @@
 						<div class="col-md-6">
 							<label class="form-label" style="font-weight: 600;">휴대전화</label>
 							<input name="phone" type="text" id="updatePhoneInput"
-								class="form-control" placeholder="예: 010-1234-5678"
+								class="form-control" maxlength="13" oninput="autoHyphenPhone(this)" placeholder="예: 010-1234-5678"
 								style="font-size: 14px;">
 						</div>
 
-						<div class="col-md-6">
+						<div class="col-md-3">
 							<label class="form-label" style="font-weight: 600;">부서</label> <select
 								name="deptno" id="updateDeptInput" class="form-select"
 								style="font-size: 14px;">
 								<option value="1">개발팀</option>
 								<option value="2">운영팀</option>
 								<option value="3">인사팀</option>
+							</select>
+						</div>
+						
+						<div class="col-md-3">
+							<label class="form-label" style="font-weight: 600;">직급</label> <select
+								name="position" id="updatePositionInput" class="form-select"
+								style="font-size: 14px;">
+								<option value="사원">사원</option>
+								<option value="대리">대리</option>
+								<option value="과장">과장</option>
+								<option value="차장">차장</option>
+								<option value="부장">부장</option>
 							</select>
 						</div>
 

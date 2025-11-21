@@ -49,7 +49,8 @@
 	<!-- 프로젝트 수정 모달 -->
 	<div class="modal fade" id="projectUpdateModal" tabindex="-1"
 		aria-labelledby="projectUpdateModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-xl">
+		<div class="modal-dialog modal-dialog-centered modal-xl"
+			style="max-width: 1400px; width: 90%;">
 			<div class="modal-content"
 				style="border: none; border-radius: 16px; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);">
 
@@ -90,16 +91,16 @@
 							</div>
 							<div>
 								<label class="form-label fw-semibold">레포 토큰</label> <input
-									type="text" id="updateRepoToken" name="repoToken"
+									type="password" id="updateRepoToken" name="repoToken"
 									class="form-control" style="font-size: 14px;">
 							</div>
 							<div>
 								<label class="form-label fw-semibold" style="font-weight: 600;">프로젝트
 									상태</label><select name="currentStage" id="updateCurrentStage"
 									class="form-select" style="font-size: 14px;">
-								<option value="진행중">진행중</option>
-								<option value="완료">완료</option>
-								<option value="중단">중단</option>
+									<option value="진행중">진행중</option>
+									<option value="완료">완료</option>
+									<option value="중단">중단</option>
 								</select>
 							</div>
 							<div>

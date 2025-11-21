@@ -192,9 +192,7 @@
 		resultMap="ProjectMap">
 		SELECT e.empno, e.ename, j.jname, d.dname
 		from emp e join job
-		j on
-		e.jobno =
-		j.jobno
+		j on e.jobno = j.jobno
 		join dept d on e.deptno = d.deptno
 		where e.empno
 		Not IN

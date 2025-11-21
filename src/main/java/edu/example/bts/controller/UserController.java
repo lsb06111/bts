@@ -39,22 +39,4 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("등록 실패");
 		}
 	}
-	
-	/* 로그인된 사용자 프로필 페이지 SecurityContext*/
-    /*@GetMapping("/profile")
-    public String profilePage(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            // 로그인 정보가 없으면 로그인 페이지로 리다이렉트
-            return "redirect:/auth/loginForm";
-        }
-
-        String email = authentication.getName(); // 로그인된 사용자 이메일
-        model.addAttribute("email", email);
-
-        System.out.println("[DEBUG] 로그인 사용자 이메일: " + email);
-
-        return "user/profile";
-    }*/
 }

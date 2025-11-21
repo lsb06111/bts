@@ -75,7 +75,8 @@
 				</div>
 
 				<!-- 본문 -->
-				<div class="modal-body" style="padding: 0 32px 32px; min-height: 650px; max-height: 70vh; overflow-y: auto;">
+				<div class="modal-body"
+					style="padding: 0 32px 32px; min-height: 650px; max-height: 70vh; overflow-y: auto;">
 					<!-- form 유지하면서 flex 적용 -->
 					<form id="projectAddForm" action="/bts/project/add" method="post"
 						style="display: flex; gap: 32px; flex-wrap: wrap;">
@@ -104,7 +105,7 @@
 
 							<div>
 								<label class="form-label fw-semibold">레포 토큰</label> <input
-									type="text" name="repoToken" class="form-control"
+									type="password" name="repoToken" class="form-control"
 									placeholder="예: ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 									style="font-size: 14px;">
 							</div>
@@ -195,7 +196,7 @@
 			</div>
 		</div>
 	</div>
-<script>
+	<script>
 	// 전체 사원 목록 불러오기 (페이지네이션 포함)
 	function loadEmployeePage(pageNum) {
 	    $.ajax({
@@ -376,28 +377,89 @@
 
 
 	// 폼 제출 시 hidden input 추가
-	$(document).on("submit", "#projectAddForm", function() {
-	    var form = $(this);
-	    form.find("input[name='memberEmpnos'], input[name='approverEmpno']").remove();
+	$(document).on("submit", "#projectAddForm", function (e) {
+    e.preventDefault(); // 기본 제출 막기
+    let form = $(this);
 
-	    // 멤버 리스트 추가
-	    $("#memberTags .tag").each(function() {
-	        var empno = $(this).attr("data-empno");
-	        form.append("<input type='hidden' name='memberEmpnos' value='" + empno + "'>");
-	    });
+    // 입력값 가져오기
+    const projectName = form.find("input[name='projectName']").val().trim();
+    const repoName = form.find("input[name='repoName']").val().trim();
+    const ownerUsername = form.find("input[name='ownerUsername']").val().trim();
+    const repoToken = form.find("input[name='repoToken']").val().trim();
 
-	    // 결재자 추가
-	    var approver = $("#approverTags .tag").attr("data-empno");
-	    if (approver) {
-	        form.append("<input type='hidden' name='approverEmpno' value='" + approver + "'>");
-	    }
-	});
+    // 멤버 & 결재자
+    const memberCount = $("#memberTags .tag").length;
+    const approverCount = $("#approverTags .tag").length;
 
+    // ========== 유효성 체크 ==========
+    if (projectName.length === 0) {
+        alert("프로젝트 이름을 입력해주세요.");
+        return;
+    }
+
+    if (repoName.length === 0) {
+        alert("레포 이름을 입력해주세요.");
+        return;
+    }
+
+    if (ownerUsername.length === 0) {
+        alert("레포 소유자 ID를 입력해주세요.");
+        return;
+    }
+
+    if (repoToken.length === 0) {
+        alert("레포 토큰을 입력해주세요.");
+        return;
+    }
+
+    if (memberCount === 0) {
+        alert("프로젝트 멤버를 최소 1명 이상 추가해주세요.");
+        return;
+    }
+
+    if (approverCount === 0) {
+        alert("운영팀 결재자를 선택해주세요.");
+        return;
+    }
+
+    // 기존 hidden 제거
+    form.find("input[name='memberEmpnos'], input[name='approverEmpno']").remove();
+
+    // 멤버 hidden input 생성
+    $("#memberTags .tag").each(function () {
+        form.append("<input type='hidden' name='memberEmpnos' value='" + $(this).data("empno") + "'>");
+    });
+
+    // 결재자 hidden 생성
+    const approverEmpno = $("#approverTags .tag").data("empno");
+    form.append("<input type='hidden' name='approverEmpno' value='" + approverEmpno + "'>");
+
+    // ========= AJAX 제출 =========
+    $.ajax({
+        url: form.attr("action"),
+        type: "POST",
+        data: form.serialize(),
+        success: function (res) {
+            if (res.status === "success") {
+                alert("프로젝트가 성공적으로 생성되었습니다.");
+                $("#projectAddModal").modal("hide");
+                location.reload();
+            } else {
+                alert("프로젝트 생성 중 오류가 발생했습니다.");
+            }
+        },
+        error: function () {
+            alert("서버 요청 중 오류가 발생했습니다.");
+        }
+    });
+});
 
 	// 페이지 로드 시 전체 목록 첫 페이지 불러오기
 	$(document).ready(function() {
 	    loadEmployeePage(1);
 	});
+	
+	
 </script>
 
 </body>
